@@ -23,5 +23,5 @@ void main() {
     normal = mat3(transpose(inverse(ubo.model))) * inNormal; // Correct normal transformation
     uv = inUV; // Pass UV coordinates to the fragment shader
     tangent = inTangent;
-    gl_Position = ubo.proj * ubo.view * vec4(fragPos, 1.0);
+    gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPos, 1.0);
 }

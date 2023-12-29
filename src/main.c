@@ -56,7 +56,7 @@ void updateUniformBuffer(VkDevice device, RenderObject *renderObject, Camera *ca
 
     // Set up lighting information
     // Example values - replace with your actual lighting data
-    vec3 lightDirection = {0.0f, 0.0f, 0.0f}; // Direction of light
+    vec3 lightDirection = {0.0f, 1.0f, 0.0f}; // Direction of light
     vec4 lightColor = {1.0f, 1.0f, 1.0f, 1.0f}; // Color of light
 
     glm_vec3_copy(lightDirection, ubo.lightDir);
@@ -141,10 +141,10 @@ int main() {
     }
 
     renderObjects[0] = createRenderObjectFromFile(&context, descriptorSetLayout, descriptorPool, "models/plane.glb");
-    renderObjects[1] = createRenderObjectFromFile(&context, descriptorSetLayout, descriptorPool, "models/cube-normal.glb");
+    renderObjects[1] = createRenderObjectFromFile(&context, descriptorSetLayout, descriptorPool, "models/ship.glb");
 
     glm_vec3_copy((vec3) {0.0f, 0.0f, 0.0f}, renderObjects[0]->position);
-    glm_vec3_copy((vec3) {0.0f, 2.0f, 1.2f}, renderObjects[1]->position);
+    glm_vec3_copy((vec3) {0.0f, 0.2f, -2.2f}, renderObjects[1]->position);
     glm_vec3_copy((vec3) {0.5f, 0.5f, 0.5f}, renderObjects[1]->scale);
 
     VkImage depthImage;
@@ -207,7 +207,7 @@ int main() {
         // Move
        // renderObjects[1]->rotation[0] += 0.7f;
         renderObjects[1]->rotation[1] += 0.3f;
-        renderObjects[1]->rotation[2] += 0.3f;
+   //     renderObjects[1]->rotation[2] += 0.3f;
 
         for (size_t i = 0; i < numRenderObjects; i++) {
             RenderObject *obj = renderObjects[i];
