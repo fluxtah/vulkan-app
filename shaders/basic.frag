@@ -20,7 +20,7 @@ layout(set = 0, binding = 2) uniform sampler2D normalMapSampler;
 layout(set = 0, binding = 3) uniform sampler2D metallicRoughnessMapSampler;
 
 vec3 calculateLight(vec3 norm, float metallic, float roughness) {
-    vec3 lightPos = vec3(-4, 20, 20);
+    vec3 lightPos = vec3(-5, 5, 5);
     vec3 toLight = normalize(lightPos - fragPos);
     vec3 viewDir = normalize(-fragPos);
     vec3 halfDir = normalize(toLight + viewDir);
@@ -54,5 +54,6 @@ void main() {
     vec4 textureColor = texture(texSampler, uv);
     vec3 result = lightingResult * textureColor.rgb;
 
+   // outColor = vec4(sampledNormal, 1.0);
     outColor = vec4(result, 1.0);
 }
