@@ -40,25 +40,12 @@ void printGpuMemoryInfo(VkPhysicalDevice physicalDevice);
 
 void printDeviceLimits(VkPhysicalDevice device);
 
-void updateLightsUBO(VkDevice device, RenderObject *renderObject, Camera *camera, float time) {
+void initLight(Light *light, float *color, float *position, float *direction, float intensity);
+
+void updateLightsUBO(VkDevice device, RenderObject *renderObject, Camera *camera, Light *lights, int numLights) {
     // Set up lighting information
     LightingUBO lightingUBO = {0};
-    Light light = {0};
-    light.type = 1;
-    glm_vec4_copy((vec4) {1.0f, 1.0f, 1.0f, 1.0f}, light.color);
-    glm_vec3_copy((vec3) {0.0f, 1.0f, 2.5f}, light.position);
-    glm_vec3_copy((vec3) {0.0f, 0.0f, 0.0f}, light.direction);
-    light.intensity = 1.0f;
-
-    Light light2 = {0};
-    light2.type = 1;
-    glm_vec4_copy((vec4) {1.0f, 1.0f, 1.0f, 1.0f}, light2.color);
-    glm_vec3_copy((vec3) {-5.0f, 0.0f, 0.0f}, light2.position);
-    glm_vec3_copy((vec3) {0.0f, 0.0f, 0.0f}, light2.direction);
-    light2.intensity = 1.0f;
-
-    Light lights[] = {light, light2};
-    lightingUBO.numLightsInUse = 1;
+    lightingUBO.numLightsInUse = numLights;
     memcpy(lightingUBO.lights, lights, sizeof(Light) * lightingUBO.numLightsInUse);
     glm_vec3_copy(camera->position, lightingUBO.cameraPos);
     glm_vec3_copy((vec3) {0.04f, 0.04f, 0.04f}, lightingUBO.ambientLightColor);
@@ -68,7 +55,6 @@ void updateLightsUBO(VkDevice device, RenderObject *renderObject, Camera *camera
     memcpy(lightsData, &lightingUBO, sizeof(LightingUBO));
     vkUnmapMemory(device, renderObject->lightingUBO->memory);
 }
-
 
 void updateTransformUBO(VkDevice device, RenderObject *renderObject, Camera *camera) {
     TransformUBO transformUBO = {0};
@@ -161,6 +147,34 @@ int main() {
                0.1f,                      // Near plane
                100.0f);                   // Far plane
 
+
+    //
+    // Lights
+    //
+    Light light = {0};
+    initLight(
+            &light,
+            (vec4) {1.0f, 1.0f, 1.0f, 1.0f},
+            (vec3) {0.0f, 1.0f, 1.7f},
+            (vec3) {0.0f, 0.0f, -1.0f},
+            1.0f
+    );
+
+    Light light2 = {0};
+    initLight(
+            &light2,
+            (vec4) {0.0f, 1.0f, 0.0f, 1.0f},
+            (vec3) {-2.0f, 1.0f, 1.7f},
+            (vec3) {0.0f, 0.0f, 1.0f},
+            1.0f
+    );
+
+    int numLights = 1;
+    Light lights[] = {light, light2};
+
+    //
+    // Scene Objects
+    //
     int numRenderObjects = 2;
     RenderObject **renderObjects = malloc(sizeof(RenderObject *) * numRenderObjects);
     if (!renderObjects) {
@@ -240,7 +254,7 @@ int main() {
 
             // Update UBO
             updateTransformUBO(context.device, obj, &camera);
-            updateLightsUBO(context.device, obj, &camera, currentTime);
+            updateLightsUBO(context.device, obj, &camera, lights, numLights);
         }
 
         uint32_t imageIndex;
@@ -300,6 +314,16 @@ int main() {
     glfwTerminate();
 
     return 0;
+}
+
+void initLight(Light *light, float *color, float *position, float *direction, float intensity) {
+    light->type = 1;
+    light->intensity = intensity;
+    glm_vec4_copy(color, (*light).color);
+    glm_vec3_copy(position, (*light).position);
+    if(direction != NULL) {
+        glm_vec3_copy(direction, (*light).direction);
+    }
 }
 
 void printGpuMemoryInfo(VkPhysicalDevice physicalDevice) {
