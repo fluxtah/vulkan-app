@@ -40,49 +40,53 @@ void printGpuMemoryInfo(VkPhysicalDevice physicalDevice);
 
 void printDeviceLimits(VkPhysicalDevice device);
 
-void updateUniformBuffer(VkDevice device, RenderObject *renderObject, Camera *camera) {
-    UniformBufferObject ubo = {0};
-    glm_mat4_identity(ubo.model);
-
-    // Apply transformations based on RenderObject's properties
-    glm_translate(ubo.model, renderObject->position);
-    glm_scale(ubo.model, renderObject->scale);
-    glm_rotate(ubo.model, glm_rad(renderObject->rotation[0]), (vec3) {1.0f, 0.0f, 0.0f}); // X rotation
-    glm_rotate(ubo.model, glm_rad(renderObject->rotation[1]), (vec3) {0.0f, 1.0f, 0.0f}); // Y rotation
-    glm_rotate(ubo.model, glm_rad(renderObject->rotation[2]), (vec3) {0.0f, 0.0f, 1.0f}); // Z rotation
-
-    memcpy(ubo.view, camera->view, sizeof(mat4));
-    memcpy(ubo.proj, camera->proj, sizeof(mat4));
-
+void updateLightsUBO(VkDevice device, RenderObject *renderObject, Camera *camera) {
     // Set up lighting information
-    // Example values - replace with your actual lighting data
-    vec3 lightDirection = {0.0f, 1.0f, 0.0f}; // Direction of light
-    vec4 lightColor = {1.0f, 1.0f, 1.0f, 1.0f}; // Color of light
+    LightArrayUBO lightArrayUBO = {0};
+    Light light = {0};
+    light.type = 1;
+    glm_vec4_copy((vec4) {1.0f, 1.0f, 1.0f, 1.0f}, light.color);
+    glm_vec3_copy((vec3) {5.0f, 2.0f, 0.0f}, light.position);
+    glm_vec3_copy((vec3) {0.0f, 0.0f, 0.0f}, light.direction);
+    light.intensity = 1.0f;
 
-    glm_vec3_copy(lightDirection, ubo.lightDir);
-    glm_vec4_copy(lightColor, ubo.lightColor);
+    Light light2 = {0};
+    light2.type = 1;
+    glm_vec4_copy((vec4) {1.0f, 1.0f, 1.0f, 1.0f}, light2.color);
+    glm_vec3_copy((vec3) {-5.0f, 2.0f, 0.0f}, light2.position);
+    glm_vec3_copy((vec3) {0.0f, 0.0f, 0.0f}, light2.direction);
+    light2.intensity = 1.0f;
 
-    // Map memory, copy data, and unmap
-    void *data;
-    vkMapMemory(device, renderObject->uniformBuffer->memory, 0, sizeof(UniformBufferObject), 0, &data);
-    memcpy(data, &ubo, sizeof(UniformBufferObject));
-    vkUnmapMemory(device, renderObject->uniformBuffer->memory);
+    Light lights[] = {light, light2};
+    lightArrayUBO.numLightsInUse = 2;
+    memcpy(lightArrayUBO.lights, lights, sizeof(Light) * lightArrayUBO.numLightsInUse);
+    glm_vec3_copy(camera->position, lightArrayUBO.cameraPos);
+
+    void *lightsData;
+    vkMapMemory(device, renderObject->lightArrayUBO->memory, 0, sizeof(LightArrayUBO), 0, &lightsData);
+    memcpy(lightsData, &lightArrayUBO, sizeof(LightArrayUBO));
+    vkUnmapMemory(device, renderObject->lightArrayUBO->memory);
+}
+
+
+void updateTransformUBO(VkDevice device, RenderObject *renderObject, Camera *camera) {
+    TransformUBO transformUBO = {0};
+    glm_mat4_identity(transformUBO.model);
+    glm_translate(transformUBO.model, renderObject->position);
+    glm_scale(transformUBO.model, renderObject->scale);
+    glm_rotate(transformUBO.model, glm_rad(renderObject->rotation[0]), (vec3) {1.0f, 0.0f, 0.0f}); // X rotation
+    glm_rotate(transformUBO.model, glm_rad(renderObject->rotation[1]), (vec3) {0.0f, 1.0f, 0.0f}); // Y rotation
+    glm_rotate(transformUBO.model, glm_rad(renderObject->rotation[2]), (vec3) {0.0f, 0.0f, 1.0f}); // Z rotation
+    memcpy(transformUBO.view, camera->view, sizeof(mat4));
+    memcpy(transformUBO.proj, camera->proj, sizeof(mat4));
+
+    void *transformData;
+    vkMapMemory(device, renderObject->transformUBO->memory, 0, sizeof(TransformUBO), 0, &transformData);
+    memcpy(transformData, &transformUBO, sizeof(TransformUBO));
+    vkUnmapMemory(device, renderObject->transformUBO->memory);
 }
 
 int main() {
-    // Register Kotlin Application callbacks
-    ktSetCreateShaderModuleFunc(createShaderModule);
-    ktSetDestroyShaderModuleFunc(destroyShaderModule);
-
-    ktSetCreatePipelineLayoutFunc(createPipelineLayout);
-    ktSetDestroyPipelineLayoutFunc(destroyPipelineLayout);
-
-    ktSetCreatePipelineFunc(createPipeline);
-    ktSetDestroyPipelineFunc(destroyPipeline);
-
-    ktSetCreateRenderPassFunc(createRenderPass);
-    ktSetDestroyRenderPassFunc(destroyRenderPass);
-
     // Create the Kotlin Application
     ktCreateApplication();
 
@@ -96,32 +100,52 @@ int main() {
     printDeviceLimits(context.physicalDevice);
 
     ktSetVulkanContext(&context);
-    ktSetVkDevice(context.device);
 
-    //
-    // VULKAN RENDERING
-    //
     swapChain = createSwapChain(&context, &swapChainExtent);
     if (swapChain == VK_NULL_HANDLE)
         return -1;
 
-    ktSetVkSwapChain(swapChain);
-    ktSetSwapChainExtent((Extent2D *) &swapChainExtent);
-
     createSwapChainImageViews(context.device, swapChain, &swapChainImageViews, &imageCount);
 
     //
-    // Create a descriptor set layout (common for all objects)
+    // Create descriptor set layouts
     //
-    VkDescriptorSetLayout descriptorSetLayout;
-    createBasicShaderDescriptorSetLayout(context.device, &descriptorSetLayout);
-    ktSetVkDescriptorSetLayout(descriptorSetLayout);
+    VkDescriptorSetLayout vertexShaderDescriptorSetLayout = createVertexShaderDescriptorSetLayout(context.device);
+    VkDescriptorSetLayout fragmentShaderDescriptorSetLayout = createFragmentShaderDescriptorSetLayout(context.device);
 
     //
-    // Create a descriptor pool (common for all objects)
+    // Create a descriptor pool
     //
     VkDescriptorPool descriptorPool;
     createBasicShaderDescriptorPool(context.device, &descriptorPool);
+
+    VkImage depthImage;
+    VkDeviceMemory depthImageMemory;
+    VkImageView depthImageView;
+    createDepthResources(&context, swapChainExtent, context.commandPool, &depthImage, &depthImageMemory,
+                         &depthImageView);
+
+    VkRenderPass renderPass = createRenderPass(&context);
+    VkShaderModule vertexShaderModule = createShaderModule(context.device, "shaders/basic.vert.spv");
+    VkShaderModule fragmentShaderModule = createShaderModule(context.device, "shaders/basic.frag.spv");
+
+    VkPipelineLayout pipelineLayout = createPipelineLayout(context.device,
+                                                           vertexShaderDescriptorSetLayout,
+                                                           fragmentShaderDescriptorSetLayout);
+    Viewport viewport = (Viewport) {
+            0, 0, swapChainExtent.width, swapChainExtent.height, 0.0f, 1.0f
+    };
+    VkPipeline pipeline = createPipeline(context.device, pipelineLayout, renderPass, viewport, vertexShaderModule,
+                                         fragmentShaderModule);
+    swapChainFramebuffers = createSwapChainFramebuffers(context.device, swapChainImageViews, imageCount,
+                                                        renderPass, swapChainExtent, depthImageView);
+
+    if (pipeline == VK_NULL_HANDLE)
+        return -1;
+
+    VkCommandBuffer *commandBuffers = allocateCommandBuffers(context.device, context.commandPool, imageCount);
+    if (commandBuffers == VK_NULL_HANDLE)
+        return -1;
 
     Camera camera;
     initCamera(&camera,
@@ -140,36 +164,34 @@ int main() {
         exit(1);
     }
 
-    renderObjects[0] = createRenderObjectFromFile(&context, descriptorSetLayout, descriptorPool, "models/plane.glb");
-    renderObjects[1] = createRenderObjectFromFile(&context, descriptorSetLayout, descriptorPool, "models/ship.glb");
+    renderObjects[0] = createRenderObjectFromFile(
+            &context,
+            vertexShaderDescriptorSetLayout,
+            fragmentShaderDescriptorSetLayout,
+            descriptorPool,
+            "models/plane.glb");
+    renderObjects[1] = createRenderObjectFromFile(
+            &context,
+            vertexShaderDescriptorSetLayout,
+            fragmentShaderDescriptorSetLayout,
+            descriptorPool,
+            "models/sphere.glb");
 
     glm_vec3_copy((vec3) {0.0f, 0.0f, 0.0f}, renderObjects[0]->position);
-    glm_vec3_copy((vec3) {0.0f, 0.2f, -2.2f}, renderObjects[1]->position);
-    glm_vec3_copy((vec3) {0.5f, 0.5f, 0.5f}, renderObjects[1]->scale);
-
-    VkImage depthImage;
-    VkDeviceMemory depthImageMemory;
-    VkImageView depthImageView;
-    createDepthResources(&context, swapChainExtent, context.commandPool, &depthImage, &depthImageMemory,
-                         &depthImageView);
-
-    ktInitApplication();
-
-    swapChainFramebuffers = createSwapChainFramebuffers(context.device, swapChainImageViews, imageCount,
-                                                        ktGetVkRenderPass("default"), swapChainExtent, depthImageView);
-
-    VkPipeline graphicsPipeline = ktGetVkPipeline("default");
-    if (graphicsPipeline == VK_NULL_HANDLE)
-        return -1;
-
-    VkCommandBuffer *commandBuffers = allocateCommandBuffers(context.device, context.commandPool, imageCount);
-    if (commandBuffers == VK_NULL_HANDLE)
-        return -1;
+    glm_vec3_copy((vec3) {0.0f, 0.0f, -2.0f}, renderObjects[1]->position);
+    glm_vec3_copy((vec3) {2.5f, 2.5f, 2.5f}, renderObjects[1]->scale);
 
 
     for (size_t i = 0; i < imageCount; i++) {
-        recordCommandBuffer(commandBuffers[i], ktGetVkRenderPass("default"), swapChainFramebuffers[i], swapChainExtent,
-                            graphicsPipeline, ktGetVkPipelineLayout("default"), renderObjects, numRenderObjects);
+        recordCommandBuffer(
+                commandBuffers[i],
+                renderPass,
+                swapChainFramebuffers[i],
+                swapChainExtent,
+                pipeline,
+                pipelineLayout,
+                renderObjects,
+                numRenderObjects);
     }
 
     VkSemaphore imageAvailableSemaphore;
@@ -205,15 +227,16 @@ int main() {
         VkSemaphore waitSemaphores[] = {imageAvailableSemaphore};
 
         // Move
-       // renderObjects[1]->rotation[0] += 0.7f;
-        renderObjects[1]->rotation[1] += 0.3f;
-   //     renderObjects[1]->rotation[2] += 0.3f;
+        // renderObjects[1]->rotation[0] += 0.7f;
+        renderObjects[1]->rotation[1] += 0.1f;
+        renderObjects[1]->rotation[2] += 0.02f;
 
         for (size_t i = 0; i < numRenderObjects; i++) {
             RenderObject *obj = renderObjects[i];
 
             // Update UBO
-            updateUniformBuffer(context.device, obj, &camera);
+            updateTransformUBO(context.device, obj, &camera);
+            updateLightsUBO(context.device, obj, &camera);
         }
 
         uint32_t imageIndex;
@@ -238,7 +261,8 @@ int main() {
     vkDestroyFence(context.device, inFlightFence, NULL);
 
     vkDestroyDescriptorPool(context.device, descriptorPool, NULL);
-    vkDestroyDescriptorSetLayout(context.device, descriptorSetLayout, NULL);
+    vkDestroyDescriptorSetLayout(context.device, vertexShaderDescriptorSetLayout, NULL);
+    vkDestroyDescriptorSetLayout(context.device, fragmentShaderDescriptorSetLayout, NULL);
 
     for (size_t i = 0; i < numRenderObjects; i++) {
         destroyRenderObject(&context, renderObjects[i]);
@@ -250,9 +274,11 @@ int main() {
     }
     free(swapChainFramebuffers);
 
-    ktDestroyAllPipelines();
-    ktDestroyAllShaderModules();
-    ktDestroyAllRenderPasses();
+    vkDestroyPipeline(context.device, pipeline, NULL);
+    vkDestroyPipelineLayout(context.device, pipelineLayout, NULL);
+    vkDestroyShaderModule(context.device, vertexShaderModule, NULL);
+    vkDestroyShaderModule(context.device, fragmentShaderModule, NULL);
+    vkDestroyRenderPass(context.device, renderPass, NULL);
 
     vkDestroyImageView(context.device, depthImageView, NULL);
     vkDestroyImage(context.device, depthImage, NULL);

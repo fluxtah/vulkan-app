@@ -27,7 +27,7 @@ typedef struct {
 void readModelData(cgltf_data *data, ModelData *modelData);
 void printModelData(const ModelData *modelData);
 ModelData *loadModelData(const char *filename);
-void freeModelData(ModelData *modelData);
+void destroyModelData(ModelData *modelData);
 
 // Define a small buffer for a 1x1 white pixel in RGBA format
 static const uint8_t onePixelDiffuseImage[4] = {50, 56, 123, 255 }; // white pixel

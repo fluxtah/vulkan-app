@@ -1,7 +1,11 @@
 #include "include/app_renderobject.h"
 
-RenderObject *createRenderObjectFromFile(VulkanContext *context, VkDescriptorSetLayout descriptorSetLayout,
-                                         VkDescriptorPool descriptorPool, const char *filename) {
+RenderObject *createRenderObjectFromFile(
+        VulkanContext *context,
+        VkDescriptorSetLayout vertexDescriptorSetLayout,
+        VkDescriptorSetLayout fragmentDescriptorSetLayout,
+        VkDescriptorPool descriptorPool,
+        const char *filename) {
     RenderObject *obj = malloc(sizeof(RenderObject));
     obj->scale[0] = 1.0f;
     obj->scale[1] = 1.0f;
@@ -9,10 +13,17 @@ RenderObject *createRenderObjectFromFile(VulkanContext *context, VkDescriptorSet
     obj->modelData = loadModelData(filename);
 
     // Dynamically allocate a BufferMemory
-    obj->uniformBuffer = (BufferMemory *) malloc(sizeof(BufferMemory));
-    createBufferMemory(context, obj->uniformBuffer, sizeof(UniformBufferObject),
+    obj->transformUBO = (BufferMemory *) malloc(sizeof(BufferMemory));
+    createBufferMemory(context, obj->transformUBO, sizeof(TransformUBO),
                        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+    // Dynamically allocate a BufferMemory
+    obj->lightArrayUBO = (BufferMemory *) malloc(sizeof(BufferMemory));
+    createBufferMemory(context, obj->lightArrayUBO, sizeof(LightArrayUBO),
+                       VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
 
     // Create vertex buffer with staging
     obj->vertexBuffer = (BufferMemory *) malloc(sizeof(BufferMemory));
@@ -32,7 +43,6 @@ RenderObject *createRenderObjectFromFile(VulkanContext *context, VkDescriptorSet
 
 
     // Upload textures
-
     obj->colorMap = malloc(sizeof(ImageMemory));
     setupTextureFromImageData(context, obj->modelData->diffuseImageData, obj->colorMap);
     obj->normalMap = malloc(sizeof(ImageMemory));
@@ -40,16 +50,21 @@ RenderObject *createRenderObjectFromFile(VulkanContext *context, VkDescriptorSet
     obj->metallicRoughnessMap = malloc(sizeof(ImageMemory));
     setupTextureFromImageData(context, obj->modelData->metallicRoughnessMapImageData, obj->metallicRoughnessMap);
 
-    // Create a descriptor set for our uniform data
-    allocateBasicShaderDescriptorSet(context->device, descriptorPool, descriptorSetLayout, &obj->descriptorSet);
+    // Create a descriptor sets
+    allocateDescriptorSet(context->device, descriptorPool, vertexDescriptorSetLayout, &obj->vertexDescriptorSet);
+    allocateDescriptorSet(context->device, descriptorPool, fragmentDescriptorSetLayout, &obj->fragmentDescriptorSet);
+
     updateBasicShaderDescriptorSet(
             context->device,
-            obj->descriptorSet,
-            obj->uniformBuffer->buffer,
+            obj->vertexDescriptorSet,
+            obj->fragmentDescriptorSet,
+            obj->transformUBO->buffer,
+            obj->lightArrayUBO->buffer,
             obj->colorMap->imageView,
             obj->normalMap->imageView,
             obj->metallicRoughnessMap->imageView,
-            context->sampler);
+            context->sampler
+    );
 
     return obj;
 }
@@ -84,22 +99,34 @@ void setupTextureFromImageData(VulkanContext *context, ModelImageData *imageData
 
 
 void destroyRenderObject(VulkanContext *context, RenderObject *obj) {
-    destroyBufferMemory(context, obj->uniformBuffer);
+    // Destroy UBO's
+    destroyBufferMemory(context, obj->transformUBO);
+    destroyBufferMemory(context, obj->lightArrayUBO);
+
+    // Destroy data buffers
     destroyBufferMemory(context, obj->indexBuffer);
     destroyBufferMemory(context, obj->vertexBuffer);
+
+    // Destroy color map
     vkDestroyImageView(context->device, obj->colorMap->imageView, NULL);
     vkDestroyImage(context->device, obj->colorMap->image, NULL);
     vkFreeMemory(context->device, obj->colorMap->memory, NULL);
     free(obj->colorMap);
+
+    // Destroy normal map
     vkDestroyImageView(context->device, obj->normalMap->imageView, NULL);
     vkDestroyImage(context->device, obj->normalMap->image, NULL);
     vkFreeMemory(context->device, obj->normalMap->memory, NULL);
     free(obj->normalMap);
+
+    // Destroy metallic roughness map
     vkDestroyImageView(context->device, obj->metallicRoughnessMap->imageView, NULL);
     vkDestroyImage(context->device, obj->metallicRoughnessMap->image, NULL);
     vkFreeMemory(context->device, obj->metallicRoughnessMap->memory, NULL);
     free(obj->metallicRoughnessMap);
 
-    freeModelData(obj->modelData);
+    // Destroy model data
+    destroyModelData(obj->modelData);
+
     free(obj);
 }

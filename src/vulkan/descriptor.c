@@ -2,15 +2,15 @@
 
 void createBasicShaderDescriptorPool(VkDevice device, VkDescriptorPool *descriptorPool) {
     VkDescriptorPoolSize poolSizes[] = {
-            {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,         3},
-            {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 9} // diffuse and normal map
+            {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,         9},
+            {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 12} // diffuse and normal map
     };
 
     VkDescriptorPoolCreateInfo poolInfo = {};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.poolSizeCount = 2;
     poolInfo.pPoolSizes = poolSizes;
-    poolInfo.maxSets = 3; // Total number of descriptor sets
+    poolInfo.maxSets = 6; // Total number of descriptor sets
 
     if (vkCreateDescriptorPool(device, &poolInfo, NULL, descriptorPool) != VK_SUCCESS) {
         fprintf(stderr, "Failed to create descriptor pool\n");
@@ -18,13 +18,35 @@ void createBasicShaderDescriptorPool(VkDevice device, VkDescriptorPool *descript
     }
 }
 
-void createBasicShaderDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout *descriptorSetLayout) {
-    VkDescriptorSetLayoutBinding uboLayoutBinding = {};
-    uboLayoutBinding.binding = 0;
-    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    uboLayoutBinding.descriptorCount = 1;
-    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-    uboLayoutBinding.pImmutableSamplers = NULL;
+VkDescriptorSetLayout createVertexShaderDescriptorSetLayout(VkDevice device) {
+    VkDescriptorSetLayoutBinding transformUboLayoutBinding = {};
+    transformUboLayoutBinding.binding = 0;
+    transformUboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    transformUboLayoutBinding.descriptorCount = 1;
+    transformUboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    transformUboLayoutBinding.pImmutableSamplers = NULL;
+
+    VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutInfo.bindingCount = 1;
+    layoutInfo.pBindings = &transformUboLayoutBinding;
+
+    VkDescriptorSetLayout descriptorSetLayout;
+    if (vkCreateDescriptorSetLayout(device, &layoutInfo, NULL, &descriptorSetLayout) != VK_SUCCESS) {
+        fprintf(stderr, "Failed to create vertex descriptor set layout\n");
+        exit(-1);
+    }
+
+    return descriptorSetLayout;
+}
+
+VkDescriptorSetLayout createFragmentShaderDescriptorSetLayout(VkDevice device) {
+    VkDescriptorSetLayoutBinding lightArrayUboLayoutBinding = {};
+    lightArrayUboLayoutBinding.binding = 0;
+    lightArrayUboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    lightArrayUboLayoutBinding.descriptorCount = 1;
+    lightArrayUboLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+    lightArrayUboLayoutBinding.pImmutableSamplers = NULL;
 
     VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
     samplerLayoutBinding.binding = 1;
@@ -48,7 +70,7 @@ void createBasicShaderDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout
     metallicRoughnessMapLayoutBinding.pImmutableSamplers = NULL;
 
     VkDescriptorSetLayoutBinding bindings[] = {
-            uboLayoutBinding,
+            lightArrayUboLayoutBinding,
             samplerLayoutBinding,
             normalMapLayoutBinding,
             metallicRoughnessMapLayoutBinding
@@ -59,20 +81,26 @@ void createBasicShaderDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout
     layoutInfo.bindingCount = 4;
     layoutInfo.pBindings = bindings;
 
-    if (vkCreateDescriptorSetLayout(device, &layoutInfo, NULL, descriptorSetLayout) != VK_SUCCESS) {
-        fprintf(stderr, "Failed to create descriptor set layout\n");
+    VkDescriptorSetLayout descriptorSetLayout;
+    if (vkCreateDescriptorSetLayout(device, &layoutInfo, NULL, &descriptorSetLayout) != VK_SUCCESS) {
+        fprintf(stderr, "Failed to create fragment descriptor set layout\n");
         exit(-1);
     }
+
+    return descriptorSetLayout;
 }
 
-void allocateBasicShaderDescriptorSet(VkDevice device, VkDescriptorPool descriptorPool,
-                                      VkDescriptorSetLayout descriptorSetLayout,
-                                      VkDescriptorSet *descriptorSet) {
+void allocateDescriptorSet(
+        VkDevice device,
+        VkDescriptorPool descriptorPool,
+        VkDescriptorSetLayout layout,
+        VkDescriptorSet *descriptorSet) {
+
     VkDescriptorSetAllocateInfo allocInfo = {};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     allocInfo.descriptorPool = descriptorPool;
     allocInfo.descriptorSetCount = 1;
-    allocInfo.pSetLayouts = &descriptorSetLayout;
+    allocInfo.pSetLayouts = &layout;
 
     if (vkAllocateDescriptorSets(device, &allocInfo, descriptorSet) != VK_SUCCESS) {
         fprintf(stderr, "Failed to allocate descriptor set\n");
@@ -80,12 +108,25 @@ void allocateBasicShaderDescriptorSet(VkDevice device, VkDescriptorPool descript
     }
 }
 
-void updateBasicShaderDescriptorSet(VkDevice device, VkDescriptorSet descriptorSet, VkBuffer buffer,
-                                    VkImageView baseColorImageView, VkImageView normalMapImageView, VkImageView metallicRoughnessMapImageView, VkSampler sampler) {
-    VkDescriptorBufferInfo bufferInfo = {};
-    bufferInfo.buffer = buffer;
-    bufferInfo.offset = 0;
-    bufferInfo.range = sizeof(UniformBufferObject);
+void updateBasicShaderDescriptorSet(
+        VkDevice device,
+        VkDescriptorSet vertexDescriptorSet,
+        VkDescriptorSet fragmentDescriptorSet,
+        VkBuffer transformUboBuffer,
+        VkBuffer lightArrayUboBuffer,
+        VkImageView baseColorImageView,
+        VkImageView normalMapImageView,
+        VkImageView metallicRoughnessMapImageView,
+        VkSampler sampler) {
+    VkDescriptorBufferInfo transformUboBufferInfo = {};
+    transformUboBufferInfo.buffer = transformUboBuffer;
+    transformUboBufferInfo.offset = 0;
+    transformUboBufferInfo.range = sizeof(TransformUBO);
+
+    VkDescriptorBufferInfo lightArrayUboBufferInfo = {};
+    lightArrayUboBufferInfo.buffer = lightArrayUboBuffer;
+    lightArrayUboBufferInfo.offset = 0;
+    lightArrayUboBufferInfo.range = sizeof(LightArrayUBO);
 
     VkDescriptorImageInfo textureImageInfo = {};
     textureImageInfo.imageView = baseColorImageView;
@@ -104,16 +145,25 @@ void updateBasicShaderDescriptorSet(VkDevice device, VkDescriptorSet descriptorS
 
     VkWriteDescriptorSet descriptorWrite = {};
     descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrite.dstSet = descriptorSet;
+    descriptorWrite.dstSet = vertexDescriptorSet;
     descriptorWrite.dstBinding = 0;
     descriptorWrite.dstArrayElement = 0;
     descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     descriptorWrite.descriptorCount = 1;
-    descriptorWrite.pBufferInfo = &bufferInfo;
+    descriptorWrite.pBufferInfo = &transformUboBufferInfo;
+
+    VkWriteDescriptorSet descriptorWrite1 = {};
+    descriptorWrite1.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrite1.dstSet = fragmentDescriptorSet;
+    descriptorWrite1.dstBinding = 0;
+    descriptorWrite1.dstArrayElement = 0;
+    descriptorWrite1.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    descriptorWrite1.descriptorCount = 1;
+    descriptorWrite1.pBufferInfo = &lightArrayUboBufferInfo;
 
     VkWriteDescriptorSet descriptorWrite2 = {};
     descriptorWrite2.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrite2.dstSet = descriptorSet;
+    descriptorWrite2.dstSet = fragmentDescriptorSet;
     descriptorWrite2.dstBinding = 1;
     descriptorWrite2.dstArrayElement = 0;
     descriptorWrite2.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -123,7 +173,7 @@ void updateBasicShaderDescriptorSet(VkDevice device, VkDescriptorSet descriptorS
 
     VkWriteDescriptorSet descriptorWrite3 = {};
     descriptorWrite3.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrite3.dstSet = descriptorSet;
+    descriptorWrite3.dstSet = fragmentDescriptorSet;
     descriptorWrite3.dstBinding = 2;
     descriptorWrite3.dstArrayElement = 0;
     descriptorWrite3.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -133,7 +183,7 @@ void updateBasicShaderDescriptorSet(VkDevice device, VkDescriptorSet descriptorS
 
     VkWriteDescriptorSet descriptorWrite4 = {};
     descriptorWrite4.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrite4.dstSet = descriptorSet;
+    descriptorWrite4.dstSet = fragmentDescriptorSet;
     descriptorWrite4.dstBinding = 3;
     descriptorWrite4.dstArrayElement = 0;
     descriptorWrite4.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -143,10 +193,11 @@ void updateBasicShaderDescriptorSet(VkDevice device, VkDescriptorSet descriptorS
 
     VkWriteDescriptorSet sets[] = {
             descriptorWrite,
+            descriptorWrite1,
             descriptorWrite2,
             descriptorWrite3,
             descriptorWrite4
     };
 
-    vkUpdateDescriptorSets(device, 4, sets, 0, NULL);
+    vkUpdateDescriptorSets(device, 5, sets, 0, NULL);
 }

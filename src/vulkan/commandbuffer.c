@@ -25,9 +25,15 @@ VkCommandBuffer *allocateCommandBuffers(VkDevice device, VkCommandPool commandPo
     return commandBuffers;
 }
 
-void recordCommandBuffer(VkCommandBuffer commandBuffer, VkRenderPass renderPass, VkFramebuffer framebuffer,
-                         VkExtent2D swapChainExtent, VkPipeline graphicsPipeline, VkPipelineLayout pipelineLayout,
-                         RenderObject *renderObjects[], int numRenderObjects) {
+void recordCommandBuffer(
+        VkCommandBuffer commandBuffer,
+        VkRenderPass renderPass,
+        VkFramebuffer framebuffer,
+        VkExtent2D swapChainExtent,
+        VkPipeline graphicsPipeline,
+        VkPipelineLayout pipelineLayout,
+        RenderObject *renderObjects[],
+        int numRenderObjects) {
     beginCommandBufferRecording(commandBuffer, renderPass, framebuffer, &swapChainExtent, graphicsPipeline);
 
     for (size_t i = 0; i < numRenderObjects; i++) {
@@ -38,7 +44,8 @@ void recordCommandBuffer(VkCommandBuffer commandBuffer, VkRenderPass renderPass,
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
         vkCmdBindIndexBuffer(commandBuffer, obj->indexBuffer->buffer, 0, VK_INDEX_TYPE_UINT16);
 
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &obj->descriptorSet, 0, NULL);
+        VkDescriptorSet descriptorSets[] = { obj->vertexDescriptorSet, obj->fragmentDescriptorSet };
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 2, descriptorSets, 0, NULL);
 
         vkCmdDrawIndexed(commandBuffer, obj->modelData->num_indices, 1, 0, 0, 0);
     }
@@ -70,8 +77,8 @@ void beginCommandBufferRecording(VkCommandBuffer commandBuffer, VkRenderPass ren
     renderPassInfo.renderArea.extent = (*swapChainExtent);
 
     VkClearValue clearValues[2];
-    clearValues[0].color = (VkClearColorValue){{0.0f, 0.0f, 0.0f, 1.0f}}; // Clear color
-    clearValues[1].depthStencil = (VkClearDepthStencilValue){1.0f, 0};    // Clear depth
+    clearValues[0].color = (VkClearColorValue) {{0.0f, 0.0f, 0.0f, 1.0f}}; // Clear color
+    clearValues[1].depthStencil = (VkClearDepthStencilValue) {1.0f, 0};    // Clear depth
 
     renderPassInfo.clearValueCount = 2;
     renderPassInfo.pClearValues = clearValues;

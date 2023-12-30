@@ -1,10 +1,19 @@
 #include "include/vulkan/pipeline.h"
 
-VkPipelineLayout createPipelineLayout(VkDevice device, VkDescriptorSetLayout descriptorSetLayout) {
+VkPipelineLayout createPipelineLayout(
+        VkDevice device,
+        VkDescriptorSetLayout vertexDescriptorSetLayout,
+        VkDescriptorSetLayout fragmentDescriptorSetLayout) {
+
+    VkDescriptorSetLayout layouts[] = {
+            vertexDescriptorSetLayout,
+            fragmentDescriptorSetLayout
+    };
+
     VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 1; // We have one descriptor set layout
-    pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout; // Pointer to descriptor set layout
+    pipelineLayoutInfo.setLayoutCount = 2; // We have two descriptor set layouts
+    pipelineLayoutInfo.pSetLayouts = layouts; // Pointer to descriptor set layout
     pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
     pipelineLayoutInfo.pPushConstantRanges = NULL; // Optional
 
@@ -167,12 +176,4 @@ VkPipeline createPipeline(VkDevice device, VkPipelineLayout pipelineLayout, VkRe
     }
 
     return graphicsPipeline;
-}
-
-void destroyPipelineLayout(VkDevice device, VkPipelineLayout pipelineLayout) {
-    vkDestroyPipelineLayout(device, pipelineLayout, NULL);
-}
-
-void destroyPipeline(VkDevice device, VkPipeline pipeline) {
-    vkDestroyPipeline(device, pipeline, NULL);
 }

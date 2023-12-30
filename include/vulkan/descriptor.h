@@ -8,11 +8,24 @@
 
 void createBasicShaderDescriptorPool(VkDevice device, VkDescriptorPool *descriptorPool);
 
-void createBasicShaderDescriptorSetLayout(VkDevice device, VkDescriptorSetLayout *descriptorSetLayout);
+VkDescriptorSetLayout createVertexShaderDescriptorSetLayout(VkDevice device);
+VkDescriptorSetLayout createFragmentShaderDescriptorSetLayout(VkDevice device);
 
-void allocateBasicShaderDescriptorSet(VkDevice device, VkDescriptorPool descriptorPool, VkDescriptorSetLayout descriptorSetLayout,
-                                      VkDescriptorSet *descriptorSet);
+void allocateDescriptorSet(
+        VkDevice device,
+        VkDescriptorPool descriptorPool,
+        VkDescriptorSetLayout layout,
+        VkDescriptorSet *descriptorSet);
 
-void updateBasicShaderDescriptorSet(VkDevice device, VkDescriptorSet descriptorSet, VkBuffer buffer,
-                                    VkImageView baseColorImageView, VkImageView normalMapImageView, VkImageView metallicRoughnessMapImageView, VkSampler sampler);
+void updateBasicShaderDescriptorSet(
+        VkDevice device,
+        VkDescriptorSet vertexDescriptorSet,
+        VkDescriptorSet fragmentDescriptorSet,
+        VkBuffer transformUboBuffer,
+        VkBuffer lightArrayUboBuffer,
+        VkImageView baseColorImageView,
+        VkImageView normalMapImageView,
+        VkImageView metallicRoughnessMapImageView,
+        VkSampler sampler);
+
 #endif // VULKAN_DESCRIPTOR_H

@@ -22,7 +22,6 @@ typedef struct {
     vec3 position;
     vec3 rotation;
 
-    // TODO Possible data that can be shared
     ModelData *modelData;
     BufferMemory *vertexBuffer;
     BufferMemory *indexBuffer;
@@ -31,14 +30,19 @@ typedef struct {
     ImageMemory *normalMap;
     ImageMemory *metallicRoughnessMap;
 
-    // Not shared
-    BufferMemory *uniformBuffer;
-    VkDescriptorSet descriptorSet;
+    BufferMemory *transformUBO;
+    BufferMemory *lightArrayUBO;
+    VkDescriptorSet vertexDescriptorSet;
+    VkDescriptorSet fragmentDescriptorSet;
 
 } RenderObject;
 
-RenderObject *createRenderObjectFromFile(VulkanContext *context, VkDescriptorSetLayout descriptorSetLayout,
-                                         VkDescriptorPool descriptorPool, const char *filename);
+RenderObject *createRenderObjectFromFile(
+        VulkanContext *context,
+        VkDescriptorSetLayout vertexDescriptorSetLayout,
+        VkDescriptorSetLayout fragmentDescriptorSetLayout,
+        VkDescriptorPool descriptorPool,
+        const char *filename);
 void setupTextureFromImageData(VulkanContext *context, ModelImageData *imageData, ImageMemory *imageMemory);
 
 void destroyRenderObject(VulkanContext *context, RenderObject *obj);

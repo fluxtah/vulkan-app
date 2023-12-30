@@ -12,8 +12,17 @@ typedef struct {
     float tangent[4];
 } Vertex;
 
-VkPipelineLayout createPipelineLayout(VkDevice device, VkDescriptorSetLayout descriptorSetLayout);
-VkPipeline createPipeline(VkDevice device, VkPipelineLayout pipelineLayout, VkRenderPass renderPass, Viewport viewport, VkShaderModule vertShaderModule, VkShaderModule fragShaderModule);
-void destroyPipelineLayout(VkDevice device, VkPipelineLayout pipelineLayout);
-void destroyPipeline(VkDevice device, VkPipeline pipeline);
+VkPipelineLayout createPipelineLayout(
+        VkDevice device,
+        VkDescriptorSetLayout vertexDescriptorSetLayout,
+        VkDescriptorSetLayout fragmentDescriptorSetLayout);
+
+VkPipeline createPipeline(
+        VkDevice device,
+        VkPipelineLayout pipelineLayout,
+        VkRenderPass renderPass,
+        Viewport viewport,
+        VkShaderModule vertShaderModule,
+        VkShaderModule fragShaderModule);
+
 #endif // VULKAN_PIPELINE_H

@@ -266,7 +266,7 @@ ModelData *loadModelData(const char *filename) {
     return modelData;
 }
 
-void freeModelData(ModelData *modelData) {
+void destroyModelData(ModelData *modelData) {
     if (modelData) {
         if (modelData->vertices) {
             free(modelData->vertices);

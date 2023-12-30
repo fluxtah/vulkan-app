@@ -1,4 +1,5 @@
 #version 450
+#define MAX_LIGHTS 5
 
 layout(location = 0) in vec3 fragPos;
 layout(location = 1) in vec3 normal;
@@ -7,37 +8,45 @@ layout(location = 3) in vec4 tangent;
 
 layout(location = 0) out vec4 outColor;
 
-layout(set = 0, binding = 0) uniform UBO {
-    mat4 model;
-    mat4 view;
-    mat4 proj;
-    vec3 lightDir;
-    vec4 lightColor;
-} lightInfo;
+struct Light {
+    int type;// point = 0, spot = 1
+    vec4 color;// rgba: 'a' could be used for another property like light radius
+    vec3 position;
+    vec3 direction;
+    float intensity;
+};
 
-layout(set = 0, binding = 1) uniform sampler2D texSampler;
-layout(set = 0, binding = 2) uniform sampler2D normalMapSampler;
-layout(set = 0, binding = 3) uniform sampler2D metallicRoughnessMapSampler;
+layout(set = 1, binding = 0) uniform LightArray {
+    Light lights[MAX_LIGHTS];
+    vec3 cameraPos;
+    int numLightsInUse;
+} ubo;
 
-vec3 calculateLight(vec3 norm, float metallic, float roughness) {
-    vec3 lightPos = vec3(-5, 5, 5);
-    vec3 toLight = normalize(lightInfo.lightDir);
-    vec3 viewDir = normalize(-fragPos);
-    vec3 halfDir = normalize(toLight + viewDir);
+layout(set = 1, binding = 1) uniform sampler2D texSampler;
+layout(set = 1, binding = 2) uniform sampler2D normalMapSampler;
+layout(set = 1, binding = 3) uniform sampler2D metallicRoughnessMapSampler;
 
-    // Basic ambient component
-    vec3 ambient = 0.2 * lightInfo.lightColor.rgb;
+vec3 calculateLight(vec3 norm, vec3 fragPos, vec3 viewDir, float metallic, float roughness) {
+    vec3 result = vec3(0.0);
+    for (int i = 0; i < ubo.numLightsInUse; i++) {
+        Light light = ubo.lights[i];
+        vec3 lightDir = normalize(light.position - fragPos);
+        vec3 halfDir = normalize(lightDir + viewDir);
 
-    // Diffuse reflection (Lambert)
-    float diff = max(dot(norm, toLight), 0.0);
-    vec3 diffuse = (1.0 - metallic) * diff * lightInfo.lightColor.rgb;
+        // Ambient component
+        vec3 ambient = 0.1 * light.color.rgb * light.intensity;
 
-    // Specular reflection (Blinn-Phong model modified by roughness)
-    float specularStrength = pow(max(dot(norm, halfDir), 0.0), mix(8.0, 256.0, 1.0 - roughness));
-    vec3 specularColor = mix(vec3(0.04), lightInfo.lightColor.rgb, metallic);
-    vec3 specular = specularColor * specularStrength;
+        // Diffuse reflection (Lambert)
+        float diff = max(dot(norm, lightDir), 0.0);
+        vec3 diffuse = (1.0 - metallic) * diff * light.color.rgb * light.intensity;
 
-    return ambient + diffuse + specular;
+        // Specular reflection (Blinn-Phong model modified by roughness)
+        float spec = pow(max(dot(norm, halfDir), 0.0), mix(8.0, 256.0, roughness));
+        vec3 specular = spec * light.color.rgb * light.intensity;
+
+        result += ambient + diffuse + specular;
+    }
+    return result;
 }
 
 void main() {
@@ -46,14 +55,14 @@ void main() {
     vec3 sampledNormal = texture(normalMapSampler, uv).rgb * 2.0 - 1.0;
     vec3 norm = normalize(TBN * sampledNormal);
 
+    vec3 viewDir = normalize(ubo.cameraPos - fragPos);
     vec3 metallicRoughness = texture(metallicRoughnessMapSampler, uv).rgb;
     float metallic = metallicRoughness.b;
     float roughness = metallicRoughness.g;
 
-    vec3 lightingResult = calculateLight(norm, metallic, roughness);
+    vec3 lightingResult = calculateLight(norm, fragPos, viewDir, metallic, roughness);
     vec4 textureColor = texture(texSampler, uv);
     vec3 result = lightingResult * textureColor.rgb;
 
-   // outColor = vec4(sampledNormal, 1.0);
-    outColor = vec4(result, 1.0);
+    outColor = vec4(result, 1.0f);
 }
