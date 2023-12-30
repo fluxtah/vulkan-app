@@ -2,7 +2,7 @@
 
 void initCamera(Camera *camera, vec3 position, vec3 target, vec3 up, float fov, float aspectRatio, float nearPlane, float farPlane) {
     glm_vec3_copy(position, camera->position);
-    glm_vec3_sub(target, position, camera->direction); // Direction from position to target
+    glm_vec3_sub(position, target, camera->direction);
     glm_vec3_normalize(camera->direction);
     glm_vec3_copy(up, camera->up);
     camera->fov = fov;

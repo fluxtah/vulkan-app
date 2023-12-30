@@ -26,27 +26,52 @@ layout(set = 1, binding = 1) uniform sampler2D texSampler;
 layout(set = 1, binding = 2) uniform sampler2D normalMapSampler;
 layout(set = 1, binding = 3) uniform sampler2D metallicRoughnessMapSampler;
 
-vec3 calculateLight(vec3 norm, vec3 fragPos, vec3 viewDir, float metallic, float roughness) {
+vec3 fresnelSchlick(float cosTheta, vec3 F0) {
+    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+}
+
+float calculateAttenuation(vec3 lightPos, vec3 fragPos) {
+    float distance = length(lightPos - fragPos);
+    float attenuation = 1.0 / (distance * distance);
+    return attenuation;
+}
+
+vec3 calculateLight(vec3 norm, vec3 fragPos, vec3 viewDir, float metallic, float roughness, vec3 textureColor) {
     vec3 result = vec3(0.0);
+    vec3 F0 = vec3(0.04);
+    F0 = mix(F0, textureColor, metallic);
+
     for (int i = 0; i < ubo.numLightsInUse; i++) {
         Light light = ubo.lights[i];
         vec3 lightDir = normalize(light.position - fragPos);
         vec3 halfDir = normalize(lightDir + viewDir);
 
-        // Ambient component
-        vec3 ambient = 0.1 * light.color.rgb * light.intensity;
+        vec3 fresnel = fresnelSchlick(max(dot(viewDir, norm), 0.0), F0);
 
-        // Diffuse reflection (Lambert)
+        // Adjusted Ambient Component
+        vec3 ambient = 0.03 * light.color.rgb * light.intensity;
+
+        // Diffuse Reflection
         float diff = max(dot(norm, lightDir), 0.0);
         vec3 diffuse = (1.0 - metallic) * diff * light.color.rgb * light.intensity;
+        diffuse *= (1.0 - fresnel);
 
-        // Specular reflection (Blinn-Phong model modified by roughness)
-        float spec = pow(max(dot(norm, halfDir), 0.0), mix(8.0, 256.0, roughness));
-        vec3 specular = spec * light.color.rgb * light.intensity;
+        // Specular Reflection
+        float spec = pow(max(dot(norm, halfDir), 0.0), mix(16.0, 256.0, roughness)); // Increased spec power
+        vec3 specular = spec * light.color.rgb * light.intensity * fresnel;
+
+        // Use the calculateAttenuation function
+        float attenuation = calculateAttenuation(light.position, fragPos);
+        diffuse *= attenuation;
+        specular *= attenuation;
 
         result += ambient + diffuse + specular;
     }
     return result;
+}
+
+vec3 gammaCorrect(vec3 color) {
+    return pow(color, vec3(1.0/2.2));
 }
 
 void main() {
@@ -60,9 +85,11 @@ void main() {
     float metallic = metallicRoughness.b;
     float roughness = metallicRoughness.g;
 
-    vec3 lightingResult = calculateLight(norm, fragPos, viewDir, metallic, roughness);
     vec4 textureColor = texture(texSampler, uv);
-    vec3 result = lightingResult * textureColor.rgb;
+    vec3 lightingResult = calculateLight(norm, fragPos, viewDir, metallic, roughness, textureColor.rgb);
+
+    // Apply Gamma Correction
+    vec3 result = gammaCorrect(lightingResult * textureColor.rgb);
 
     outColor = vec4(result, 1.0f);
 }

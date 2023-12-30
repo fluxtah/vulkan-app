@@ -40,25 +40,25 @@ void printGpuMemoryInfo(VkPhysicalDevice physicalDevice);
 
 void printDeviceLimits(VkPhysicalDevice device);
 
-void updateLightsUBO(VkDevice device, RenderObject *renderObject, Camera *camera) {
+void updateLightsUBO(VkDevice device, RenderObject *renderObject, Camera *camera, float time) {
     // Set up lighting information
     LightArrayUBO lightArrayUBO = {0};
     Light light = {0};
     light.type = 1;
     glm_vec4_copy((vec4) {1.0f, 1.0f, 1.0f, 1.0f}, light.color);
-    glm_vec3_copy((vec3) {5.0f, 2.0f, 0.0f}, light.position);
+    glm_vec3_copy((vec3) {0.0f, 1.0f, 2.5f}, light.position);
     glm_vec3_copy((vec3) {0.0f, 0.0f, 0.0f}, light.direction);
     light.intensity = 1.0f;
 
     Light light2 = {0};
     light2.type = 1;
     glm_vec4_copy((vec4) {1.0f, 1.0f, 1.0f, 1.0f}, light2.color);
-    glm_vec3_copy((vec3) {-5.0f, 2.0f, 0.0f}, light2.position);
+    glm_vec3_copy((vec3) {-5.0f, 0.0f, 0.0f}, light2.position);
     glm_vec3_copy((vec3) {0.0f, 0.0f, 0.0f}, light2.direction);
     light2.intensity = 1.0f;
 
     Light lights[] = {light, light2};
-    lightArrayUBO.numLightsInUse = 2;
+    lightArrayUBO.numLightsInUse = 1;
     memcpy(lightArrayUBO.lights, lights, sizeof(Light) * lightArrayUBO.numLightsInUse);
     glm_vec3_copy(camera->position, lightArrayUBO.cameraPos);
 
@@ -147,12 +147,15 @@ int main() {
     if (commandBuffers == VK_NULL_HANDLE)
         return -1;
 
+    //
+    // Camera
+    //
     Camera camera;
     initCamera(&camera,
-               (vec3) {0.0f, 3.0f, 3.0f}, // Camera position
+               (vec3) {0.0f, 1.0f, 2.0f}, // Camera position
                (vec3) {0.0f, 0.0f, 0.0f}, // Camera looking at the origin
                (vec3) {0.0f, 1.0f, 0.0f}, // Up vector
-               60.0f,                     // FOV
+               45.0f,                     // FOV
                (float) swapChainExtent.width / (float) swapChainExtent.height,           // Aspect ratio
                0.1f,                      // Near plane
                100.0f);                   // Far plane
@@ -178,8 +181,8 @@ int main() {
             "models/sphere.glb");
 
     glm_vec3_copy((vec3) {0.0f, 0.0f, 0.0f}, renderObjects[0]->position);
-    glm_vec3_copy((vec3) {0.0f, 0.0f, -2.0f}, renderObjects[1]->position);
-    glm_vec3_copy((vec3) {2.5f, 2.5f, 2.5f}, renderObjects[1]->scale);
+    glm_vec3_copy((vec3) {0.0f, 0.0f, 0.0f}, renderObjects[1]->position);
+    glm_vec3_copy((vec3) {1.0f, 1.0f, 1.0f}, renderObjects[1]->scale);
 
 
     for (size_t i = 0; i < imageCount; i++) {
@@ -236,7 +239,7 @@ int main() {
 
             // Update UBO
             updateTransformUBO(context.device, obj, &camera);
-            updateLightsUBO(context.device, obj, &camera);
+            updateLightsUBO(context.device, obj, &camera, currentTime);
         }
 
         uint32_t imageIndex;
