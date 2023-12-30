@@ -19,8 +19,8 @@ RenderObject *createRenderObjectFromFile(
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
     // Dynamically allocate a BufferMemory
-    obj->lightArrayUBO = (BufferMemory *) malloc(sizeof(BufferMemory));
-    createBufferMemory(context, obj->lightArrayUBO, sizeof(LightArrayUBO),
+    obj->lightingUBO = (BufferMemory *) malloc(sizeof(BufferMemory));
+    createBufferMemory(context, obj->lightingUBO, sizeof(LightingUBO),
                        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
@@ -59,7 +59,7 @@ RenderObject *createRenderObjectFromFile(
             obj->vertexDescriptorSet,
             obj->fragmentDescriptorSet,
             obj->transformUBO->buffer,
-            obj->lightArrayUBO->buffer,
+            obj->lightingUBO->buffer,
             obj->colorMap->imageView,
             obj->normalMap->imageView,
             obj->metallicRoughnessMap->imageView,
@@ -101,7 +101,7 @@ void setupTextureFromImageData(VulkanContext *context, ModelImageData *imageData
 void destroyRenderObject(VulkanContext *context, RenderObject *obj) {
     // Destroy UBO's
     destroyBufferMemory(context, obj->transformUBO);
-    destroyBufferMemory(context, obj->lightArrayUBO);
+    destroyBufferMemory(context, obj->lightingUBO);
 
     // Destroy data buffers
     destroyBufferMemory(context, obj->indexBuffer);

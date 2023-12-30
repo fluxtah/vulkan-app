@@ -22,7 +22,7 @@ void updateBasicShaderDescriptorSet(
         VkDescriptorSet vertexDescriptorSet,
         VkDescriptorSet fragmentDescriptorSet,
         VkBuffer transformUboBuffer,
-        VkBuffer lightArrayUboBuffer,
+        VkBuffer lightingUboBuffer,
         VkImageView baseColorImageView,
         VkImageView normalMapImageView,
         VkImageView metallicRoughnessMapImageView,

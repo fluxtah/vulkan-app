@@ -42,7 +42,7 @@ void printDeviceLimits(VkPhysicalDevice device);
 
 void updateLightsUBO(VkDevice device, RenderObject *renderObject, Camera *camera, float time) {
     // Set up lighting information
-    LightArrayUBO lightArrayUBO = {0};
+    LightingUBO lightingUBO = {0};
     Light light = {0};
     light.type = 1;
     glm_vec4_copy((vec4) {1.0f, 1.0f, 1.0f, 1.0f}, light.color);
@@ -58,14 +58,15 @@ void updateLightsUBO(VkDevice device, RenderObject *renderObject, Camera *camera
     light2.intensity = 1.0f;
 
     Light lights[] = {light, light2};
-    lightArrayUBO.numLightsInUse = 1;
-    memcpy(lightArrayUBO.lights, lights, sizeof(Light) * lightArrayUBO.numLightsInUse);
-    glm_vec3_copy(camera->position, lightArrayUBO.cameraPos);
+    lightingUBO.numLightsInUse = 1;
+    memcpy(lightingUBO.lights, lights, sizeof(Light) * lightingUBO.numLightsInUse);
+    glm_vec3_copy(camera->position, lightingUBO.cameraPos);
+    glm_vec3_copy((vec3) {0.04f, 0.04f, 0.04f}, lightingUBO.ambientLightColor);
 
     void *lightsData;
-    vkMapMemory(device, renderObject->lightArrayUBO->memory, 0, sizeof(LightArrayUBO), 0, &lightsData);
-    memcpy(lightsData, &lightArrayUBO, sizeof(LightArrayUBO));
-    vkUnmapMemory(device, renderObject->lightArrayUBO->memory);
+    vkMapMemory(device, renderObject->lightingUBO->memory, 0, sizeof(LightingUBO), 0, &lightsData);
+    memcpy(lightsData, &lightingUBO, sizeof(LightingUBO));
+    vkUnmapMemory(device, renderObject->lightingUBO->memory);
 }
 
 

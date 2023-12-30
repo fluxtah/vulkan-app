@@ -41,12 +41,12 @@ VkDescriptorSetLayout createVertexShaderDescriptorSetLayout(VkDevice device) {
 }
 
 VkDescriptorSetLayout createFragmentShaderDescriptorSetLayout(VkDevice device) {
-    VkDescriptorSetLayoutBinding lightArrayUboLayoutBinding = {};
-    lightArrayUboLayoutBinding.binding = 0;
-    lightArrayUboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    lightArrayUboLayoutBinding.descriptorCount = 1;
-    lightArrayUboLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-    lightArrayUboLayoutBinding.pImmutableSamplers = NULL;
+    VkDescriptorSetLayoutBinding lightingUboLayoutBinding = {};
+    lightingUboLayoutBinding.binding = 0;
+    lightingUboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    lightingUboLayoutBinding.descriptorCount = 1;
+    lightingUboLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+    lightingUboLayoutBinding.pImmutableSamplers = NULL;
 
     VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
     samplerLayoutBinding.binding = 1;
@@ -70,7 +70,7 @@ VkDescriptorSetLayout createFragmentShaderDescriptorSetLayout(VkDevice device) {
     metallicRoughnessMapLayoutBinding.pImmutableSamplers = NULL;
 
     VkDescriptorSetLayoutBinding bindings[] = {
-            lightArrayUboLayoutBinding,
+            lightingUboLayoutBinding,
             samplerLayoutBinding,
             normalMapLayoutBinding,
             metallicRoughnessMapLayoutBinding
@@ -113,7 +113,7 @@ void updateBasicShaderDescriptorSet(
         VkDescriptorSet vertexDescriptorSet,
         VkDescriptorSet fragmentDescriptorSet,
         VkBuffer transformUboBuffer,
-        VkBuffer lightArrayUboBuffer,
+        VkBuffer lightingUboBuffer,
         VkImageView baseColorImageView,
         VkImageView normalMapImageView,
         VkImageView metallicRoughnessMapImageView,
@@ -123,10 +123,10 @@ void updateBasicShaderDescriptorSet(
     transformUboBufferInfo.offset = 0;
     transformUboBufferInfo.range = sizeof(TransformUBO);
 
-    VkDescriptorBufferInfo lightArrayUboBufferInfo = {};
-    lightArrayUboBufferInfo.buffer = lightArrayUboBuffer;
-    lightArrayUboBufferInfo.offset = 0;
-    lightArrayUboBufferInfo.range = sizeof(LightArrayUBO);
+    VkDescriptorBufferInfo lightingUboBufferInfo = {};
+    lightingUboBufferInfo.buffer = lightingUboBuffer;
+    lightingUboBufferInfo.offset = 0;
+    lightingUboBufferInfo.range = sizeof(LightingUBO);
 
     VkDescriptorImageInfo textureImageInfo = {};
     textureImageInfo.imageView = baseColorImageView;
@@ -159,7 +159,7 @@ void updateBasicShaderDescriptorSet(
     descriptorWrite1.dstArrayElement = 0;
     descriptorWrite1.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     descriptorWrite1.descriptorCount = 1;
-    descriptorWrite1.pBufferInfo = &lightArrayUboBufferInfo;
+    descriptorWrite1.pBufferInfo = &lightingUboBufferInfo;
 
     VkWriteDescriptorSet descriptorWrite2 = {};
     descriptorWrite2.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;

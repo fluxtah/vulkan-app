@@ -31,7 +31,7 @@ typedef struct {
     ImageMemory *metallicRoughnessMap;
 
     BufferMemory *transformUBO;
-    BufferMemory *lightArrayUBO;
+    BufferMemory *lightingUBO;
     VkDescriptorSet vertexDescriptorSet;
     VkDescriptorSet fragmentDescriptorSet;
 

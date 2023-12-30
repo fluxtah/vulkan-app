@@ -16,8 +16,9 @@ struct Light {
     float intensity;
 };
 
-layout(set = 1, binding = 0) uniform LightArray {
+layout(set = 1, binding = 0) uniform LightingUBO {
     Light lights[MAX_LIGHTS];
+    vec3 ambientLightColor;
     vec3 cameraPos;
     int numLightsInUse;
 } ubo;
@@ -49,7 +50,7 @@ vec3 calculateLight(vec3 norm, vec3 fragPos, vec3 viewDir, float metallic, float
         vec3 fresnel = fresnelSchlick(max(dot(viewDir, norm), 0.0), F0);
 
         // Adjusted Ambient Component
-        vec3 ambient = 0.03 * light.color.rgb * light.intensity;
+        vec3 ambient = ubo.ambientLightColor * light.color.rgb * light.intensity;
 
         // Diffuse Reflection
         float diff = max(dot(norm, lightDir), 0.0);
@@ -86,7 +87,7 @@ void main() {
     float roughness = metallicRoughness.g;
 
     vec4 textureColor = texture(texSampler, uv);
-    vec3 lightingResult = calculateLight(norm, fragPos, viewDir, metallic, roughness, textureColor.rgb);
+    vec3 lightingResult = calculateLight(norm, fragPos, viewDir, metallic, roughness , textureColor.rgb);
 
     // Apply Gamma Correction
     vec3 result = gammaCorrect(lightingResult * textureColor.rgb);

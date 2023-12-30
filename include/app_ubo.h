@@ -23,9 +23,11 @@ typedef struct {
 
 typedef struct {
     Light lights[MAX_LIGHTS];
+    vec3 ambientLightColor;
+    char _pad1;
     vec3 cameraPos;
     int numLightsInUse; // should not exceed MAX_LIGHTS!
-} LightArrayUBO;
+} LightingUBO;
 
 
 #endif
