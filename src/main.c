@@ -36,6 +36,10 @@ VkImageView *swapChainImageViews;
 uint32_t imageCount;
 VkFramebuffer *swapChainFramebuffers;
 
+// Global or static variable
+static float lastFrameTime = 0.0f;
+static bool keys[1024];
+
 void printGpuMemoryInfo(VkPhysicalDevice physicalDevice);
 
 void printDeviceLimits(VkPhysicalDevice device);
@@ -59,11 +63,12 @@ void updateLightsUBO(VkDevice device, RenderObject *renderObject, Camera *camera
 void updateTransformUBO(VkDevice device, RenderObject *renderObject, Camera *camera) {
     TransformUBO transformUBO = {0};
     glm_mat4_identity(transformUBO.model);
-    glm_translate(transformUBO.model, renderObject->position);
     glm_scale(transformUBO.model, renderObject->scale);
     glm_rotate(transformUBO.model, glm_rad(renderObject->rotation[0]), (vec3) {1.0f, 0.0f, 0.0f}); // X rotation
     glm_rotate(transformUBO.model, glm_rad(renderObject->rotation[1]), (vec3) {0.0f, 1.0f, 0.0f}); // Y rotation
     glm_rotate(transformUBO.model, glm_rad(renderObject->rotation[2]), (vec3) {0.0f, 0.0f, 1.0f}); // Z rotation
+    glm_translate(transformUBO.model, renderObject->position);
+
     memcpy(transformUBO.view, camera->view, sizeof(mat4));
     memcpy(transformUBO.proj, camera->proj, sizeof(mat4));
 
@@ -71,6 +76,81 @@ void updateTransformUBO(VkDevice device, RenderObject *renderObject, Camera *cam
     vkMapMemory(device, renderObject->transformUBO->memory, 0, sizeof(TransformUBO), 0, &transformData);
     memcpy(transformData, &transformUBO, sizeof(TransformUBO));
     vkUnmapMemory(device, renderObject->transformUBO->memory);
+}
+
+void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+    if (key >= 0 && key < 1024) {
+        if (action == GLFW_PRESS) {
+            keys[key] = true;
+        } else if (action == GLFW_RELEASE) {
+            keys[key] = false;
+        }
+    }
+}
+
+void updateCameraMovement(VulkanContext *context, Camera *camera, float deltaTime) {
+    const float baseSpeed = 3.0f; // Adjust bases speed as needed
+    float cameraSpeed = baseSpeed * deltaTime;
+    const float rotationSpeed = 40.0f; // Rotation speed
+    float cameraRotationSpeed = rotationSpeed * deltaTime;
+
+    if (keys[GLFW_KEY_W]) {
+        // Move forward
+        vec3 delta;
+        glm_vec3_scale(camera->direction, cameraSpeed, delta);
+        glm_vec3_add(camera->position, delta, camera->position);
+    }
+    if (keys[GLFW_KEY_S]) {
+        // Move backward
+        vec3 delta;
+        glm_vec3_scale(camera->direction, cameraSpeed, delta);
+        glm_vec3_sub(camera->position, delta, camera->position);
+    }
+    if (keys[GLFW_KEY_A]) {
+        // Move left
+        vec3 left, right;
+        glm_vec3_crossn(camera->direction, camera->up, right);
+        glm_vec3_negate_to(right, left); // Negate the right vector to get left
+        glm_vec3_scale(left, cameraSpeed, left);
+        glm_vec3_add(camera->position, left, camera->position);
+    }
+    if (keys[GLFW_KEY_D]) {
+        // Move right
+        vec3 right;
+        glm_vec3_crossn(camera->direction, camera->up, right);
+        glm_vec3_scale(right, cameraSpeed, right);
+        glm_vec3_add(camera->position, right, camera->position);
+    }
+
+    // Rotation controls
+    if (keys[GLFW_KEY_UP]) {
+        camera->pitch += cameraRotationSpeed;
+    }
+    if (keys[GLFW_KEY_DOWN]) {
+        camera->pitch -= cameraRotationSpeed;
+    }
+    if (keys[GLFW_KEY_LEFT]) {
+        camera->yaw -= cameraRotationSpeed;
+    }
+    if (keys[GLFW_KEY_RIGHT]) {
+        camera->yaw += cameraRotationSpeed;
+    }
+
+    // Constrain the pitch
+    if (camera->pitch > 89.0f) camera->pitch = 89.0f;
+    if (camera->pitch < -89.0f) camera->pitch = -89.0f;
+
+    // Update the camera's direction based on new pitch and yaw
+    vec3 front;
+    front[0] = cosf(glm_rad(camera->pitch)) * cosf(glm_rad(camera->yaw));
+    front[1] = sinf(glm_rad(camera->pitch));
+    front[2] = cosf(glm_rad(camera->pitch)) * sinf(glm_rad(camera->yaw));
+    glm_vec3_normalize_to(front, camera->direction);
+
+    updateCamera(camera); // Update the camera's view matrix
+
+    printf("deltaTime: %f, cameraSpeed: %f, cameraRotationSpeed: %f\n", deltaTime, cameraSpeed, cameraRotationSpeed);
+
 }
 
 int main() {
@@ -139,14 +219,13 @@ int main() {
     //
     Camera camera;
     initCamera(&camera,
-               (vec3) {0.0f, 1.0f, 2.0f}, // Camera position
-               (vec3) {0.0f, 0.0f, 0.0f}, // Camera looking at the origin
-               (vec3) {0.0f, 1.0f, 0.0f}, // Up vector
-               45.0f,                     // FOV
-               (float) swapChainExtent.width / (float) swapChainExtent.height,           // Aspect ratio
-               0.1f,                      // Near plane
-               100.0f);                   // Far plane
+               (vec3) {0.0f, 1.0f, 2.0f},
+               45.0f,
+               (float) swapChainExtent.width / (float) swapChainExtent.height,
+               0.1f,
+               100.0f);
 
+    glfwSetKeyCallback(context.window, key_callback);
 
     //
     // Lights
@@ -238,9 +317,12 @@ int main() {
      * MAIN LOOP
      */
     while (!glfwWindowShouldClose(context.window)) {
+        float currentFrameTime = (float) glfwGetTime();
+        float deltaTime = currentFrameTime - lastFrameTime;
+        lastFrameTime = currentFrameTime;
+
         glfwPollEvents();
 
-        float currentTime = (float) glfwGetTime();
         VkSemaphore signalSemaphores[] = {renderFinishedSemaphore};
         VkSemaphore waitSemaphores[] = {imageAvailableSemaphore};
 
@@ -248,6 +330,7 @@ int main() {
         // renderObjects[1]->rotation[0] += 0.7f;
         renderObjects[1]->rotation[1] += 0.1f;
         renderObjects[1]->rotation[2] += 0.02f;
+        updateCameraMovement(&context, &camera, deltaTime);
 
         for (size_t i = 0; i < numRenderObjects; i++) {
             RenderObject *obj = renderObjects[i];
@@ -321,7 +404,7 @@ void initLight(Light *light, float *color, float *position, float *direction, fl
     light->intensity = intensity;
     glm_vec4_copy(color, (*light).color);
     glm_vec3_copy(position, (*light).position);
-    if(direction != NULL) {
+    if (direction != NULL) {
         glm_vec3_copy(direction, (*light).direction);
     }
 }

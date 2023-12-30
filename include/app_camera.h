@@ -7,17 +7,25 @@ typedef struct {
     vec3 position;
     vec3 direction;
     vec3 up;
-    float fov;          // Field of view in degrees
+    vec3 target; // Target position for look-at-target mode
+    float yaw;
+    float pitch;
+    float fov;
     float aspectRatio;
     float nearPlane;
     float farPlane;
     mat4 view;
     mat4 proj;
+    bool lookAtTarget; // Flag to enable look-at-target mode
 } Camera;
 
-void initCamera(Camera *camera, vec3 position, vec3 target, vec3 up, float fov, float aspectRatio, float nearPlane,
-                float farPlane);
+void initCamera(Camera *camera, vec3 position, float fov, float aspectRatio, float nearPlane, float farPlane);
 
 void updateCamera(Camera *camera);
+
+void setLookAtTarget(Camera *camera, vec3 target);
+
+void disableLookAtTarget(Camera *camera);
+
 
 #endif //APP_CAMERA_H
