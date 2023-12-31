@@ -7,17 +7,17 @@ import kotlin.experimental.ExperimentalNativeApi
 typealias CEntity = CPointer<CPointed>
 
 @OptIn(ExperimentalForeignApi::class)
-typealias CreateEntityFunc = (VulkanContext, String) -> CEntity
+typealias CreateEntityFunc = (CVulkanContext, String) -> CEntity
 
 @OptIn(ExperimentalForeignApi::class)
 var c_createEntity: CreateEntityFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktSetCreateEntityFunc")
-fun ktSetCreateEntityFunc(callback: CPointer<CFunction<(VulkanContext, CPointer<ByteVar>) -> CEntity>>) {
+fun ktSetCreateEntityFunc(callback: CPointer<CFunction<(CVulkanContext, CPointer<ByteVar>) -> CEntity>>) {
     c_createEntity = { context, name ->
         memScoped {
-            callback.reinterpret<CFunction<(VulkanContext, CPointer<ByteVar>) -> CEntity>>()(
+            callback.reinterpret<CFunction<(CVulkanContext, CPointer<ByteVar>) -> CEntity>>()(
                 context,
                 name.cstr.ptr
             )
@@ -26,17 +26,17 @@ fun ktSetCreateEntityFunc(callback: CPointer<CFunction<(VulkanContext, CPointer<
 }
 
 @OptIn(ExperimentalForeignApi::class)
-typealias DestroyEntityFunc = (VulkanContext, CEntity) -> Unit
+typealias DestroyEntityFunc = (CVulkanContext, CEntity) -> Unit
 
 @OptIn(ExperimentalForeignApi::class)
-var destroyEntityFuncCallback: DestroyEntityFunc? = null
+var c_destroyEntity: DestroyEntityFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktSetDestroyEntityFunc")
-fun ktSetDestroyEntityFunc(callback: CPointer<CFunction<(VulkanContext, CEntity) -> Unit>>) {
-    destroyEntityFuncCallback = { device, renderObject ->
+fun ktSetDestroyEntityFunc(callback: CPointer<CFunction<(CVulkanContext, CEntity) -> Unit>>) {
+    c_destroyEntity = { device, renderObject ->
         memScoped {
-            callback.reinterpret<CFunction<(VulkanContext, CEntity) -> Unit>>()(device, renderObject)
+            callback.reinterpret<CFunction<(CVulkanContext, CEntity) -> Unit>>()(device, renderObject)
         }
     }
 }

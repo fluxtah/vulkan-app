@@ -1,9 +1,19 @@
 package com.fluxtah.application.api
 
-class Entity
+import com.fluxtah.application.api.interop.CEntity
+import com.fluxtah.application.api.interop.c_createEntity
+import com.fluxtah.application.api.interop.c_destroyEntity
+import kotlinx.cinterop.ExperimentalForeignApi
+
+@OptIn(ExperimentalForeignApi::class)
+class Entity(private val handle: CEntity) {
+    fun destroy() {
+        c_destroyEntity!!.invoke(ApplicationContext.vulcanContext!!, handle)
+    }
+}
 
 @SceneDsl
-class EntityBuilder(val modelPath: String) {
+class EntityBuilder(private val modelPath: String) {
     fun position(x: Float, y: Float, z: Float) { /* ... */
     }
 
@@ -12,8 +22,10 @@ class EntityBuilder(val modelPath: String) {
 
     fun onEachFrame(action: (deltaTime: Float) -> Unit) { /* ... */
     }
-    // Additional methods for transformations and behaviors
+
+    @OptIn(ExperimentalForeignApi::class)
     fun build(): Entity {
-        return Entity()
+        val entity = c_createEntity!!.invoke(ApplicationContext.vulcanContext!!, modelPath)
+        return Entity(entity)
     }
 }

@@ -11,18 +11,6 @@ fun Application.setActiveCamera(id: String) {
     TODO("Not yet implemented")
 }
 
-class Camera
-
-@SceneDsl
-class CameraBuilder {
-    fun position(x: Float, y: Float, z: Float) { /* ... */
-    }
-
-    fun build(): Camera {
-        return Camera()
-    }
-}
-
 class Light
 
 @SceneDsl

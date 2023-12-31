@@ -10,8 +10,8 @@ annotation class SceneDsl
 
 @OptIn(ExperimentalForeignApi::class)
 class Scene {
-    //    val cameras = mutableMapOf<String, Camera>()
-//    val lights = mutableMapOf<String, Light>()
+    val cameras = mutableMapOf<String, Camera>()
+    val lights = mutableMapOf<String, Light>()
     val entities = mutableMapOf<String, Entity>()
 }
 
@@ -48,6 +48,12 @@ class SceneBuilder(val sceneId: String) {
     @OptIn(ExperimentalForeignApi::class)
     fun build(): Scene {
         val scene = Scene()
+        cameras.forEach { (id, builder) ->
+            scene.cameras[id] = builder.invoke()
+        }
+        lights.forEach { (id, builder) ->
+            scene.lights[id] = builder.invoke()
+        }
         entities.forEach { (id, builder) ->
             scene.entities[id] = builder.invoke()
         }
