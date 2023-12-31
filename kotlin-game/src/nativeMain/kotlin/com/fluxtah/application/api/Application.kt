@@ -4,7 +4,38 @@ import com.fluxtah.application.MyApplication
 
 interface Application {
     fun initialize()
-    fun draw()
+    fun update(time: Float, deltaTime: Float) {}
+}
+
+fun Application.setActiveCamera(id: String) {
+    TODO("Not yet implemented")
+}
+
+class Camera
+
+@SceneDsl
+class CameraBuilder {
+    fun position(x: Float, y: Float, z: Float) { /* ... */
+    }
+
+    fun build(): Camera {
+        return Camera()
+    }
+}
+
+class Light
+
+@SceneDsl
+class LightBuilder {
+    fun color(r: Float, g: Float, b: Float, a: Float) { /* ... */
+    }
+
+    fun position(x: Float, y: Float, z: Float) { /* ... */
+    }
+
+    fun build(): Light {
+        return Light()
+    }
 }
 
 private lateinit var applicationInstance: Application
@@ -22,7 +53,7 @@ fun ktInitApplication() {
 }
 
 @OptIn(kotlin.experimental.ExperimentalNativeApi::class)
-@CName("ktDrawApplication")
-fun ktDrawApplication() {
-    applicationInstance.draw()
+@CName("ktUpdateApplication")
+fun ktUpdateApplication(time: Float, deltaTime: Float) {
+    applicationInstance.update(time, deltaTime)
 }

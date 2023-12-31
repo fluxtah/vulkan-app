@@ -149,7 +149,7 @@ void updateCameraMovement(VulkanContext *context, Camera *camera, float deltaTim
 
     updateCamera(camera); // Update the camera's view matrix
 
-    printf("deltaTime: %f, cameraSpeed: %f, cameraRotationSpeed: %f\n", deltaTime, cameraSpeed, cameraRotationSpeed);
+  //  printf("deltaTime: %f, cameraSpeed: %f, cameraRotationSpeed: %f\n", deltaTime, cameraSpeed, cameraRotationSpeed);
 
 }
 
@@ -219,7 +219,7 @@ int main() {
     //
     Camera camera;
     initCamera(&camera,
-               (vec3) {0.0f, 1.0f, 2.0f},
+               (vec3) {0.0f, 0.0f, 2.0f},
                45.0f,
                (float) swapChainExtent.width / (float) swapChainExtent.height,
                0.1f,
@@ -328,8 +328,8 @@ int main() {
 
         // Move
         // renderObjects[1]->rotation[0] += 0.7f;
-        renderObjects[1]->rotation[1] += 0.1f;
-        renderObjects[1]->rotation[2] += 0.02f;
+        renderObjects[1]->rotation[1] += 20.5f * deltaTime;
+        renderObjects[1]->rotation[2] += 20.5f * deltaTime;
         updateCameraMovement(&context, &camera, deltaTime);
 
         for (size_t i = 0; i < numRenderObjects; i++) {
