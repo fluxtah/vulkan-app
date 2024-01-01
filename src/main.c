@@ -95,57 +95,31 @@ void updateCameraMovement(VulkanContext *context, Camera *camera, float deltaTim
     float cameraRotationSpeed = rotationSpeed * deltaTime;
 
     if (keys[GLFW_KEY_W]) {
-        // Move forward
-        vec3 delta;
-        glm_vec3_scale(camera->direction, cameraSpeed, delta);
-        glm_vec3_add(camera->position, delta, camera->position);
+        moveCameraForward(camera, cameraSpeed);
     }
     if (keys[GLFW_KEY_S]) {
-        // Move backward
-        vec3 delta;
-        glm_vec3_scale(camera->direction, cameraSpeed, delta);
-        glm_vec3_sub(camera->position, delta, camera->position);
+        moveCameraBackward(camera, cameraSpeed);
     }
     if (keys[GLFW_KEY_A]) {
-        // Move left
-        vec3 left, right;
-        glm_vec3_crossn(camera->direction, camera->up, right);
-        glm_vec3_negate_to(right, left); // Negate the right vector to get left
-        glm_vec3_scale(left, cameraSpeed, left);
-        glm_vec3_add(camera->position, left, camera->position);
+        moveCameraLeft(camera, cameraSpeed);
     }
     if (keys[GLFW_KEY_D]) {
-        // Move right
-        vec3 right;
-        glm_vec3_crossn(camera->direction, camera->up, right);
-        glm_vec3_scale(right, cameraSpeed, right);
-        glm_vec3_add(camera->position, right, camera->position);
+        moveCameraRight(camera, cameraSpeed);
     }
 
     // Rotation controls
     if (keys[GLFW_KEY_UP]) {
-        camera->pitch += cameraRotationSpeed;
+        pitchCameraUp(camera, cameraRotationSpeed);
     }
     if (keys[GLFW_KEY_DOWN]) {
-        camera->pitch -= cameraRotationSpeed;
+        pitchCameraDown(camera, cameraRotationSpeed);
     }
     if (keys[GLFW_KEY_LEFT]) {
-        camera->yaw -= cameraRotationSpeed;
+        yawCameraLeft(camera, cameraRotationSpeed);
     }
     if (keys[GLFW_KEY_RIGHT]) {
-        camera->yaw += cameraRotationSpeed;
+        yawCameraRight(camera, cameraRotationSpeed);
     }
-
-    // Constrain the pitch
-    if (camera->pitch > 89.0f) camera->pitch = 89.0f;
-    if (camera->pitch < -89.0f) camera->pitch = -89.0f;
-
-    // Update the camera's direction based on new pitch and yaw
-    vec3 front;
-    front[0] = cosf(glm_rad(camera->pitch)) * cosf(glm_rad(camera->yaw));
-    front[1] = sinf(glm_rad(camera->pitch));
-    front[2] = cosf(glm_rad(camera->pitch)) * sinf(glm_rad(camera->yaw));
-    glm_vec3_normalize_to(front, camera->direction);
 
     updateCamera(camera); // Update the camera's view matrix
 
