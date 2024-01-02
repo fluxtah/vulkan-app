@@ -121,7 +121,7 @@ void updateCameraMovement(VulkanContext *context, Camera *camera, float deltaTim
         yawCameraRight(camera, cameraRotationSpeed);
     }
 
-    updateCamera(camera); // Update the camera's view matrix
+    applyCameraChanges(camera); // Update the camera's view matrix
 
     //  printf("deltaTime: %f, cameraSpeed: %f, cameraRotationSpeed: %f\n", deltaTime, cameraSpeed, cameraRotationSpeed);
 
@@ -131,6 +131,13 @@ void bindKotlinApi() {
     // Camera
     ktSetCreateCameraFunc(createCamera);
     ktSetDestroyCameraFunc(destroyCamera);
+    ktSetMoveCameraForwardFunc(moveCameraForward);
+    ktSetMoveCameraBackwardFunc(moveCameraBackward);
+    ktSetMoveCameraLeftFunc(moveCameraLeft);
+    ktSetMoveCameraRightFunc(moveCameraRight);
+    ktSetPitchCameraUpFunc(pitchCameraUp);
+    ktSetPitchCameraDownFunc(pitchCameraDown);
+    ktSetApplyCameraChangesFunc(applyCameraChanges);
 }
 
 int main() {

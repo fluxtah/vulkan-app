@@ -80,3 +80,127 @@ fun ktSetMoveCameraBackwardFunc(callback: CPointer<CFunction<(CCamera, Float) ->
         }
     }
 }
+
+@OptIn(ExperimentalForeignApi::class)
+typealias MoveCameraLeftFunc = (CCamera, Float) -> Unit
+
+@OptIn(ExperimentalForeignApi::class)
+var c_moveCameraLeft: MoveCameraLeftFunc? = null
+
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@CName("ktSetMoveCameraLeftFunc")
+fun ktSetMoveCameraLeftFunc(callback: CPointer<CFunction<(CCamera, Float) -> Unit>>) {
+    c_moveCameraLeft = { camera, amount ->
+        memScoped {
+            callback.reinterpret<CFunction<(CCamera, Float) -> Unit>>()(
+                camera, amount
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+typealias MoveCameraRightFunc = (CCamera, Float) -> Unit
+
+@OptIn(ExperimentalForeignApi::class)
+var c_moveCameraRight: MoveCameraRightFunc? = null
+
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@CName("ktSetMoveCameraRightFunc")
+fun ktSetMoveCameraRightFunc(callback: CPointer<CFunction<(CCamera, Float) -> Unit>>) {
+    c_moveCameraRight = { camera, amount ->
+        memScoped {
+            callback.reinterpret<CFunction<(CCamera, Float) -> Unit>>()(
+                camera, amount
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+typealias PitchCameraUpFunc = (CCamera, Float) -> Unit
+
+@OptIn(ExperimentalForeignApi::class)
+var c_pitchCameraUp: PitchCameraUpFunc? = null
+
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@CName("ktSetPitchCameraUpFunc")
+fun ktSetPitchCameraUpFunc(callback: CPointer<CFunction<(CCamera, Float) -> Unit>>) {
+    c_pitchCameraUp = { camera, amount ->
+        memScoped {
+            callback.reinterpret<CFunction<(CCamera, Float) -> Unit>>()(
+                camera, amount
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+typealias PitchCameraDownFunc = (CCamera, Float) -> Unit
+
+@OptIn(ExperimentalForeignApi::class)
+var c_pitchCameraDown: PitchCameraDownFunc? = null
+
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@CName("ktSetPitchCameraDownFunc")
+fun ktSetPitchCameraDownFunc(callback: CPointer<CFunction<(CCamera, Float) -> Unit>>) {
+    c_pitchCameraDown = { camera, amount ->
+        memScoped {
+            callback.reinterpret<CFunction<(CCamera, Float) -> Unit>>()(
+                camera, amount
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+typealias YawCameraLeftFunc = (CCamera, Float) -> Unit
+
+@OptIn(ExperimentalForeignApi::class)
+var c_yawCameraLeft: YawCameraLeftFunc? = null
+
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@CName("ktSetYawCameraLeftFunc")
+fun ktSetYawCameraLeftFunc(callback: CPointer<CFunction<(CCamera, Float) -> Unit>>) {
+    c_yawCameraLeft = { camera, amount ->
+        memScoped {
+            callback.reinterpret<CFunction<(CCamera, Float) -> Unit>>()(
+                camera, amount
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+typealias YawCameraRightFunc = (CCamera, Float) -> Unit
+
+@OptIn(ExperimentalForeignApi::class)
+var c_yawCameraRight: YawCameraRightFunc? = null
+
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@CName("ktSetYawCameraRightFunc")
+fun ktSetYawCameraRightFunc(callback: CPointer<CFunction<(CCamera, Float) -> Unit>>) {
+    c_yawCameraRight = { camera, amount ->
+        memScoped {
+            callback.reinterpret<CFunction<(CCamera, Float) -> Unit>>()(
+                camera, amount
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+typealias ApplyCameraChangesFunc = (CCamera) -> Unit
+
+@OptIn(ExperimentalForeignApi::class)
+var c_applyCameraChanges: ApplyCameraChangesFunc? = null
+
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@CName("ktSetApplyCameraChangesFunc")
+fun ktSetApplyCameraChangesFunc(callback: CPointer<CFunction<(CCamera) -> Unit>>) {
+    c_applyCameraChanges = { camera ->
+        memScoped {
+            callback.reinterpret<CFunction<(CCamera) -> Unit>>()(camera)
+        }
+    }
+}

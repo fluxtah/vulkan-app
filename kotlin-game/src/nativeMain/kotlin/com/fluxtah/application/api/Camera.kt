@@ -1,9 +1,6 @@
 package com.fluxtah.application.api
 
-import com.fluxtah.application.api.interop.CCamera
-import com.fluxtah.application.api.interop.c_createCamera
-import com.fluxtah.application.api.interop.c_moveCameraBackward
-import com.fluxtah.application.api.interop.c_moveCameraForward
+import com.fluxtah.application.api.interop.*
 import com.fluxtah.application.api.interop.model.CreateCameraInfo
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.cValue
@@ -20,31 +17,31 @@ class Camera(private val handle: CCamera) {
     }
 
     fun moveLeft(amount: Float) {
-        TODO("Not yet implemented")
+        c_moveCameraLeft!!.invoke(handle, amount)
     }
 
-    fun moveRight(camera: Camera, amount: Float) {
-        TODO("Not yet implemented")
+    fun moveRight(amount: Float) {
+        c_moveCameraRight!!.invoke(handle, amount)
     }
 
-    fun pitchUp(camera: Camera, amount: Float) {
-        TODO("Not yet implemented")
+    fun pitchUp(amount: Float) {
+        c_pitchCameraUp!!.invoke(handle, amount)
     }
 
-    fun pitchDown(camera: Camera, amount: Float) {
-        TODO("Not yet implemented")
+    fun pitchDown(amount: Float) {
+        c_pitchCameraDown!!.invoke(handle, amount)
     }
 
-    fun yawLeft(camera: Camera, amount: Float) {
-        TODO("Not yet implemented")
+    fun yawLeft(amount: Float) {
+        c_yawCameraLeft!!.invoke(handle, amount)
     }
 
-    fun yawRight(camera: Camera, amount: Float) {
-        TODO("Not yet implemented")
+    fun yawRight(amount: Float) {
+        c_yawCameraRight!!.invoke(handle, amount)
     }
 
     fun applyChanges() {
-        TODO("Not yet implemented")
+        c_applyCameraChanges!!.invoke(handle)
     }
 }
 

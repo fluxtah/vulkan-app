@@ -24,7 +24,7 @@ Camera *createCamera(CreateCameraInfo *info);
 
 void destroyCamera(Camera *camera);
 
-void updateCamera(Camera *camera);
+void applyCameraChanges(Camera *camera);
 
 void setLookAtTarget(Camera *camera, vec3 target);
 

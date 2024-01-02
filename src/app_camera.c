@@ -14,12 +14,12 @@ Camera *createCamera(CreateCameraInfo *info) {
     camera->farPlane = info->far;
     camera->lookAtTarget = false; // Look-at-target mode disabled by default
 
-    updateCamera(camera);
+    applyCameraChanges(camera);
 
     return camera;
 }
 
-void updateCamera(Camera *camera) {
+void applyCameraChanges(Camera *camera) {
 
     // FPS camera behavior based on yaw and pitch
     // Constrain the pitch
