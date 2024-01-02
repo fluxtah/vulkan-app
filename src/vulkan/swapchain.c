@@ -1,16 +1,16 @@
 #include "include/vulkan/swapchain.h"
 
-VkSwapchainKHR createSwapChain(VulkanContext *context, VkExtent2D *swapchainExtent) {
+VkSwapchainKHR createSwapChain(VulkanContext *context) {
     VkSurfaceCapabilitiesKHR capabilities;
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(context->physicalDevice, context->surface, &capabilities);
 
     // Set the swap extent
-    *swapchainExtent = capabilities.currentExtent;
-    if (swapchainExtent->width == UINT32_MAX) {
+    VkExtent2D swapchainExtent = capabilities.currentExtent;
+    if (swapchainExtent.width == UINT32_MAX) {
         int width, height;
         glfwGetFramebufferSize(context->window, &width, &height);
-        swapchainExtent->width = (uint32_t) width;
-        swapchainExtent->height = (uint32_t) height;
+        swapchainExtent.width = (uint32_t) width;
+        swapchainExtent.height = (uint32_t) height;
     }
 
     uint32_t imageCount = capabilities.minImageCount + 1;
@@ -24,7 +24,7 @@ VkSwapchainKHR createSwapChain(VulkanContext *context, VkExtent2D *swapchainExte
     createInfo.minImageCount = imageCount;
     createInfo.imageFormat = context->surfaceFormat.format;
     createInfo.imageColorSpace = context->surfaceFormat.colorSpace;
-    createInfo.imageExtent = *swapchainExtent;
+    createInfo.imageExtent = swapchainExtent;
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
     createInfo.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
@@ -33,9 +33,6 @@ VkSwapchainKHR createSwapChain(VulkanContext *context, VkExtent2D *swapchainExte
     createInfo.clipped = VK_TRUE;
     createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-    // Other settings like image sharing mode, pre-transform, composite alpha, present mode, clipped, old swap chain
-    // ...
-
     VkSwapchainKHR swapChain;
     VkResult result = vkCreateSwapchainKHR(context->device, &createInfo, NULL, &swapChain);
     if (result != VK_SUCCESS) {
@@ -43,33 +40,34 @@ VkSwapchainKHR createSwapChain(VulkanContext *context, VkExtent2D *swapchainExte
         return VK_NULL_HANDLE;
     }
 
+    context->swapChainExtent = swapchainExtent;
+
     return swapChain;
 }
 
-void createSwapChainImageViews(VkDevice device, VkSwapchainKHR swapChain, VkImageView **swapChainImageViews,
-                               uint32_t *imageCount) {
-    vkGetSwapchainImagesKHR(device, swapChain, imageCount, NULL);
+void createSwapChainImageViews(VulkanContext *context) {
+    vkGetSwapchainImagesKHR(context->device, context->swapChain, &context->swapChainImageCount, NULL);
 
-    VkImage *swapChainImages = malloc(*imageCount * sizeof(VkImage));
+    VkImage *swapChainImages = malloc(sizeof(VkImage) * context->swapChainImageCount);
     if (!swapChainImages) {
         fprintf(stderr, "Failed to allocate memory for swap chain images\n");
         return;
     }
 
-    if (vkGetSwapchainImagesKHR(device, swapChain, imageCount, swapChainImages) != VK_SUCCESS) {
+    if (vkGetSwapchainImagesKHR(context->device, context->swapChain, &context->swapChainImageCount, swapChainImages) != VK_SUCCESS) {
         fprintf(stderr, "Failed to get swap chain images\n");
         free(swapChainImages);
         return;
     }
 
-    *swapChainImageViews = malloc(*imageCount * sizeof(VkImageView));
-    if (!*swapChainImageViews) {
+    context->swapChainImageViews = malloc( sizeof(VkImageView) * context->swapChainImageCount);
+    if (!context->swapChainImageViews) {
         fprintf(stderr, "Failed to allocate memory for image views\n");
         free(swapChainImages);
         return;
     }
 
-    for (uint32_t i = 0; i < *imageCount; i++) {
+    for (uint32_t i = 0; i < context->swapChainImageCount; i++) {
         VkImageViewCreateInfo createInfo = {};
         createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
         createInfo.image = swapChainImages[i];
@@ -85,7 +83,7 @@ void createSwapChainImageViews(VkDevice device, VkSwapchainKHR swapChain, VkImag
         createInfo.subresourceRange.baseArrayLayer = 0;
         createInfo.subresourceRange.layerCount = 1;
 
-        if (vkCreateImageView(device, &createInfo, NULL, &((*swapChainImageViews)[i])) != VK_SUCCESS) {
+        if (vkCreateImageView(context->device, &createInfo, NULL, &((context->swapChainImageViews)[i])) != VK_SUCCESS) {
             fprintf(stderr, "Failed to create image view for image %d\n", i);
             // Handle partial cleanup if needed
         }

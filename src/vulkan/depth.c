@@ -19,12 +19,12 @@ VkFormat findDepthFormat(VkPhysicalDevice physicalDevice) {
 }
 
 void
-createDepthResources(VulkanContext *context, VkExtent2D swapChainExtent, VkCommandPool commandPool, VkImage *depthImage,
+createDepthResources(VulkanContext *context, VkCommandPool commandPool, VkImage *depthImage,
                      VkDeviceMemory *depthImageMemory, VkImageView *depthImageView) {
     VkFormat depthFormat = findDepthFormat(context->physicalDevice);
 
     // Assuming createImage and createImageView are implemented
-    createImage(context->device, context->physicalDevice, swapChainExtent.width, swapChainExtent.height, depthFormat,
+    createImage(context->device, context->physicalDevice, context->swapChainExtent.width, context->swapChainExtent.height, depthFormat,
                 VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
 

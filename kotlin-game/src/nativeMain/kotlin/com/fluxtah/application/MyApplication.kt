@@ -5,16 +5,15 @@ import com.fluxtah.application.api.input.Key
 import com.fluxtah.application.api.isKeyPressed
 import com.fluxtah.application.api.scene
 import com.fluxtah.application.api.setActiveScene
-import kotlinx.cinterop.ExperimentalForeignApi
 
 class MyApplication : Application {
     override fun initialize() {
 
-//        scene("main") {
-//            camera("camera") {
-//                position(0.0f, 0.0f, 2.0f)
-//            }
-//
+        scene("main") {
+            camera("camera") {
+                position(0.0f, 0.0f, 2.0f)
+            }
+
 //            light("light") {
 //                color(1.0f, 1.0f, 1.0f, 1.0f)
 //                position(0.0f, 1.0f, 1.7f)
@@ -29,14 +28,17 @@ class MyApplication : Application {
 //                    rotate(0.0f, 0.1f * deltaTime, 0.02f * deltaTime)
 //                }
 //            }
-//            setActiveCamera("camera")
-//        }
-//
-//        setActiveScene("main")
+
+            onSceneCreated { scene ->
+                scene.setActiveCamera("camera")
+            }
+        }
+
+        setActiveScene("main")
     }
 
     override fun update(time: Float, deltaTime: Float) {
-        handleMoveCamera(deltaTime)
+        // handleMoveCamera(deltaTime)
     }
 
     private fun handleMoveCamera(deltaTime: Float) {
@@ -56,20 +58,20 @@ class MyApplication : Application {
             camera.moveLeft(cameraSpeed)
         }
         if (isKeyPressed(Key.D)) {
-            camera.moveRight(camera, cameraSpeed)
+            camera.moveRight(cameraSpeed)
         }
 
         if (isKeyPressed(Key.Up)) {
-            camera.pitchUp(camera, cameraRotationSpeed)
+            camera.pitchUp(cameraRotationSpeed)
         }
         if (isKeyPressed(Key.Down)) {
-            camera.pitchDown(camera, cameraRotationSpeed)
+            camera.pitchDown(cameraRotationSpeed)
         }
         if (isKeyPressed(Key.Left)) {
-            camera.yawLeft(camera, cameraRotationSpeed)
+            camera.yawLeft(cameraRotationSpeed)
         }
         if (isKeyPressed(Key.Right)) {
-            camera.yawRight(camera, cameraRotationSpeed)
+            camera.yawRight(cameraRotationSpeed)
         }
 
         camera.applyChanges()

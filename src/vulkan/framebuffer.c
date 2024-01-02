@@ -1,7 +1,7 @@
 #include "include/vulkan/framebuffer.h"
 
-VkFramebuffer *createSwapChainFramebuffers(VkDevice device, VkImageView *swapChainImageViews, uint32_t imageCount,
-                                           VkRenderPass renderPass, VkExtent2D swapChainExtent, VkImageView depthImageView) {
+VkFramebuffer *createSwapChainFramebuffers(VulkanContext *context, VkImageView *swapChainImageViews, uint32_t imageCount,
+                                           VkRenderPass renderPass, VkImageView depthImageView) {
     // Allocate memory for framebuffers
     VkFramebuffer *swapChainFramebuffers = malloc(sizeof(VkFramebuffer) * imageCount);
     if (swapChainFramebuffers == NULL) {
@@ -21,15 +21,15 @@ VkFramebuffer *createSwapChainFramebuffers(VkDevice device, VkImageView *swapCha
         framebufferInfo.renderPass = renderPass;
         framebufferInfo.attachmentCount = 2; // Now using 2 attachments: color and depth
         framebufferInfo.pAttachments = attachments;
-        framebufferInfo.width = swapChainExtent.width;
-        framebufferInfo.height = swapChainExtent.height;
+        framebufferInfo.width = context->swapChainExtent.width;
+        framebufferInfo.height = context->swapChainExtent.height;
         framebufferInfo.layers = 1;
 
-        if (vkCreateFramebuffer(device, &framebufferInfo, NULL, &swapChainFramebuffers[i]) != VK_SUCCESS) {
+        if (vkCreateFramebuffer(context->device, &framebufferInfo, NULL, &swapChainFramebuffers[i]) != VK_SUCCESS) {
             fprintf(stderr, "Failed to create framebuffer\n");
             // Clean up any framebuffers that were successfully created
             for (size_t j = 0; j < i; j++) {
-                vkDestroyFramebuffer(device, swapChainFramebuffers[j], NULL);
+                vkDestroyFramebuffer(context->device, swapChainFramebuffers[j], NULL);
             }
             free(swapChainFramebuffers);
             return NULL;

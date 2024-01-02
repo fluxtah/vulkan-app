@@ -1,10 +1,16 @@
 package com.fluxtah.application.api
 
+import com.fluxtah.application.api.interop.c_setActiveCamera
 import kotlinx.cinterop.ExperimentalForeignApi
 
-var activeScene: Scene? = null
-private val sceneBuilders = mutableMapOf<String, () -> Scene>()
-private val scenes = mutableMapOf<String, Scene>()
+var activeScene: SceneInfo? = null
+private val sceneBuilders = mutableMapOf<String, () -> SceneInfo>()
+private val scenes = mutableMapOf<String, SceneInfo>()
+
+data class SceneInfo(
+    val scene: Scene,
+    val onSceneCreated: ((Scene) -> Unit)?
+)
 
 @DslMarker
 annotation class SceneDsl
@@ -18,6 +24,7 @@ class Scene {
 
     fun setActiveCamera(id: String) {
         activeCamera = cameras[id] ?: throw Exception("Camera with id $id does not exist")
+        c_setActiveCamera!!.invoke(ApplicationContext.vulcanContext!!, activeCamera!!.handle)
     }
 
     fun activeCamera(): Camera? {
@@ -26,21 +33,25 @@ class Scene {
 }
 
 fun Application.scene(): Scene {
-    return activeScene ?: throw Exception("No active scene")
+    return activeScene?.scene ?: throw Exception("No active scene")
 }
 
-fun Application.scene(id: String, builder: SceneBuilder.() -> Unit) {
+fun Application.scene(id: String, block: SceneBuilder.() -> Unit) {
     sceneBuilders[id] = {
-        SceneBuilder(id).apply(builder).build()
+        val builder = SceneBuilder(id)
+        block(builder)
+        builder.build()
     }
 }
 
 @SceneDsl
 class SceneBuilder(val sceneId: String) {
-    private var activeCameraId: String? = null
     private val entities = mutableMapOf<String, () -> Entity>()
     private val cameras = mutableMapOf<String, () -> Camera>()
     private val lights = mutableMapOf<String, () -> Light>()
+
+    private var onSceneCreated: ((Scene) -> Unit)? = null
+
     fun camera(id: String, builder: CameraBuilder.() -> Unit) {
         cameras[id] = {
             CameraBuilder().apply(builder).build()
@@ -61,7 +72,7 @@ class SceneBuilder(val sceneId: String) {
     }
 
     @OptIn(ExperimentalForeignApi::class)
-    fun build(): Scene {
+    fun build(): SceneInfo {
         val scene = Scene()
         cameras.forEach { (id, builder) ->
             scene.cameras[id] = builder.invoke()
@@ -72,14 +83,14 @@ class SceneBuilder(val sceneId: String) {
         entities.forEach { (id, builder) ->
             scene.entities[id] = builder.invoke()
         }
-        if (activeCameraId != null) {
-            scene.setActiveCamera(activeCameraId!!)
-        }
-        return scene
+        return SceneInfo(
+            scene,
+            onSceneCreated
+        )
     }
 
-    fun setActiveCamera(id: String) {
-        activeCameraId = id
+    fun onSceneCreated(block: (Scene) -> Unit) {
+        onSceneCreated = block
     }
 }
 
@@ -91,6 +102,8 @@ fun Application.setActiveScene(id: String) {
     } else {
         // Create new scene
         val scene = builder.invoke()
+
+        scene.onSceneCreated?.invoke(scene.scene)
 
         // Set as active scene
         scenes[id] = scene

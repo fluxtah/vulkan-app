@@ -11,18 +11,17 @@ typealias CCamera = CPointer<CPointed>
 typealias CCreateCameraInfo = CPointer<CreateCameraInfo>
 
 @OptIn(ExperimentalForeignApi::class)
-typealias CreateCameraFunc = (CVulkanContext, CCreateCameraInfo) -> CCamera
+typealias CreateCameraFunc = (CCreateCameraInfo) -> CCamera
 
 @OptIn(ExperimentalForeignApi::class)
 var c_createCamera: CreateCameraFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktSetCreateCameraFunc")
-fun ktSetCreateCameraFunc(callback: CPointer<CFunction<(CVulkanContext, CCreateCameraInfo) -> CCamera>>) {
-    c_createCamera = { context, info ->
+fun ktSetCreateCameraFunc(callback: CPointer<CFunction<(CCreateCameraInfo) -> CCamera>>) {
+    c_createCamera = { info ->
         memScoped {
-            callback.reinterpret<CFunction<(CVulkanContext, CPointer<CreateCameraInfo>) -> CCamera>>()(
-                context,
+            callback.reinterpret<CFunction<(CCreateCameraInfo) -> CCamera>>()(
                 info
             )
         }

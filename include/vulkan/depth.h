@@ -9,5 +9,8 @@
 #include "context.h"
 
 VkFormat findDepthFormat(VkPhysicalDevice physicalDevice);
-void createDepthResources(VulkanContext *context, VkExtent2D swapChainExtent, VkCommandPool commandPool, VkImage *depthImage, VkDeviceMemory *depthImageMemory, VkImageView *depthImageView);
+
+void createDepthResources(VulkanContext *context, VkCommandPool commandPool, VkImage *depthImage,
+                          VkDeviceMemory *depthImageMemory, VkImageView *depthImageView);
+
 #endif //VULKAN_DEPTH_H

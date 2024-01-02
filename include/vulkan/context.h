@@ -10,6 +10,7 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "include/app_camera.h"
 
 typedef struct VulkanContext {
     GLFWwindow *window;
@@ -26,6 +27,17 @@ typedef struct VulkanContext {
     VkPresentModeKHR presentMode;
     VkCommandPool commandPool;
     VkSampler sampler;
+
+    // TODO Screen dependent data properties
+    //  when the screen changes or device reset (gotta research this)
+    //  may need to recreate these resources
+    VkExtent2D swapChainExtent;
+    VkSwapchainKHR swapChain;
+    VkImageView *swapChainImageViews;
+    uint32_t swapChainImageCount;
+    VkFramebuffer *swapChainFramebuffers;
+
+    Camera *activeCamera;
 } VulkanContext;
 
 #endif //VULKAN_CONTEXT_H

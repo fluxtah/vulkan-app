@@ -4,7 +4,8 @@
 #include <vulkan/vulkan.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "context.h"
 
-VkFramebuffer *createSwapChainFramebuffers(VkDevice device, VkImageView *swapChainImageViews, uint32_t imageCount,
-                                           VkRenderPass renderPass, VkExtent2D swapChainExtent, VkImageView depthImageView);
+VkFramebuffer *createSwapChainFramebuffers(VulkanContext *context, VkImageView *swapChainImageViews, uint32_t imageCount,
+                                           VkRenderPass renderPass, VkImageView depthImageView);
 #endif // VULKAN_FRAMEBUFFER_H

@@ -7,7 +7,7 @@ import kotlinx.cinterop.cValue
 import kotlinx.cinterop.memScoped
 
 @OptIn(ExperimentalForeignApi::class)
-class Camera(private val handle: CCamera) {
+class Camera(val handle: CCamera) {
     fun moveForward(amount: Float) {
         c_moveCameraForward!!.invoke(handle, amount)
     }
@@ -53,7 +53,7 @@ class CameraBuilder {
     private var fieldOfView: Float = 45.0f
     private var nearPlane: Float = 0.1f
     private var farPlane: Float = 100.0f
-    private var aspectRatio: Float = 1.0f
+    private var aspectRatio: Float = 0.0f
     fun position(x: Float, y: Float, z: Float) {
         positionX = x
         positionY = y
@@ -79,17 +79,17 @@ class CameraBuilder {
     @OptIn(ExperimentalForeignApi::class)
     fun build(): Camera {
         val info = cValue<CreateCameraInfo> {
-            positionX = this@CameraBuilder.positionX
-            positionY = this@CameraBuilder.positionY
-            positionZ = this@CameraBuilder.positionZ
-            fov = this@CameraBuilder.fieldOfView
-            near = this@CameraBuilder.nearPlane
-            far = this@CameraBuilder.farPlane
-            aspect = this@CameraBuilder.aspectRatio
+            this.positionX = this@CameraBuilder.positionX
+            this.positionY = this@CameraBuilder.positionY
+            this.positionZ = this@CameraBuilder.positionZ
+            this.fov = this@CameraBuilder.fieldOfView
+            this.near = this@CameraBuilder.nearPlane
+            this.far = this@CameraBuilder.farPlane
+            this.aspect = this@CameraBuilder.aspectRatio
         }
 
         val cCamera = memScoped {
-            c_createCamera!!.invoke(ApplicationContext.vulcanContext!!, info.ptr)
+            c_createCamera!!.invoke(info.ptr)
         }
 
         return Camera(cCamera)

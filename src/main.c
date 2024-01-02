@@ -27,15 +27,6 @@
 #include <stdio.h>
 #include <cglm/cglm.h>
 
-// TODO refactor this so we don't have top level variables!
-//  - Move everything in main() into a runApplication() class
-// Re-creatable resources (screen changes)
-VkExtent2D swapChainExtent;
-VkSwapchainKHR swapChain;
-VkImageView *swapChainImageViews;
-uint32_t imageCount;
-VkFramebuffer *swapChainFramebuffers;
-
 // Global or static variable
 static float lastFrameTime = 0.0f;
 static bool keys[1024];
@@ -88,43 +79,61 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
     }
 }
 
-void updateCameraMovement(VulkanContext *context, Camera *camera, float deltaTime) {
+int isKeyPressed(int key) {
+    if (keys[key]) {
+        return 1;
+    }
+
+    return -1;
+}
+
+void updateCameraMovement(VulkanContext *context, float deltaTime) {
     const float baseSpeed = 3.0f; // Adjust bases speed as needed
     float cameraSpeed = baseSpeed * deltaTime;
     const float rotationSpeed = 40.0f; // Rotation speed
     float cameraRotationSpeed = rotationSpeed * deltaTime;
 
     if (keys[GLFW_KEY_W]) {
-        moveCameraForward(camera, cameraSpeed);
+        moveCameraForward(context->activeCamera, cameraSpeed);
     }
     if (keys[GLFW_KEY_S]) {
-        moveCameraBackward(camera, cameraSpeed);
+        moveCameraBackward(context->activeCamera, cameraSpeed);
     }
     if (keys[GLFW_KEY_A]) {
-        moveCameraLeft(camera, cameraSpeed);
+        moveCameraLeft(context->activeCamera, cameraSpeed);
     }
     if (keys[GLFW_KEY_D]) {
-        moveCameraRight(camera, cameraSpeed);
+        moveCameraRight(context->activeCamera, cameraSpeed);
     }
 
     // Rotation controls
     if (keys[GLFW_KEY_UP]) {
-        pitchCameraUp(camera, cameraRotationSpeed);
+        pitchCameraUp(context->activeCamera, cameraRotationSpeed);
     }
     if (keys[GLFW_KEY_DOWN]) {
-        pitchCameraDown(camera, cameraRotationSpeed);
+        pitchCameraDown(context->activeCamera, cameraRotationSpeed);
     }
     if (keys[GLFW_KEY_LEFT]) {
-        yawCameraLeft(camera, cameraRotationSpeed);
+        yawCameraLeft(context->activeCamera, cameraRotationSpeed);
     }
     if (keys[GLFW_KEY_RIGHT]) {
-        yawCameraRight(camera, cameraRotationSpeed);
+        yawCameraRight(context->activeCamera, cameraRotationSpeed);
     }
 
-    applyCameraChanges(camera); // Update the camera's view matrix
+    applyCameraChanges(context->activeCamera); // Update the camera's view matrix
 
     //  printf("deltaTime: %f, cameraSpeed: %f, cameraRotationSpeed: %f\n", deltaTime, cameraSpeed, cameraRotationSpeed);
 
+}
+
+void setActiveCamera(VulkanContext *context, Camera *camera) {
+    context->activeCamera = camera;
+
+    // Default to extent
+    if (camera->aspectRatio == 0.0f) {
+        camera->aspectRatio = (float) context->swapChainExtent.width / (float) context->swapChainExtent.height;
+        applyCameraChanges(camera);
+    }
 }
 
 void bindKotlinApi() {
@@ -138,6 +147,7 @@ void bindKotlinApi() {
     ktSetPitchCameraUpFunc(pitchCameraUp);
     ktSetPitchCameraDownFunc(pitchCameraDown);
     ktSetApplyCameraChangesFunc(applyCameraChanges);
+    ktSetActiveCameraFunc(setActiveCamera);
 }
 
 int main() {
@@ -156,11 +166,11 @@ int main() {
 
     ktSetVulkanContext(&context);
 
-    swapChain = createSwapChain(&context, &swapChainExtent);
-    if (swapChain == VK_NULL_HANDLE)
+    context.swapChain = createSwapChain(&context);
+    if (context.swapChain == VK_NULL_HANDLE)
         return -1;
 
-    createSwapChainImageViews(context.device, swapChain, &swapChainImageViews, &imageCount);
+    createSwapChainImageViews(&context);
 
     //
     // Create descriptor set layouts
@@ -177,7 +187,7 @@ int main() {
     VkImage depthImage;
     VkDeviceMemory depthImageMemory;
     VkImageView depthImageView;
-    createDepthResources(&context, swapChainExtent, context.commandPool, &depthImage, &depthImageMemory,
+    createDepthResources(&context, context.commandPool, &depthImage, &depthImageMemory,
                          &depthImageView);
 
     VkRenderPass renderPass = createRenderPass(&context);
@@ -188,17 +198,19 @@ int main() {
                                                            vertexShaderDescriptorSetLayout,
                                                            fragmentShaderDescriptorSetLayout);
     Viewport viewport = (Viewport) {
-            0, 0, swapChainExtent.width, swapChainExtent.height, 0.0f, 1.0f
+            0, 0, context.swapChainExtent.width, context.swapChainExtent.height, 0.0f, 1.0f
     };
     VkPipeline pipeline = createPipeline(context.device, pipelineLayout, renderPass, viewport, vertexShaderModule,
                                          fragmentShaderModule);
-    swapChainFramebuffers = createSwapChainFramebuffers(context.device, swapChainImageViews, imageCount,
-                                                        renderPass, swapChainExtent, depthImageView);
+    context.swapChainFramebuffers = createSwapChainFramebuffers(&context, context.swapChainImageViews,
+                                                                context.swapChainImageCount, renderPass,
+                                                                depthImageView);
 
     if (pipeline == VK_NULL_HANDLE)
         return -1;
 
-    VkCommandBuffer *commandBuffers = allocateCommandBuffers(context.device, context.commandPool, imageCount);
+    VkCommandBuffer *commandBuffers = allocateCommandBuffers(context.device, context.commandPool,
+                                                             context.swapChainImageCount);
     if (commandBuffers == VK_NULL_HANDLE)
         return -1;
 
@@ -210,16 +222,16 @@ int main() {
     //
     // Camera
     //
-    CreateCameraInfo createCameraInfo = {
-            0.0f,
-            0.0f,
-            2.0f,
-            45.0f,
-            (float) swapChainExtent.width / (float) swapChainExtent.height,
-            0.1f,
-            100.0f
-    };
-    Camera *camera = createCamera(&createCameraInfo);
+//    CreateCameraInfo createCameraInfo = {
+//            0.0f,
+//            0.0f,
+//            2.0f,
+//            45.0f,
+//            (float) context.swapChainExtent.width / (float) context.swapChainExtent.height,
+//            0.1f,
+//            100.0f
+//    };
+//    setActiveCamera(&context, createCamera(&createCameraInfo));
 
     glfwSetKeyCallback(context.window, key_callback);
 
@@ -275,12 +287,12 @@ int main() {
     glm_vec3_copy((vec3) {1.0f, 1.0f, 1.0f}, renderObjects[1]->scale);
 
 
-    for (size_t i = 0; i < imageCount; i++) {
+    for (size_t i = 0; i < context.swapChainImageCount; i++) {
         recordCommandBuffer(
                 commandBuffers[i],
                 renderPass,
-                swapChainFramebuffers[i],
-                swapChainExtent,
+                context.swapChainFramebuffers[i],
+                context.swapChainExtent,
                 pipeline,
                 pipelineLayout,
                 renderObjects,
@@ -325,24 +337,24 @@ int main() {
         // Move
         renderObjects[1]->rotation[1] += 20.5f * deltaTime;
         renderObjects[1]->rotation[2] += 20.5f * deltaTime;
-        updateCameraMovement(&context, camera, deltaTime);
+        updateCameraMovement(&context, deltaTime);
 
         for (size_t i = 0; i < numRenderObjects; i++) {
             RenderObject *obj = renderObjects[i];
 
             // Update UBO
-            updateTransformUBO(context.device, obj, camera);
-            updateLightsUBO(context.device, obj, camera, lights, numLights);
+            updateTransformUBO(context.device, obj, context.activeCamera);
+            updateLightsUBO(context.device, obj, context.activeCamera, lights, numLights);
         }
 
         uint32_t imageIndex;
-        vkAcquireNextImageKHR(context.device, swapChain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE,
+        vkAcquireNextImageKHR(context.device, context.swapChain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE,
                               &imageIndex);
 
         vkResetFences(context.device, 1, &inFlightFence);
 
         renderSubmit(&context, waitSemaphores, signalSemaphores, inFlightFence, commandBuffers, imageIndex);
-        renderPresent(&context, swapChain, signalSemaphores, imageIndex);
+        renderPresent(&context, context.swapChain, signalSemaphores, imageIndex);
 
         vkWaitForFences(context.device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
     }
@@ -365,10 +377,10 @@ int main() {
     }
     free(renderObjects);
 
-    for (size_t i = 0; i < imageCount; i++) {
-        vkDestroyFramebuffer(context.device, swapChainFramebuffers[i], NULL);
+    for (size_t i = 0; i < context.swapChainImageCount; i++) {
+        vkDestroyFramebuffer(context.device, context.swapChainFramebuffers[i], NULL);
     }
-    free(swapChainFramebuffers);
+    free(context.swapChainFramebuffers);
 
     vkDestroyPipeline(context.device, pipeline, NULL);
     vkDestroyPipelineLayout(context.device, pipelineLayout, NULL);
@@ -380,14 +392,14 @@ int main() {
     vkDestroyImage(context.device, depthImage, NULL);
     vkFreeMemory(context.device, depthImageMemory, NULL);
 
-    for (uint32_t i = 0; i < imageCount; i++) {
-        vkDestroyImageView(context.device, swapChainImageViews[i], NULL);
+    for (uint32_t i = 0; i < context.swapChainImageCount; i++) {
+        vkDestroyImageView(context.device, context.swapChainImageViews[i], NULL);
     }
-    free(swapChainImageViews);
+    free(context.swapChainImageViews);
 
-    destroyCamera(camera);
+    destroyCamera(context.activeCamera);
 
-    vkDestroySwapchainKHR(context.device, swapChain, NULL);
+    vkDestroySwapchainKHR(context.device, context.swapChain, NULL);
 
     destroyVulkan(&context);
 

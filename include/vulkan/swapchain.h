@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include "context.h"
 
-VkSwapchainKHR createSwapChain(VulkanContext *context, VkExtent2D *swapchainExtent);
-void createSwapChainImageViews(VkDevice device, VkSwapchainKHR swapChain, VkImageView **swapChainImageViews, uint32_t *imageCount);
+VkSwapchainKHR createSwapChain(VulkanContext *context);
+void createSwapChainImageViews(VulkanContext *context);
 
 #endif // VULKAN_SWAPCHAIN_H

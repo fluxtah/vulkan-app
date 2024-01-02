@@ -4,7 +4,7 @@
 #include <cglm/cglm.h>
 #include "model.h"
 
-typedef struct {
+typedef struct Camera {
     vec3 position;
     vec3 direction;
     vec3 up;
@@ -45,4 +45,5 @@ void pitchCameraDown(Camera *camera, float amount);
 void yawCameraLeft(Camera *camera, float amount);
 
 void yawCameraRight(Camera *camera, float amount);
+
 #endif //APP_CAMERA_H
