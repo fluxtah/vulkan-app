@@ -123,11 +123,18 @@ void updateCameraMovement(VulkanContext *context, Camera *camera, float deltaTim
 
     updateCamera(camera); // Update the camera's view matrix
 
-  //  printf("deltaTime: %f, cameraSpeed: %f, cameraRotationSpeed: %f\n", deltaTime, cameraSpeed, cameraRotationSpeed);
+    //  printf("deltaTime: %f, cameraSpeed: %f, cameraRotationSpeed: %f\n", deltaTime, cameraSpeed, cameraRotationSpeed);
 
 }
 
+void bindKotlinApi() {
+    // Camera
+    ktSetCreateCameraFunc(createCamera);
+    ktSetDestroyCameraFunc(destroyCamera);
+}
+
 int main() {
+    bindKotlinApi();
     // Create the Kotlin Application
     ktCreateApplication();
 
@@ -189,15 +196,23 @@ int main() {
         return -1;
 
     //
+    // Init KT
+    //
+    ktInitApplication();
+
+    //
     // Camera
     //
-    Camera camera;
-    initCamera(&camera,
-               (vec3) {0.0f, 0.0f, 2.0f},
-               45.0f,
-               (float) swapChainExtent.width / (float) swapChainExtent.height,
-               0.1f,
-               100.0f);
+    CreateCameraInfo createCameraInfo = {
+            0.0f,
+            0.0f,
+            2.0f,
+            45.0f,
+            (float) swapChainExtent.width / (float) swapChainExtent.height,
+            0.1f,
+            100.0f
+    };
+    Camera *camera = createCamera(&createCameraInfo);
 
     glfwSetKeyCallback(context.window, key_callback);
 
@@ -301,17 +316,16 @@ int main() {
         VkSemaphore waitSemaphores[] = {imageAvailableSemaphore};
 
         // Move
-        // renderObjects[1]->rotation[0] += 0.7f;
         renderObjects[1]->rotation[1] += 20.5f * deltaTime;
         renderObjects[1]->rotation[2] += 20.5f * deltaTime;
-        updateCameraMovement(&context, &camera, deltaTime);
+        updateCameraMovement(&context, camera, deltaTime);
 
         for (size_t i = 0; i < numRenderObjects; i++) {
             RenderObject *obj = renderObjects[i];
 
             // Update UBO
-            updateTransformUBO(context.device, obj, &camera);
-            updateLightsUBO(context.device, obj, &camera, lights, numLights);
+            updateTransformUBO(context.device, obj, camera);
+            updateLightsUBO(context.device, obj, camera, lights, numLights);
         }
 
         uint32_t imageIndex;
@@ -363,6 +377,8 @@ int main() {
         vkDestroyImageView(context.device, swapChainImageViews[i], NULL);
     }
     free(swapChainImageViews);
+
+    destroyCamera(camera);
 
     vkDestroySwapchainKHR(context.device, swapChain, NULL);
 

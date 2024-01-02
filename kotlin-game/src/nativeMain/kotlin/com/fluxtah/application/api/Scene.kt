@@ -2,6 +2,7 @@ package com.fluxtah.application.api
 
 import kotlinx.cinterop.ExperimentalForeignApi
 
+var activeScene: Scene? = null
 private val sceneBuilders = mutableMapOf<String, () -> Scene>()
 private val scenes = mutableMapOf<String, Scene>()
 
@@ -10,9 +11,22 @@ annotation class SceneDsl
 
 @OptIn(ExperimentalForeignApi::class)
 class Scene {
+    private var activeCamera: Camera? = null
     val cameras = mutableMapOf<String, Camera>()
     val lights = mutableMapOf<String, Light>()
     val entities = mutableMapOf<String, Entity>()
+
+    fun setActiveCamera(id: String) {
+        activeCamera = cameras[id] ?: throw Exception("Camera with id $id does not exist")
+    }
+
+    fun activeCamera(): Camera? {
+        return activeCamera
+    }
+}
+
+fun Application.scene(): Scene {
+    return activeScene ?: throw Exception("No active scene")
 }
 
 fun Application.scene(id: String, builder: SceneBuilder.() -> Unit) {
@@ -23,6 +37,7 @@ fun Application.scene(id: String, builder: SceneBuilder.() -> Unit) {
 
 @SceneDsl
 class SceneBuilder(val sceneId: String) {
+    private var activeCameraId: String? = null
     private val entities = mutableMapOf<String, () -> Entity>()
     private val cameras = mutableMapOf<String, () -> Camera>()
     private val lights = mutableMapOf<String, () -> Light>()
@@ -57,17 +72,29 @@ class SceneBuilder(val sceneId: String) {
         entities.forEach { (id, builder) ->
             scene.entities[id] = builder.invoke()
         }
+        if (activeCameraId != null) {
+            scene.setActiveCamera(activeCameraId!!)
+        }
         return scene
+    }
+
+    fun setActiveCamera(id: String) {
+        activeCameraId = id
     }
 }
 
 fun Application.setActiveScene(id: String) {
     val builder = sceneBuilders[id] ?: throw Exception("Scene with id $id does not exist")
-    if (scenes.containsKey(id)) return // Already active
+    val existingScene = scenes[id]
+    if (existingScene != null) {
+        activeScene = existingScene
+    } else {
+        // Create new scene
+        val scene = builder.invoke()
 
-    val scene = builder.invoke()
-
-    // Set as active scene
-    scenes[id] = scene
+        // Set as active scene
+        scenes[id] = scene
+        activeScene = scene
+    }
 }
 

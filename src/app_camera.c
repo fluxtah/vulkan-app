@@ -1,17 +1,22 @@
 #include "include/app_camera.h"
 
-void initCamera(Camera *camera, vec3 position, float fov, float aspectRatio, float nearPlane, float farPlane) {
+
+Camera *createCamera(CreateCameraInfo *info) {
+    Camera *camera = malloc(sizeof(Camera));
+    vec3 position = {info->positionX, info->positionY, info->positionZ};
     glm_vec3_copy(position, camera->position); // Set the camera position
     camera->yaw = -90.0f; // Yaw set to -90 degrees to face down the positive Z-axis
     camera->pitch = 0.0f; // Pitch set to 0 degrees, level with the horizon
     glm_vec3_copy((vec3) {0.0f, 1.0f, 0.0f}, camera->up); // Y is up in Vulkan
-    camera->fov = fov;
-    camera->aspectRatio = aspectRatio;
-    camera->nearPlane = nearPlane;
-    camera->farPlane = farPlane;
+    camera->fov = info->fov;
+    camera->aspectRatio = info->aspect;
+    camera->nearPlane = info->near;
+    camera->farPlane = info->far;
     camera->lookAtTarget = false; // Look-at-target mode disabled by default
 
     updateCamera(camera);
+
+    return camera;
 }
 
 void updateCamera(Camera *camera) {
@@ -94,11 +99,6 @@ void yawCameraLeft(Camera *camera, float amount) {
 
 void yawCameraRight(Camera *camera, float amount) {
     camera->yaw += amount;
-}
-
-Camera *createCamera() {
-    Camera *camera = malloc(sizeof(Camera));
-    return camera;
 }
 
 void destroyCamera(Camera *camera) {

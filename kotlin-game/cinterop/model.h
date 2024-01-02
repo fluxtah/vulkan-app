@@ -39,4 +39,14 @@ typedef struct Viewport {
     float    maxDepth;
 } Viewport;
 
+typedef struct CreateCameraInfo {
+    float positionX;
+    float positionY;
+    float positionZ;
+    float    fov;
+    float    aspect;
+    float    near;
+    float    far;
+} CreateCameraInfo;
+
 #endif // MODEL_H

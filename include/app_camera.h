@@ -2,6 +2,7 @@
 #define APP_CAMERA_H
 
 #include <cglm/cglm.h>
+#include "model.h"
 
 typedef struct {
     vec3 position;
@@ -19,11 +20,9 @@ typedef struct {
     bool lookAtTarget; // Flag to enable look-at-target mode
 } Camera;
 
-Camera *createCamera();
+Camera *createCamera(CreateCameraInfo *info);
 
 void destroyCamera(Camera *camera);
-
-void initCamera(Camera *camera, vec3 position, float fov, float aspectRatio, float nearPlane, float farPlane);
 
 void updateCamera(Camera *camera);
 
@@ -46,7 +45,4 @@ void pitchCameraDown(Camera *camera, float amount);
 void yawCameraLeft(Camera *camera, float amount);
 
 void yawCameraRight(Camera *camera, float amount);
-
-
-
 #endif //APP_CAMERA_H

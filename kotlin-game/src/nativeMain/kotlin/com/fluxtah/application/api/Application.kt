@@ -1,13 +1,14 @@
 package com.fluxtah.application.api
 
 import com.fluxtah.application.MyApplication
+import com.fluxtah.application.api.input.Key
 
 interface Application {
     fun initialize()
     fun update(time: Float, deltaTime: Float) {}
 }
 
-fun Application.setActiveCamera(id: String) {
+fun Application.isKeyPressed(key: Key) : Boolean {
     TODO("Not yet implemented")
 }
 
