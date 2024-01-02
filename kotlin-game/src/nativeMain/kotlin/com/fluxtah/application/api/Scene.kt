@@ -101,13 +101,13 @@ fun Application.setActiveScene(id: String) {
         activeScene = existingScene
     } else {
         // Create new scene
-        val scene = builder.invoke()
+        val sceneInfo = builder.invoke()
 
-        scene.onSceneCreated?.invoke(scene.scene)
+        sceneInfo.onSceneCreated?.invoke(sceneInfo.scene)
 
         // Set as active scene
-        scenes[id] = scene
-        activeScene = scene
+        scenes[id] = sceneInfo
+        activeScene = sceneInfo
     }
 }
 

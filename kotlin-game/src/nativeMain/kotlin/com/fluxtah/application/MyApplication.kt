@@ -38,7 +38,7 @@ class MyApplication : Application {
     }
 
     override fun update(time: Float, deltaTime: Float) {
-        // handleMoveCamera(deltaTime)
+        handleMoveCamera(deltaTime)
     }
 
     private fun handleMoveCamera(deltaTime: Float) {

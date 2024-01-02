@@ -137,6 +137,9 @@ void setActiveCamera(VulkanContext *context, Camera *camera) {
 }
 
 void bindKotlinApi() {
+    // Input
+    ktSetIsKeyPressedFunc(isKeyPressed);
+
     // Camera
     ktSetCreateCameraFunc(createCamera);
     ktSetDestroyCameraFunc(destroyCamera);
@@ -146,6 +149,8 @@ void bindKotlinApi() {
     ktSetMoveCameraRightFunc(moveCameraRight);
     ktSetPitchCameraUpFunc(pitchCameraUp);
     ktSetPitchCameraDownFunc(pitchCameraDown);
+    ktSetYawCameraLeftFunc(yawCameraLeft);
+    ktSetYawCameraRightFunc(yawCameraRight);
     ktSetApplyCameraChangesFunc(applyCameraChanges);
     ktSetActiveCameraFunc(setActiveCamera);
 }
@@ -334,10 +339,12 @@ int main() {
         VkSemaphore signalSemaphores[] = {renderFinishedSemaphore};
         VkSemaphore waitSemaphores[] = {imageAvailableSemaphore};
 
+        ktUpdateApplication(currentFrameTime, deltaTime);
+
         // Move
         renderObjects[1]->rotation[1] += 20.5f * deltaTime;
         renderObjects[1]->rotation[2] += 20.5f * deltaTime;
-        updateCameraMovement(&context, deltaTime);
+        // updateCameraMovement(&context, deltaTime);
 
         for (size_t i = 0; i < numRenderObjects; i++) {
             RenderObject *obj = renderObjects[i];

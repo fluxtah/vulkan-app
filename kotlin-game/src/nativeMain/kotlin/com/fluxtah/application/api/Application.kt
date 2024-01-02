@@ -2,6 +2,7 @@ package com.fluxtah.application.api
 
 import com.fluxtah.application.MyApplication
 import com.fluxtah.application.api.input.Key
+import com.fluxtah.application.api.interop.c_isKeyPressed
 
 interface Application {
     fun initialize()
@@ -9,7 +10,7 @@ interface Application {
 }
 
 fun Application.isKeyPressed(key: Key) : Boolean {
-    TODO("Not yet implemented")
+    return c_isKeyPressed?.invoke(key.value) == 1
 }
 
 private lateinit var applicationInstance: Application
