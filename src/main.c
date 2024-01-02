@@ -31,10 +31,6 @@
 static float lastFrameTime = 0.0f;
 static bool keys[1024];
 
-void printGpuMemoryInfo(VkPhysicalDevice physicalDevice);
-
-void printDeviceLimits(VkPhysicalDevice device);
-
 void initLight(Light *light, float *color, float *position, float *direction, float intensity);
 
 void updateLightsUBO(VkDevice device, RenderObject *renderObject, Camera *camera, Light *lights, int numLights) {
@@ -85,45 +81,6 @@ int isKeyPressed(int key) {
     }
 
     return -1;
-}
-
-void updateCameraMovement(VulkanContext *context, float deltaTime) {
-    const float baseSpeed = 3.0f; // Adjust bases speed as needed
-    float cameraSpeed = baseSpeed * deltaTime;
-    const float rotationSpeed = 40.0f; // Rotation speed
-    float cameraRotationSpeed = rotationSpeed * deltaTime;
-
-    if (keys[GLFW_KEY_W]) {
-        moveCameraForward(context->activeCamera, cameraSpeed);
-    }
-    if (keys[GLFW_KEY_S]) {
-        moveCameraBackward(context->activeCamera, cameraSpeed);
-    }
-    if (keys[GLFW_KEY_A]) {
-        moveCameraLeft(context->activeCamera, cameraSpeed);
-    }
-    if (keys[GLFW_KEY_D]) {
-        moveCameraRight(context->activeCamera, cameraSpeed);
-    }
-
-    // Rotation controls
-    if (keys[GLFW_KEY_UP]) {
-        pitchCameraUp(context->activeCamera, cameraRotationSpeed);
-    }
-    if (keys[GLFW_KEY_DOWN]) {
-        pitchCameraDown(context->activeCamera, cameraRotationSpeed);
-    }
-    if (keys[GLFW_KEY_LEFT]) {
-        yawCameraLeft(context->activeCamera, cameraRotationSpeed);
-    }
-    if (keys[GLFW_KEY_RIGHT]) {
-        yawCameraRight(context->activeCamera, cameraRotationSpeed);
-    }
-
-    applyCameraChanges(context->activeCamera); // Update the camera's view matrix
-
-    //  printf("deltaTime: %f, cameraSpeed: %f, cameraRotationSpeed: %f\n", deltaTime, cameraSpeed, cameraRotationSpeed);
-
 }
 
 void setActiveCamera(VulkanContext *context, Camera *camera) {
@@ -423,56 +380,4 @@ void initLight(Light *light, float *color, float *position, float *direction, fl
     if (direction != NULL) {
         glm_vec3_copy(direction, (*light).direction);
     }
-}
-
-void printGpuMemoryInfo(VkPhysicalDevice physicalDevice) {
-    VkPhysicalDeviceMemoryProperties memProperties;
-    vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
-
-    printf("Memory Heaps:\n");
-    for (uint32_t i = 0; i < memProperties.memoryHeapCount; ++i) {
-        printf("Heap %d: \n", i);
-        printf("    Size: %llu MB\n", memProperties.memoryHeaps[i].size / (1024 * 1024));
-
-        if (memProperties.memoryHeaps[i].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) {
-            printf("    This heap is local to the device (usually means it's on the GPU).\n");
-        } else {
-            printf("    This heap is not local to the device (may be system memory).\n");
-        }
-    }
-
-    printf("\nMemory Types:\n");
-    for (uint32_t i = 0; i < memProperties.memoryTypeCount; ++i) {
-        printf("Memory Type %d: \n", i);
-        printf("    Heap Index: %d\n", memProperties.memoryTypes[i].heapIndex);
-
-        if (memProperties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) {
-            printf("    Device local (fastest for the GPU)\n");
-        }
-        if (memProperties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) {
-            printf("    Host visible (can be mapped for host access)\n");
-        }
-        if (memProperties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) {
-            printf("    Host coherent (host and device memory are coherent)\n");
-        }
-        if (memProperties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_CACHED_BIT) {
-            printf("    Host cached (host access to this memory is cached)\n");
-        }
-    }
-}
-
-void printDeviceLimits(VkPhysicalDevice device) {
-    VkPhysicalDeviceProperties deviceProperties;
-    vkGetPhysicalDeviceProperties(device, &deviceProperties);
-
-    printf("Device Limits:\n");
-    printf("Max Descriptor Sets: %u\n", deviceProperties.limits.maxDescriptorSetUniformBuffers);
-    printf("Max Uniform Buffers per Descriptor Set: %u\n", deviceProperties.limits.maxDescriptorSetUniformBuffers);
-    printf("Max Dynamic Uniform Buffers per Descriptor Set: %u\n",
-           deviceProperties.limits.maxDescriptorSetUniformBuffersDynamic);
-    printf("Max Storage Buffers per Descriptor Set: %u\n", deviceProperties.limits.maxDescriptorSetStorageBuffers);
-    printf("Max Dynamic Storage Buffers per Descriptor Set: %u\n",
-           deviceProperties.limits.maxDescriptorSetStorageBuffersDynamic);
-    printf("Max Sampled Images per Descriptor Set: %u\n", deviceProperties.limits.maxDescriptorSetSampledImages);
-    printf("Max Storage Images per Descriptor Set: %u\n", deviceProperties.limits.maxDescriptorSetStorageImages);
 }

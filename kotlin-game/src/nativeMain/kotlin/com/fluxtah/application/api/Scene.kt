@@ -9,7 +9,8 @@ private val scenes = mutableMapOf<String, SceneInfo>()
 
 data class SceneInfo(
     val scene: Scene,
-    val onSceneCreated: ((Scene) -> Unit)?
+    val onSceneCreated: ((Scene) -> Unit)?,
+    val onSceneUpdate: OnSceneUpdate?
 )
 
 @DslMarker
@@ -32,6 +33,8 @@ class Scene {
     }
 }
 
+typealias OnSceneUpdate = ((scene: Scene, time: Float, deltaTime: Float) -> Unit)
+
 fun Application.scene(): Scene {
     return activeScene?.scene ?: throw Exception("No active scene")
 }
@@ -50,7 +53,8 @@ class SceneBuilder(val sceneId: String) {
     private val cameras = mutableMapOf<String, () -> Camera>()
     private val lights = mutableMapOf<String, () -> Light>()
 
-    private var onSceneCreated: ((Scene) -> Unit)? = null
+    private var onSceneCreated: ((scene: Scene) -> Unit)? = null
+    private var onSceneUpdate: OnSceneUpdate? = null
 
     fun camera(id: String, builder: CameraBuilder.() -> Unit) {
         cameras[id] = {
@@ -85,12 +89,17 @@ class SceneBuilder(val sceneId: String) {
         }
         return SceneInfo(
             scene,
-            onSceneCreated
+            onSceneCreated,
+            onSceneUpdate
         )
     }
 
     fun onSceneCreated(block: (Scene) -> Unit) {
         onSceneCreated = block
+    }
+
+    fun onSceneUpdate(block: OnSceneUpdate) {
+        onSceneUpdate = block
     }
 }
 

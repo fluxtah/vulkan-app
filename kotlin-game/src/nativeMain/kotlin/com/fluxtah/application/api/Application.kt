@@ -9,7 +9,7 @@ interface Application {
     fun update(time: Float, deltaTime: Float) {}
 }
 
-fun Application.isKeyPressed(key: Key) : Boolean {
+fun isKeyPressed(key: Key): Boolean {
     return c_isKeyPressed?.invoke(key.value) == 1
 }
 
@@ -30,5 +30,9 @@ fun ktInitApplication() {
 @OptIn(kotlin.experimental.ExperimentalNativeApi::class)
 @CName("ktUpdateApplication")
 fun ktUpdateApplication(time: Float, deltaTime: Float) {
+    val activeSceneInfo = activeScene
+    if (activeSceneInfo != null) {
+        activeSceneInfo.onSceneUpdate?.invoke(activeSceneInfo.scene, time, deltaTime)
+    }
     applicationInstance.update(time, deltaTime)
 }

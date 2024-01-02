@@ -8,4 +8,8 @@
 
 VkPhysicalDevice pickPhysicalDevice(VkInstance instance, VkSurfaceKHR surface);
 
+void printGpuMemoryInfo(VkPhysicalDevice physicalDevice);
+
+void printDeviceLimits(VkPhysicalDevice device);
+
 #endif //VULKAN_PHYSICALDEVICE_H

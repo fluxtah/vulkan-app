@@ -113,3 +113,55 @@ VkPhysicalDevice pickPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)
 
     return suitableDevice;
 }
+
+void printGpuMemoryInfo(VkPhysicalDevice physicalDevice) {
+    VkPhysicalDeviceMemoryProperties memProperties;
+    vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
+
+    printf("Memory Heaps:\n");
+    for (uint32_t i = 0; i < memProperties.memoryHeapCount; ++i) {
+        printf("Heap %d: \n", i);
+        printf("    Size: %llu MB\n", memProperties.memoryHeaps[i].size / (1024 * 1024));
+
+        if (memProperties.memoryHeaps[i].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) {
+            printf("    This heap is local to the device (usually means it's on the GPU).\n");
+        } else {
+            printf("    This heap is not local to the device (may be system memory).\n");
+        }
+    }
+
+    printf("\nMemory Types:\n");
+    for (uint32_t i = 0; i < memProperties.memoryTypeCount; ++i) {
+        printf("Memory Type %d: \n", i);
+        printf("    Heap Index: %d\n", memProperties.memoryTypes[i].heapIndex);
+
+        if (memProperties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) {
+            printf("    Device local (fastest for the GPU)\n");
+        }
+        if (memProperties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) {
+            printf("    Host visible (can be mapped for host access)\n");
+        }
+        if (memProperties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) {
+            printf("    Host coherent (host and device memory are coherent)\n");
+        }
+        if (memProperties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_CACHED_BIT) {
+            printf("    Host cached (host access to this memory is cached)\n");
+        }
+    }
+}
+
+void printDeviceLimits(VkPhysicalDevice device) {
+    VkPhysicalDeviceProperties deviceProperties;
+    vkGetPhysicalDeviceProperties(device, &deviceProperties);
+
+    printf("Device Limits:\n");
+    printf("Max Descriptor Sets: %u\n", deviceProperties.limits.maxDescriptorSetUniformBuffers);
+    printf("Max Uniform Buffers per Descriptor Set: %u\n", deviceProperties.limits.maxDescriptorSetUniformBuffers);
+    printf("Max Dynamic Uniform Buffers per Descriptor Set: %u\n",
+           deviceProperties.limits.maxDescriptorSetUniformBuffersDynamic);
+    printf("Max Storage Buffers per Descriptor Set: %u\n", deviceProperties.limits.maxDescriptorSetStorageBuffers);
+    printf("Max Dynamic Storage Buffers per Descriptor Set: %u\n",
+           deviceProperties.limits.maxDescriptorSetStorageBuffersDynamic);
+    printf("Max Sampled Images per Descriptor Set: %u\n", deviceProperties.limits.maxDescriptorSetSampledImages);
+    printf("Max Storage Images per Descriptor Set: %u\n", deviceProperties.limits.maxDescriptorSetStorageImages);
+}
