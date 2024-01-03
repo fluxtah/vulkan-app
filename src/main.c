@@ -33,12 +33,14 @@ static float lastFrameTime = 0.0f;
 static bool keys[1024];
 
 void updateLightsUBO(VkDevice device, RenderObject *renderObject, Camera *camera) {
-    LightArray *ktLights = (LightArray* )ktGetLights();
+    LightArray *ktLights = (LightArray *) ktGetLights();
+
+    if (!ktLights) return;
 
     Light lights[ktLights->size];
 
     for (int i = 0; i < ktLights->size; i++) {
-        Light *light = (Light *)(ktLights->lights[i]);
+        Light *light = (Light *) (ktLights->lights[i]);
         lights[i] = *light;
     }
 

@@ -4,6 +4,7 @@ import com.fluxtah.application.api.activeScene
 import com.fluxtah.application.api.interop.model.CreateLightInfo
 import com.fluxtah.application.api.interop.model.LightArray
 import kotlinx.cinterop.*
+import platform.IOKit.NULL
 import kotlin.experimental.ExperimentalNativeApi
 
 @OptIn(ExperimentalForeignApi::class)
@@ -48,7 +49,10 @@ fun ktSetDestroyLightFunc(callback: CPointer<CFunction<(CLight) -> Unit>>) {
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktGetLights")
-fun ktGetLights(): CPointer<LightArray> {
+fun ktGetLights(): CPointer<LightArray>? {
+    if (activeScene == null) {
+        return null
+    }
     val lights = activeScene!!.scene.lights.values.map { it.handle } // Assuming handle is COpaquePointer
     val lightsArray = nativeHeap.allocArray<COpaquePointerVar>(lights.size)
 
