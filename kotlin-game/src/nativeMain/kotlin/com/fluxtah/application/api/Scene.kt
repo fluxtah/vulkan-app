@@ -63,12 +63,18 @@ class SceneBuilder(val sceneId: String) {
     private var onSceneUpdate: OnSceneUpdate? = null
 
     fun camera(id: String, builder: CameraBuilder.() -> Unit) {
+        if(cameras.containsKey(id)) {
+            throw Exception("Entity with id $id already exists")
+        }
         cameras[id] = {
             CameraBuilder().apply(builder).build()
         }
     }
 
     fun light(id: String, builder: LightBuilder.() -> Unit) {
+        if(lights.containsKey(id)) {
+            throw Exception("Entity with id $id already exists")
+        }
         lights[id] = {
             LightBuilder().apply(builder).build()
         }
@@ -76,6 +82,9 @@ class SceneBuilder(val sceneId: String) {
 
     @OptIn(ExperimentalForeignApi::class)
     fun entity(id: String, modelPath: String, builder: EntityBuilder.() -> Unit) {
+        if(entities.containsKey(id)) {
+            throw Exception("Entity with id $id already exists")
+        }
         entities[id] = {
             EntityBuilder(modelPath).apply(builder).build()
         }

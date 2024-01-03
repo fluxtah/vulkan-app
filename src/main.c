@@ -63,10 +63,10 @@ void updateTransformUBO(VkDevice device, RenderObject *renderObject, Camera *cam
     TransformUBO transformUBO = {0};
     glm_mat4_identity(transformUBO.model);
     glm_scale(transformUBO.model, renderObject->scale);
+    glm_translate(transformUBO.model, renderObject->position);
     glm_rotate(transformUBO.model, glm_rad(renderObject->rotation[0]), (vec3) {1.0f, 0.0f, 0.0f}); // X rotation
     glm_rotate(transformUBO.model, glm_rad(renderObject->rotation[1]), (vec3) {0.0f, 1.0f, 0.0f}); // Y rotation
     glm_rotate(transformUBO.model, glm_rad(renderObject->rotation[2]), (vec3) {0.0f, 0.0f, 1.0f}); // Z rotation
-    glm_translate(transformUBO.model, renderObject->position);
 
     memcpy(transformUBO.view, camera->view, sizeof(mat4));
     memcpy(transformUBO.proj, camera->proj, sizeof(mat4));
@@ -172,8 +172,7 @@ int main() {
     VkImage depthImage;
     VkDeviceMemory depthImageMemory;
     VkImageView depthImageView;
-    createDepthResources(&context, context.commandPool, &depthImage, &depthImageMemory,
-                         &depthImageView);
+    createDepthResources(&context, context.commandPool, &depthImage, &depthImageMemory, &depthImageView);
 
     VkRenderPass renderPass = createRenderPass(&context);
     VkShaderModule vertexShaderModule = createShaderModule(context.device, "shaders/basic.vert.spv");
@@ -213,7 +212,6 @@ int main() {
     //
     EntityArray *ktEntities = (EntityArray *) ktGetEntities();
 
-
     int numRenderObjects = ktEntities->size;
     RenderObject *renderObjects[ktEntities->size];
 
@@ -224,11 +222,6 @@ int main() {
 
     free(ktEntities->entities);
     free(ktEntities);
-
-//    glm_vec3_copy((vec3) {0.0f, 0.0f, 0.0f}, renderObjects[0]->position);
-//    glm_vec3_copy((vec3) {0.0f, 0.0f, 0.0f}, renderObjects[1]->position);
-//    glm_vec3_copy((vec3) {1.0f, 1.0f, 1.0f}, renderObjects[1]->scale);
-
 
     for (size_t i = 0; i < context.swapChainImageCount; i++) {
         recordCommandBuffer(

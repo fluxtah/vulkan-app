@@ -27,6 +27,21 @@ class MyApplication : Application {
                 }
             }
 
+            entity("sphere2", "models/sphere.glb") {
+                position(2.0f, 0.0f, 0.0f)
+                onSceneUpdate { _, entity, _, deltaTime ->
+                    entity.rotate(0.0f, 20.5f * deltaTime, 20.5f * deltaTime)
+                }
+            }
+
+            entity("sphere3", "models/sphere.glb") {
+                position(2.0f, 0.0f, 2.0f)
+                onSceneUpdate { _, entity, _, deltaTime ->
+                    entity.rotate(0.0f, 20.5f * deltaTime, 20.5f * deltaTime)
+                }
+            }
+
+
             onSceneCreated { scene ->
                 scene.setActiveCamera("camera")
             }
