@@ -49,4 +49,24 @@ typedef struct CreateCameraInfo {
     float    far;
 } CreateCameraInfo;
 
+typedef struct CreateLightInfo {
+    int type;
+    float colorR;
+    float colorG;
+    float colorB;
+    float colorA;
+    float positionX;
+    float positionY;
+    float positionZ;
+    float directionX;
+    float directionY;
+    float directionZ;
+    float intensity;
+} CreateLightInfo;
+
+typedef struct LightArray {
+    void** lights; // Pointer to the first light
+    int size;     // Size of the array
+} LightArray;
+
 #endif // MODEL_H

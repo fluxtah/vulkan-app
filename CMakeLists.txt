@@ -7,16 +7,16 @@ find_package(glfw3 REQUIRED)
 add_executable(Game
         src/main.c
 
-        include/app_window.h
-        src/app_window.c
+        include/window.h
+        src/window.c
 
-        include/app_modeldata.h
-        src/app_modeldata.c
+        include/modeldata.h
+        src/modeldata.c
 
-        include/app_renderobject.h
-        src/app_renderobject.c
+        include/renderobject.h
+        src/renderobject.c
 
-        include/app_ubo.h
+        include/ubo.h
 
         include/util_strings.h
         src/util_strings.c
@@ -71,13 +71,15 @@ add_executable(Game
 
         include/vulkan/context.h
 
-        include/app_camera.h
-        src/app_camera.c
+        include/camera.h
+        src/camera.c
 
         include/vulkan/render.h
         src/vulkan/render.c
 
         libs/stb_image.h
+        src/light.c
+        include/light.h
 )
 
 include_directories(kotlin-game/build/bin/native/releaseShared)

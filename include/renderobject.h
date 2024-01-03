@@ -1,8 +1,8 @@
 #ifndef APP_RENDEROBJECT_H
 #define APP_RENDEROBJECT_H
 
-#include "include/app_modeldata.h"
-#include "include/app_ubo.h"
+#include "include/modeldata.h"
+#include "include/ubo.h"
 #include "include/vulkan/buffer.h"
 #include "include/vulkan/context.h"
 #include "include/vulkan/descriptor.h"

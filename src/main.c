@@ -16,9 +16,10 @@
 
 #include "kotlin-game/build/bin/native/releaseShared/libkotlin_game_api.h"
 #include "kotlin-game/cinterop/model.h"
-#include "include/app_ubo.h"
-#include "include/app_renderobject.h"
-#include "include/app_camera.h"
+#include "include/ubo.h"
+#include "include/renderobject.h"
+#include "include/camera.h"
+#include "include/light.h"
 
 #include <stdlib.h>
 #include <vulkan/vulkan.h>
@@ -31,12 +32,18 @@
 static float lastFrameTime = 0.0f;
 static bool keys[1024];
 
-void initLight(Light *light, float *color, float *position, float *direction, float intensity);
+void updateLightsUBO(VkDevice device, RenderObject *renderObject, Camera *camera) {
+    LightArray *ktLights = (LightArray* )ktGetLights();
 
-void updateLightsUBO(VkDevice device, RenderObject *renderObject, Camera *camera, Light *lights, int numLights) {
-    // Set up lighting information
+    Light lights[ktLights->size];
+
+    for (int i = 0; i < ktLights->size; i++) {
+        Light *light = (Light *)(ktLights->lights[i]);
+        lights[i] = *light;
+    }
+
     LightingUBO lightingUBO = {0};
-    lightingUBO.numLightsInUse = numLights;
+    lightingUBO.numLightsInUse = ktLights->size;
     memcpy(lightingUBO.lights, lights, sizeof(Light) * lightingUBO.numLightsInUse);
     glm_vec3_copy(camera->position, lightingUBO.cameraPos);
     glm_vec3_copy((vec3) {0.04f, 0.04f, 0.04f}, lightingUBO.ambientLightColor);
@@ -45,6 +52,9 @@ void updateLightsUBO(VkDevice device, RenderObject *renderObject, Camera *camera
     vkMapMemory(device, renderObject->lightingUBO->memory, 0, sizeof(LightingUBO), 0, &lightsData);
     memcpy(lightsData, &lightingUBO, sizeof(LightingUBO));
     vkUnmapMemory(device, renderObject->lightingUBO->memory);
+
+    free(ktLights->lights);
+    free(ktLights);
 }
 
 void updateTransformUBO(VkDevice device, RenderObject *renderObject, Camera *camera) {
@@ -110,10 +120,15 @@ void bindKotlinApi() {
     ktSetYawCameraRightFunc(yawCameraRight);
     ktSetApplyCameraChangesFunc(applyCameraChanges);
     ktSetActiveCameraFunc(setActiveCamera);
+
+    // Light
+    ktSetCreateLightFunc(createLight);
+    ktSetDestroyLightFunc(destroyLight);
 }
 
 int main() {
     bindKotlinApi();
+
     // Create the Kotlin Application
     ktCreateApplication();
 
@@ -122,6 +137,8 @@ int main() {
         printf("Something went wrong with setting up Vulkan");
         return -1;
     }
+
+    glfwSetKeyCallback(context.window, key_callback);
 
     printGpuMemoryInfo(context.physicalDevice);
     printDeviceLimits(context.physicalDevice);
@@ -180,46 +197,6 @@ int main() {
     // Init KT
     //
     ktInitApplication();
-
-    //
-    // Camera
-    //
-//    CreateCameraInfo createCameraInfo = {
-//            0.0f,
-//            0.0f,
-//            2.0f,
-//            45.0f,
-//            (float) context.swapChainExtent.width / (float) context.swapChainExtent.height,
-//            0.1f,
-//            100.0f
-//    };
-//    setActiveCamera(&context, createCamera(&createCameraInfo));
-
-    glfwSetKeyCallback(context.window, key_callback);
-
-    //
-    // Lights
-    //
-    Light light = {0};
-    initLight(
-            &light,
-            (vec4) {1.0f, 1.0f, 1.0f, 1.0f},
-            (vec3) {0.0f, 1.0f, 1.7f},
-            (vec3) {0.0f, 0.0f, -1.0f},
-            1.0f
-    );
-
-    Light light2 = {0};
-    initLight(
-            &light2,
-            (vec4) {0.0f, 1.0f, 0.0f, 1.0f},
-            (vec3) {-2.0f, 1.0f, 1.7f},
-            (vec3) {0.0f, 0.0f, 1.0f},
-            1.0f
-    );
-
-    int numLights = 1;
-    Light lights[] = {light, light2};
 
     //
     // Scene Objects
@@ -308,7 +285,7 @@ int main() {
 
             // Update UBO
             updateTransformUBO(context.device, obj, context.activeCamera);
-            updateLightsUBO(context.device, obj, context.activeCamera, lights, numLights);
+            updateLightsUBO(context.device, obj, context.activeCamera);
         }
 
         uint32_t imageIndex;
@@ -361,7 +338,9 @@ int main() {
     }
     free(context.swapChainImageViews);
 
-    destroyCamera(context.activeCamera);
+    ktDestroyApplication();
+
+    context.activeCamera = NULL;
 
     vkDestroySwapchainKHR(context.device, context.swapChain, NULL);
 
@@ -370,14 +349,4 @@ int main() {
     glfwTerminate();
 
     return 0;
-}
-
-void initLight(Light *light, float *color, float *position, float *direction, float intensity) {
-    light->type = 1;
-    light->intensity = intensity;
-    glm_vec4_copy(color, (*light).color);
-    glm_vec3_copy(position, (*light).position);
-    if (direction != NULL) {
-        glm_vec3_copy(direction, (*light).direction);
-    }
 }

@@ -1,7 +1,7 @@
 #ifndef VULKAN_DESCRIPTOR_H
 #define VULKAN_DESCRIPTOR_H
 
-#include "include/app_ubo.h"
+#include "include/ubo.h"
 #include <vulkan/vulkan.h>
 #include <stdio.h>
 #include <stdlib.h>

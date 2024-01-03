@@ -2,7 +2,7 @@
 #define VULKAN_SETUP_H
 
 #include "context.h"
-#include "include/app_window.h"
+#include "include/window.h"
 #include "instance.h"
 #include "physicaldevice.h"
 #include "commandpool.h"

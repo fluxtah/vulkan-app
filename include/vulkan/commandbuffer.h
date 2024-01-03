@@ -1,7 +1,7 @@
 #ifndef VULKAN_COMMANDBUFFER_H
 #define VULKAN_COMMANDBUFFER_H
 
-#include "include/app_renderobject.h"
+#include "include/renderobject.h"
 #include <vulkan/vulkan.h>
 #include <stdio.h>
 #include <stdlib.h>

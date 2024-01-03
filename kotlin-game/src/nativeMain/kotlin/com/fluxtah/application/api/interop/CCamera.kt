@@ -29,17 +29,17 @@ fun ktSetCreateCameraFunc(callback: CPointer<CFunction<(CCreateCameraInfo) -> CC
 }
 
 @OptIn(ExperimentalForeignApi::class)
-typealias DestroyCameraFunc = (CVulkanContext, CCamera) -> Unit
+typealias DestroyCameraFunc = (CCamera) -> Unit
 
 @OptIn(ExperimentalForeignApi::class)
 var c_destroyCamera: DestroyCameraFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktSetDestroyCameraFunc")
-fun ktSetDestroyCameraFunc(callback: CPointer<CFunction<(CVulkanContext, CCamera) -> Unit>>) {
-    c_destroyCamera = { device, camera ->
+fun ktSetDestroyCameraFunc(callback: CPointer<CFunction<(CCamera) -> Unit>>) {
+    c_destroyCamera = { camera ->
         memScoped {
-            callback.reinterpret<CFunction<(CVulkanContext, CCamera) -> Unit>>()(device, camera)
+            callback.reinterpret<CFunction<(CCamera) -> Unit>>()(camera)
         }
     }
 }

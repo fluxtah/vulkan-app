@@ -67,8 +67,8 @@ CMAKE_BINARY_DIR = /Users/ian.warwick/Documents/sdev/game
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "No interactive CMake dialog available..."
-	/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
+	/opt/homebrew/Cellar/cmake/3.28.0/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -129,101 +129,53 @@ Game/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/build
 .PHONY : Game/fast
 
-src/app_camera.o: src/app_camera.c.o
-.PHONY : src/app_camera.o
+src/camera.o: src/camera.c.o
+.PHONY : src/camera.o
 
 # target to build an object file
-src/app_camera.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/app_camera.c.o
-.PHONY : src/app_camera.c.o
+src/camera.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/camera.c.o
+.PHONY : src/camera.c.o
 
-src/app_camera.i: src/app_camera.c.i
-.PHONY : src/app_camera.i
+src/camera.i: src/camera.c.i
+.PHONY : src/camera.i
 
 # target to preprocess a source file
-src/app_camera.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/app_camera.c.i
-.PHONY : src/app_camera.c.i
+src/camera.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/camera.c.i
+.PHONY : src/camera.c.i
 
-src/app_camera.s: src/app_camera.c.s
-.PHONY : src/app_camera.s
+src/camera.s: src/camera.c.s
+.PHONY : src/camera.s
 
 # target to generate assembly for a file
-src/app_camera.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/app_camera.c.s
-.PHONY : src/app_camera.c.s
+src/camera.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/camera.c.s
+.PHONY : src/camera.c.s
 
-src/app_modeldata.o: src/app_modeldata.c.o
-.PHONY : src/app_modeldata.o
+src/light.o: src/light.c.o
+.PHONY : src/light.o
 
 # target to build an object file
-src/app_modeldata.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/app_modeldata.c.o
-.PHONY : src/app_modeldata.c.o
+src/light.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/light.c.o
+.PHONY : src/light.c.o
 
-src/app_modeldata.i: src/app_modeldata.c.i
-.PHONY : src/app_modeldata.i
-
-# target to preprocess a source file
-src/app_modeldata.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/app_modeldata.c.i
-.PHONY : src/app_modeldata.c.i
-
-src/app_modeldata.s: src/app_modeldata.c.s
-.PHONY : src/app_modeldata.s
-
-# target to generate assembly for a file
-src/app_modeldata.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/app_modeldata.c.s
-.PHONY : src/app_modeldata.c.s
-
-src/app_renderobject.o: src/app_renderobject.c.o
-.PHONY : src/app_renderobject.o
-
-# target to build an object file
-src/app_renderobject.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/app_renderobject.c.o
-.PHONY : src/app_renderobject.c.o
-
-src/app_renderobject.i: src/app_renderobject.c.i
-.PHONY : src/app_renderobject.i
+src/light.i: src/light.c.i
+.PHONY : src/light.i
 
 # target to preprocess a source file
-src/app_renderobject.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/app_renderobject.c.i
-.PHONY : src/app_renderobject.c.i
+src/light.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/light.c.i
+.PHONY : src/light.c.i
 
-src/app_renderobject.s: src/app_renderobject.c.s
-.PHONY : src/app_renderobject.s
-
-# target to generate assembly for a file
-src/app_renderobject.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/app_renderobject.c.s
-.PHONY : src/app_renderobject.c.s
-
-src/app_window.o: src/app_window.c.o
-.PHONY : src/app_window.o
-
-# target to build an object file
-src/app_window.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/app_window.c.o
-.PHONY : src/app_window.c.o
-
-src/app_window.i: src/app_window.c.i
-.PHONY : src/app_window.i
-
-# target to preprocess a source file
-src/app_window.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/app_window.c.i
-.PHONY : src/app_window.c.i
-
-src/app_window.s: src/app_window.c.s
-.PHONY : src/app_window.s
+src/light.s: src/light.c.s
+.PHONY : src/light.s
 
 # target to generate assembly for a file
-src/app_window.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/app_window.c.s
-.PHONY : src/app_window.c.s
+src/light.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/light.c.s
+.PHONY : src/light.c.s
 
 src/main.o: src/main.c.o
 .PHONY : src/main.o
@@ -248,6 +200,54 @@ src/main.s: src/main.c.s
 src/main.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/main.c.s
 .PHONY : src/main.c.s
+
+src/modeldata.o: src/modeldata.c.o
+.PHONY : src/modeldata.o
+
+# target to build an object file
+src/modeldata.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/modeldata.c.o
+.PHONY : src/modeldata.c.o
+
+src/modeldata.i: src/modeldata.c.i
+.PHONY : src/modeldata.i
+
+# target to preprocess a source file
+src/modeldata.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/modeldata.c.i
+.PHONY : src/modeldata.c.i
+
+src/modeldata.s: src/modeldata.c.s
+.PHONY : src/modeldata.s
+
+# target to generate assembly for a file
+src/modeldata.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/modeldata.c.s
+.PHONY : src/modeldata.c.s
+
+src/renderobject.o: src/renderobject.c.o
+.PHONY : src/renderobject.o
+
+# target to build an object file
+src/renderobject.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/renderobject.c.o
+.PHONY : src/renderobject.c.o
+
+src/renderobject.i: src/renderobject.c.i
+.PHONY : src/renderobject.i
+
+# target to preprocess a source file
+src/renderobject.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/renderobject.c.i
+.PHONY : src/renderobject.c.i
+
+src/renderobject.s: src/renderobject.c.s
+.PHONY : src/renderobject.s
+
+# target to generate assembly for a file
+src/renderobject.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/renderobject.c.s
+.PHONY : src/renderobject.c.s
 
 src/util_strings.o: src/util_strings.c.o
 .PHONY : src/util_strings.o
@@ -681,6 +681,30 @@ src/vulkan/swapchain.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/vulkan/swapchain.c.s
 .PHONY : src/vulkan/swapchain.c.s
 
+src/window.o: src/window.c.o
+.PHONY : src/window.o
+
+# target to build an object file
+src/window.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/window.c.o
+.PHONY : src/window.c.o
+
+src/window.i: src/window.c.i
+.PHONY : src/window.i
+
+# target to preprocess a source file
+src/window.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/window.c.i
+.PHONY : src/window.c.i
+
+src/window.s: src/window.c.s
+.PHONY : src/window.s
+
+# target to generate assembly for a file
+src/window.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/window.c.s
+.PHONY : src/window.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -690,21 +714,21 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... Game"
-	@echo "... src/app_camera.o"
-	@echo "... src/app_camera.i"
-	@echo "... src/app_camera.s"
-	@echo "... src/app_modeldata.o"
-	@echo "... src/app_modeldata.i"
-	@echo "... src/app_modeldata.s"
-	@echo "... src/app_renderobject.o"
-	@echo "... src/app_renderobject.i"
-	@echo "... src/app_renderobject.s"
-	@echo "... src/app_window.o"
-	@echo "... src/app_window.i"
-	@echo "... src/app_window.s"
+	@echo "... src/camera.o"
+	@echo "... src/camera.i"
+	@echo "... src/camera.s"
+	@echo "... src/light.o"
+	@echo "... src/light.i"
+	@echo "... src/light.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/modeldata.o"
+	@echo "... src/modeldata.i"
+	@echo "... src/modeldata.s"
+	@echo "... src/renderobject.o"
+	@echo "... src/renderobject.i"
+	@echo "... src/renderobject.s"
 	@echo "... src/util_strings.o"
 	@echo "... src/util_strings.i"
 	@echo "... src/util_strings.s"
@@ -759,6 +783,9 @@ help:
 	@echo "... src/vulkan/swapchain.o"
 	@echo "... src/vulkan/swapchain.i"
 	@echo "... src/vulkan/swapchain.s"
+	@echo "... src/window.o"
+	@echo "... src/window.i"
+	@echo "... src/window.s"
 .PHONY : help
 
 

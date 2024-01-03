@@ -1,4 +1,4 @@
-#include "include/app_modeldata.h"
+#include "include/modeldata.h"
 
 void printData(cgltf_data *data, const char *filename) {
     printf("Printing glTF Model Data for %s\n", filename);

@@ -11,11 +11,16 @@ class MyApplication : Application {
                 position(0.0f, 0.0f, 2.0f)
             }
 
-//            light("light") {
-//                color(1.0f, 1.0f, 1.0f, 1.0f)
-//                position(0.0f, 1.0f, 1.7f)
-//            }
-//
+            light("light") {
+                color(1.0f, 1.0f, 1.0f, 1.0f)
+                position(0.0f, 1.0f, 1.7f)
+            }
+
+            light("light2") {
+                color(1.0f, 0.0f, 0.0f, 1.0f)
+                position(1.0f, 1.0f, 1.7f)
+            }
+
 //            entity("plane", "models/plane.glb") {
 //                position(0.0f, 0.0f, 0.0f)
 //            }

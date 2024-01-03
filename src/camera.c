@@ -1,4 +1,4 @@
-#include "include/app_camera.h"
+#include "include/camera.h"
 
 
 Camera *createCamera(CreateCameraInfo *info) {

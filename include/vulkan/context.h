@@ -10,7 +10,7 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "include/app_camera.h"
+#include "include/camera.h"
 
 typedef struct VulkanContext {
     GLFWwindow *window;
