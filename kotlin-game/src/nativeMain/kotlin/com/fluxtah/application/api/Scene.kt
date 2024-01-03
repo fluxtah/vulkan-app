@@ -127,6 +127,7 @@ fun Application.setActiveScene(id: String) {
         // Create new scene
         val sceneInfo = builder.invoke()
 
+        // Only once if the scene is new
         sceneInfo.onSceneCreated?.invoke(sceneInfo.scene)
 
         // Set as active scene

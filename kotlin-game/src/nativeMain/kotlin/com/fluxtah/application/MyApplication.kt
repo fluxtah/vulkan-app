@@ -5,10 +5,12 @@ import com.fluxtah.application.api.input.Key
 
 class MyApplication : Application {
     override fun initialize() {
-
         scene("main") {
-            camera("camera") {
+            camera("camera1") {
                 position(0.0f, 0.0f, 2.0f)
+            }
+            camera("camera2") {
+                position(0.0f, 0.0f, 4.0f)
             }
 
             light("light") {
@@ -41,13 +43,12 @@ class MyApplication : Application {
                 }
             }
 
-
             onSceneCreated { scene ->
-                scene.setActiveCamera("camera")
+                scene.setActiveCamera("camera1")
             }
 
             onSceneUpdate { scene, _, deltaTime ->
-                handleMoveCamera(scene, deltaTime)
+                handleCameraInput(scene, deltaTime)
             }
         }
 
@@ -55,12 +56,19 @@ class MyApplication : Application {
     }
 }
 
-private fun handleMoveCamera(scene: Scene, deltaTime: Float) {
+private fun handleCameraInput(scene: Scene, deltaTime: Float) {
     val camera = scene.activeCamera() ?: return
     val baseSpeed = 3.0f
     val cameraSpeed = baseSpeed * deltaTime
     val rotationSpeed = 40.0f
     val cameraRotationSpeed = rotationSpeed * deltaTime
+
+    if(isKeyPressed(Key.Num1)) {
+        scene.setActiveCamera("camera1")
+    }
+    if(isKeyPressed(Key.Num2)) {
+        scene.setActiveCamera("camera2")
+    }
 
     if (isKeyPressed(Key.W)) {
         camera.moveForward(cameraSpeed)
