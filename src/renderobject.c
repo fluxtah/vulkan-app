@@ -1,11 +1,6 @@
 #include "include/renderobject.h"
 
-RenderObject *createRenderObjectFromFile(
-        VulkanContext *context,
-        VkDescriptorSetLayout vertexDescriptorSetLayout,
-        VkDescriptorSetLayout fragmentDescriptorSetLayout,
-        VkDescriptorPool descriptorPool,
-        const char *filename) {
+RenderObject *createRenderObjectFromFile(VulkanContext *context, const char *filename) {
     RenderObject *obj = malloc(sizeof(RenderObject));
     obj->scale[0] = 1.0f;
     obj->scale[1] = 1.0f;
@@ -51,8 +46,8 @@ RenderObject *createRenderObjectFromFile(
     setupTextureFromImageData(context, obj->modelData->metallicRoughnessMapImageData, obj->metallicRoughnessMap);
 
     // Create a descriptor sets
-    allocateDescriptorSet(context->device, descriptorPool, vertexDescriptorSetLayout, &obj->vertexDescriptorSet);
-    allocateDescriptorSet(context->device, descriptorPool, fragmentDescriptorSetLayout, &obj->fragmentDescriptorSet);
+    allocateDescriptorSet(context->device, context->descriptorPool, context->vertexShaderDescriptorSetLayout, &obj->vertexDescriptorSet);
+    allocateDescriptorSet(context->device, context->descriptorPool, context->fragmentShaderDescriptorSetLayout, &obj->fragmentDescriptorSet);
 
     updateBasicShaderDescriptorSet(
             context->device,

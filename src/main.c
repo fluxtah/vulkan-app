@@ -156,14 +156,13 @@ int main() {
     //
     // Create descriptor set layouts
     //
-    VkDescriptorSetLayout vertexShaderDescriptorSetLayout = createVertexShaderDescriptorSetLayout(context.device);
-    VkDescriptorSetLayout fragmentShaderDescriptorSetLayout = createFragmentShaderDescriptorSetLayout(context.device);
+    context.vertexShaderDescriptorSetLayout = createVertexShaderDescriptorSetLayout(context.device);
+    context.fragmentShaderDescriptorSetLayout = createFragmentShaderDescriptorSetLayout(context.device);
 
     //
     // Create a descriptor pool
     //
-    VkDescriptorPool descriptorPool;
-    createBasicShaderDescriptorPool(context.device, &descriptorPool);
+    context.descriptorPool = createBasicShaderDescriptorPool(context.device);
 
     VkImage depthImage;
     VkDeviceMemory depthImageMemory;
@@ -176,10 +175,14 @@ int main() {
     VkShaderModule fragmentShaderModule = createShaderModule(context.device, "shaders/basic.frag.spv");
 
     VkPipelineLayout pipelineLayout = createPipelineLayout(context.device,
-                                                           vertexShaderDescriptorSetLayout,
-                                                           fragmentShaderDescriptorSetLayout);
+                                                           context.vertexShaderDescriptorSetLayout,
+                                                           context.fragmentShaderDescriptorSetLayout);
     Viewport viewport = (Viewport) {
-            0, 0, context.swapChainExtent.width, context.swapChainExtent.height, 0.0f, 1.0f
+            0, 0,
+            (float) context.swapChainExtent.width,
+            (float) context.swapChainExtent.height,
+            0.0f,
+            1.0f
     };
     VkPipeline pipeline = createPipeline(context.device, pipelineLayout, renderPass, viewport, vertexShaderModule,
                                          fragmentShaderModule);
@@ -210,18 +213,8 @@ int main() {
         exit(1);
     }
 
-    renderObjects[0] = createRenderObjectFromFile(
-            &context,
-            vertexShaderDescriptorSetLayout,
-            fragmentShaderDescriptorSetLayout,
-            descriptorPool,
-            "models/plane.glb");
-    renderObjects[1] = createRenderObjectFromFile(
-            &context,
-            vertexShaderDescriptorSetLayout,
-            fragmentShaderDescriptorSetLayout,
-            descriptorPool,
-            "models/sphere.glb");
+    renderObjects[0] = createRenderObjectFromFile(&context, "models/plane.glb");
+    renderObjects[1] = createRenderObjectFromFile(&context, "models/sphere.glb");
 
     glm_vec3_copy((vec3) {0.0f, 0.0f, 0.0f}, renderObjects[0]->position);
     glm_vec3_copy((vec3) {0.0f, 0.0f, 0.0f}, renderObjects[1]->position);
@@ -311,9 +304,9 @@ int main() {
     vkDestroySemaphore(context.device, imageAvailableSemaphore, NULL);
     vkDestroyFence(context.device, inFlightFence, NULL);
 
-    vkDestroyDescriptorPool(context.device, descriptorPool, NULL);
-    vkDestroyDescriptorSetLayout(context.device, vertexShaderDescriptorSetLayout, NULL);
-    vkDestroyDescriptorSetLayout(context.device, fragmentShaderDescriptorSetLayout, NULL);
+    vkDestroyDescriptorPool(context.device, context.descriptorPool, NULL);
+    vkDestroyDescriptorSetLayout(context.device, context.vertexShaderDescriptorSetLayout, NULL);
+    vkDestroyDescriptorSetLayout(context.device, context.fragmentShaderDescriptorSetLayout, NULL);
 
     for (size_t i = 0; i < numRenderObjects; i++) {
         destroyRenderObject(&context, renderObjects[i]);

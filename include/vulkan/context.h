@@ -37,6 +37,10 @@ typedef struct VulkanContext {
     uint32_t swapChainImageCount;
     VkFramebuffer *swapChainFramebuffers;
 
+    VkDescriptorSetLayout vertexShaderDescriptorSetLayout;
+    VkDescriptorSetLayout fragmentShaderDescriptorSetLayout;
+    VkDescriptorPool descriptorPool;
+
     Camera *activeCamera;
 } VulkanContext;
 

@@ -1,6 +1,6 @@
 #include "include/vulkan/descriptor.h"
 
-void createBasicShaderDescriptorPool(VkDevice device, VkDescriptorPool *descriptorPool) {
+VkDescriptorPool createBasicShaderDescriptorPool(VkDevice device) {
     VkDescriptorPoolSize poolSizes[] = {
             {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,         9},
             {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 12} // diffuse and normal map
@@ -12,10 +12,12 @@ void createBasicShaderDescriptorPool(VkDevice device, VkDescriptorPool *descript
     poolInfo.pPoolSizes = poolSizes;
     poolInfo.maxSets = 6; // Total number of descriptor sets
 
-    if (vkCreateDescriptorPool(device, &poolInfo, NULL, descriptorPool) != VK_SUCCESS) {
+    VkDescriptorPool descriptorPool;
+    if (vkCreateDescriptorPool(device, &poolInfo, NULL, &descriptorPool) != VK_SUCCESS) {
         fprintf(stderr, "Failed to create descriptor pool\n");
         exit(-1);
     }
+    return descriptorPool;
 }
 
 VkDescriptorSetLayout createVertexShaderDescriptorSetLayout(VkDevice device) {

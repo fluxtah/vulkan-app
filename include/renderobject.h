@@ -37,12 +37,7 @@ typedef struct {
 
 } RenderObject;
 
-RenderObject *createRenderObjectFromFile(
-        VulkanContext *context,
-        VkDescriptorSetLayout vertexDescriptorSetLayout,
-        VkDescriptorSetLayout fragmentDescriptorSetLayout,
-        VkDescriptorPool descriptorPool,
-        const char *filename);
+RenderObject *createRenderObjectFromFile(VulkanContext *context, const char *filename);
 void setupTextureFromImageData(VulkanContext *context, ModelImageData *imageData, ImageMemory *imageMemory);
 
 void destroyRenderObject(VulkanContext *context, RenderObject *obj);

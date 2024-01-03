@@ -6,9 +6,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void createBasicShaderDescriptorPool(VkDevice device, VkDescriptorPool *descriptorPool);
+VkDescriptorPool createBasicShaderDescriptorPool(VkDevice device);
 
 VkDescriptorSetLayout createVertexShaderDescriptorSetLayout(VkDevice device);
+
 VkDescriptorSetLayout createFragmentShaderDescriptorSetLayout(VkDevice device);
 
 void allocateDescriptorSet(
