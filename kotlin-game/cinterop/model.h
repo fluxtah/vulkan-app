@@ -64,9 +64,26 @@ typedef struct CreateLightInfo {
     float intensity;
 } CreateLightInfo;
 
+typedef struct CreateEntityInfo {
+    float positionX;
+    float positionY;
+    float positionZ;
+    float rotationX;
+    float rotationY;
+    float rotationZ;
+    float scaleX;
+    float scaleY;
+    float scaleZ;
+} CreateEntityInfo;
+
 typedef struct LightArray {
     void** lights; // Pointer to the first light
     int size;     // Size of the array
 } LightArray;
+
+typedef struct EntityArray {
+    void** entities; // Pointer to the first entity
+    int size;     // Size of the array
+} EntityArray;
 
 #endif // MODEL_H

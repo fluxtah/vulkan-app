@@ -3,6 +3,7 @@ package com.fluxtah.application.api
 import com.fluxtah.application.MyApplication
 import com.fluxtah.application.api.input.Key
 import com.fluxtah.application.api.interop.c_destroyCamera
+import com.fluxtah.application.api.interop.c_destroyEntity
 import com.fluxtah.application.api.interop.c_destroyLight
 import com.fluxtah.application.api.interop.c_isKeyPressed
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -37,6 +38,10 @@ fun ktUpdateApplication(time: Float, deltaTime: Float) {
     val activeSceneInfo = activeScene
     if (activeSceneInfo != null) {
         activeSceneInfo.onSceneUpdate?.invoke(activeSceneInfo.scene, time, deltaTime)
+
+        activeSceneInfo.scene.entities.values.forEach {
+            it.onSceneEntityUpdate?.invoke(activeSceneInfo.scene, it.entity, time, deltaTime)
+        }
     }
     applicationInstance.update(time, deltaTime)
 }
@@ -53,6 +58,10 @@ fun ktDestroyApplication() {
         c_destroyLight!!.invoke(it.value.handle)
     }
     activeSceneInfo?.scene?.lights?.clear()
+    activeSceneInfo?.scene?.entities?.forEach {
+        c_destroyEntity!!.invoke(ApplicationContext.vulcanContext!!, it.value.entity.handle)
+    }
+    activeSceneInfo?.scene?.entities?.clear()
 
     // TODO destroy entities
 }

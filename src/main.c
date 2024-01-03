@@ -126,6 +126,11 @@ void bindKotlinApi() {
     // Light
     ktSetCreateLightFunc(createLight);
     ktSetDestroyLightFunc(destroyLight);
+
+    // Entity
+    ktSetCreateEntityFunc(createRenderObjectFromFile);
+    ktSetDestroyEntityFunc(destroyRenderObject);
+    ktSetRotateEntityFunc(rotateRenderObject);
 }
 
 int main() {
@@ -206,19 +211,23 @@ int main() {
     //
     // Scene Objects
     //
-    int numRenderObjects = 2;
-    RenderObject **renderObjects = malloc(sizeof(RenderObject *) * numRenderObjects);
-    if (!renderObjects) {
-        printf("unable to allocate memory for render objects pointers\n");
-        exit(1);
+    EntityArray *ktEntities = (EntityArray *) ktGetEntities();
+
+
+    int numRenderObjects = ktEntities->size;
+    RenderObject *renderObjects[ktEntities->size];
+
+    for (int i = 0; i < ktEntities->size; i++) {
+        RenderObject *renderObject = (RenderObject *) (ktEntities->entities[i]);
+        renderObjects[i] = renderObject;
     }
 
-    renderObjects[0] = createRenderObjectFromFile(&context, "models/plane.glb");
-    renderObjects[1] = createRenderObjectFromFile(&context, "models/sphere.glb");
+    free(ktEntities->entities);
+    free(ktEntities);
 
-    glm_vec3_copy((vec3) {0.0f, 0.0f, 0.0f}, renderObjects[0]->position);
-    glm_vec3_copy((vec3) {0.0f, 0.0f, 0.0f}, renderObjects[1]->position);
-    glm_vec3_copy((vec3) {1.0f, 1.0f, 1.0f}, renderObjects[1]->scale);
+//    glm_vec3_copy((vec3) {0.0f, 0.0f, 0.0f}, renderObjects[0]->position);
+//    glm_vec3_copy((vec3) {0.0f, 0.0f, 0.0f}, renderObjects[1]->position);
+//    glm_vec3_copy((vec3) {1.0f, 1.0f, 1.0f}, renderObjects[1]->scale);
 
 
     for (size_t i = 0; i < context.swapChainImageCount; i++) {
@@ -270,11 +279,6 @@ int main() {
 
         ktUpdateApplication(currentFrameTime, deltaTime);
 
-        // Move
-        renderObjects[1]->rotation[1] += 20.5f * deltaTime;
-        renderObjects[1]->rotation[2] += 20.5f * deltaTime;
-        // updateCameraMovement(&context, deltaTime);
-
         for (size_t i = 0; i < numRenderObjects; i++) {
             RenderObject *obj = renderObjects[i];
 
@@ -307,11 +311,6 @@ int main() {
     vkDestroyDescriptorPool(context.device, context.descriptorPool, NULL);
     vkDestroyDescriptorSetLayout(context.device, context.vertexShaderDescriptorSetLayout, NULL);
     vkDestroyDescriptorSetLayout(context.device, context.fragmentShaderDescriptorSetLayout, NULL);
-
-    for (size_t i = 0; i < numRenderObjects; i++) {
-        destroyRenderObject(&context, renderObjects[i]);
-    }
-    free(renderObjects);
 
     for (size_t i = 0; i < context.swapChainImageCount; i++) {
         vkDestroyFramebuffer(context.device, context.swapChainFramebuffers[i], NULL);

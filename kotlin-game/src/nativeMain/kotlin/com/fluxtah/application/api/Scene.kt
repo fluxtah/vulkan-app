@@ -13,6 +13,11 @@ data class SceneInfo(
     val onSceneUpdate: OnSceneUpdate?
 )
 
+data class EntityInfo(
+    val entity: Entity,
+    val onSceneEntityUpdate: OnSceneEntityUpdate?
+)
+
 @DslMarker
 annotation class SceneDsl
 
@@ -21,7 +26,7 @@ class Scene {
     private var activeCamera: Camera? = null
     val cameras = mutableMapOf<String, Camera>()
     val lights = mutableMapOf<String, Light>()
-    val entities = mutableMapOf<String, Entity>()
+    val entities = mutableMapOf<String, EntityInfo>()
 
     fun setActiveCamera(id: String) {
         activeCamera = cameras[id] ?: throw Exception("Camera with id $id does not exist")
@@ -34,6 +39,7 @@ class Scene {
 }
 
 typealias OnSceneUpdate = ((scene: Scene, time: Float, deltaTime: Float) -> Unit)
+typealias OnSceneEntityUpdate = ((scene: Scene, entity: Entity, time: Float, deltaTime: Float) -> Unit)
 
 fun Application.scene(): Scene {
     return activeScene?.scene ?: throw Exception("No active scene")
@@ -49,7 +55,7 @@ fun Application.scene(id: String, block: SceneBuilder.() -> Unit) {
 
 @SceneDsl
 class SceneBuilder(val sceneId: String) {
-    private val entities = mutableMapOf<String, () -> Entity>()
+    private val entities = mutableMapOf<String, () -> EntityInfo>()
     private val cameras = mutableMapOf<String, () -> Camera>()
     private val lights = mutableMapOf<String, () -> Light>()
 

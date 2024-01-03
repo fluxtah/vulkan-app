@@ -37,8 +37,10 @@ typedef struct {
 
 } RenderObject;
 
-RenderObject *createRenderObjectFromFile(VulkanContext *context, const char *filename);
+RenderObject *createRenderObjectFromFile(VulkanContext *context, const char *filename, CreateEntityInfo *info);
 void setupTextureFromImageData(VulkanContext *context, ModelImageData *imageData, ImageMemory *imageMemory);
+
+void rotateRenderObject(RenderObject *obj, float x, float y, float z);
 
 void destroyRenderObject(VulkanContext *context, RenderObject *obj);
 #endif //APP_RENDEROBJECT_H

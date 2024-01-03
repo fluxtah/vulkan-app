@@ -16,20 +16,16 @@ class MyApplication : Application {
                 position(0.0f, 1.0f, 1.7f)
             }
 
-            light("light2") {
-                color(1.0f, 0.0f, 0.0f, 1.0f)
-                position(1.0f, 1.0f, 1.7f)
+            entity("plane", "models/plane.glb") {
+                position(0.0f, 0.0f, 0.0f)
             }
 
-//            entity("plane", "models/plane.glb") {
-//                position(0.0f, 0.0f, 0.0f)
-//            }
-//            entity("sphere", "models/sphere.glb") {
-//                position(0.0f, 0.0f, 0.0f)
-//                onEachFrame { deltaTime ->
-//                    rotate(0.0f, 0.1f * deltaTime, 0.02f * deltaTime)
-//                }
-//            }
+            entity("sphere", "models/sphere.glb") {
+                position(0.0f, 0.0f, 0.0f)
+                onSceneUpdate { _, entity, _, deltaTime ->
+                    entity.rotate(0.0f, 20.5f * deltaTime, 20.5f * deltaTime)
+                }
+            }
 
             onSceneCreated { scene ->
                 scene.setActiveCamera("camera")

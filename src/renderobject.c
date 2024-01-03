@@ -1,10 +1,17 @@
 #include "include/renderobject.h"
 
-RenderObject *createRenderObjectFromFile(VulkanContext *context, const char *filename) {
+RenderObject *createRenderObjectFromFile(VulkanContext *context, const char *filename, CreateEntityInfo *info) {
     RenderObject *obj = malloc(sizeof(RenderObject));
-    obj->scale[0] = 1.0f;
-    obj->scale[1] = 1.0f;
-    obj->scale[2] = 1.0f;
+    obj->scale[0] = info->scaleX;
+    obj->scale[1] = info->scaleY;
+    obj->scale[2] = info->scaleZ;
+    obj->position[0] = info->positionX;
+    obj->position[1] = info->positionY;
+    obj->position[2] = info->positionZ;
+    obj->scale[0] = info->scaleX;
+    obj->scale[1] = info->scaleY;
+    obj->scale[2] = info->scaleZ;
+
     obj->modelData = loadModelData(filename);
 
     // Dynamically allocate a BufferMemory
@@ -92,6 +99,11 @@ void setupTextureFromImageData(VulkanContext *context, ModelImageData *imageData
     destroyBufferMemory(context, textureStagingBuffer);
 }
 
+void rotateRenderObject(RenderObject *obj, float x, float y, float z) {
+        obj->rotation[0] += x;
+        obj->rotation[1] += y;
+        obj->rotation[2] += z;
+}
 
 void destroyRenderObject(VulkanContext *context, RenderObject *obj) {
     // Destroy UBO's
