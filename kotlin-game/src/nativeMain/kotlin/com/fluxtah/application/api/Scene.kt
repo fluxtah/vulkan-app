@@ -15,7 +15,8 @@ data class SceneInfo(
 
 data class EntityInfo(
     val entity: Entity,
-    val onSceneEntityUpdate: OnSceneEntityUpdate?
+    val onSceneEntityUpdate: OnSceneEntityUpdate?,
+    val behaviors: MutableList<EntityBehavior>
 )
 
 @DslMarker

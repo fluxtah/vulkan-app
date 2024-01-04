@@ -18,12 +18,10 @@ var c_createCamera: CreateCameraFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktSetCreateCameraFunc")
-fun ktSetCreateCameraFunc(callback: CPointer<CFunction<(CCreateCameraInfo) -> CCamera>>) {
+fun ktSetCreateCameraFunc(callback: CPointer<CFunction<CreateCameraFunc>>) {
     c_createCamera = { info ->
         memScoped {
-            callback.reinterpret<CFunction<(CCreateCameraInfo) -> CCamera>>()(
-                info
-            )
+            callback.reinterpret<CFunction<CreateCameraFunc>>()(info)
         }
     }
 }
@@ -36,10 +34,10 @@ var c_destroyCamera: DestroyCameraFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktSetDestroyCameraFunc")
-fun ktSetDestroyCameraFunc(callback: CPointer<CFunction<(CCamera) -> Unit>>) {
+fun ktSetDestroyCameraFunc(callback: CPointer<CFunction<DestroyCameraFunc>>) {
     c_destroyCamera = { camera ->
         memScoped {
-            callback.reinterpret<CFunction<(CCamera) -> Unit>>()(camera)
+            callback.reinterpret<CFunction<DestroyCameraFunc>>()(camera)
         }
     }
 }
@@ -52,10 +50,10 @@ var c_moveCameraForward: MoveCameraForwardFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktSetMoveCameraForwardFunc")
-fun ktSetMoveCameraForwardFunc(callback: CPointer<CFunction<(CCamera, Float) -> Unit>>) {
+fun ktSetMoveCameraForwardFunc(callback: CPointer<CFunction<MoveCameraForwardFunc>>) {
     c_moveCameraForward = { camera, amount ->
         memScoped {
-            callback.reinterpret<CFunction<(CCamera, Float) -> Unit>>()(
+            callback.reinterpret<CFunction<MoveCameraForwardFunc>>()(
                 camera, amount
             )
         }
@@ -70,10 +68,10 @@ var c_moveCameraBackward: MoveCameraBackwardFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktSetMoveCameraBackwardFunc")
-fun ktSetMoveCameraBackwardFunc(callback: CPointer<CFunction<(CCamera, Float) -> Unit>>) {
+fun ktSetMoveCameraBackwardFunc(callback: CPointer<CFunction<MoveCameraBackwardFunc>>) {
     c_moveCameraBackward = { camera, amount ->
         memScoped {
-            callback.reinterpret<CFunction<(CCamera, Float) -> Unit>>()(
+            callback.reinterpret<CFunction<MoveCameraBackwardFunc>>()(
                 camera, amount
             )
         }
@@ -88,10 +86,10 @@ var c_moveCameraLeft: MoveCameraLeftFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktSetMoveCameraLeftFunc")
-fun ktSetMoveCameraLeftFunc(callback: CPointer<CFunction<(CCamera, Float) -> Unit>>) {
+fun ktSetMoveCameraLeftFunc(callback: CPointer<CFunction<MoveCameraLeftFunc>>) {
     c_moveCameraLeft = { camera, amount ->
         memScoped {
-            callback.reinterpret<CFunction<(CCamera, Float) -> Unit>>()(
+            callback.reinterpret<CFunction<MoveCameraLeftFunc>>()(
                 camera, amount
             )
         }
@@ -106,10 +104,10 @@ var c_moveCameraRight: MoveCameraRightFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktSetMoveCameraRightFunc")
-fun ktSetMoveCameraRightFunc(callback: CPointer<CFunction<(CCamera, Float) -> Unit>>) {
+fun ktSetMoveCameraRightFunc(callback: CPointer<CFunction<MoveCameraRightFunc>>) {
     c_moveCameraRight = { camera, amount ->
         memScoped {
-            callback.reinterpret<CFunction<(CCamera, Float) -> Unit>>()(
+            callback.reinterpret<CFunction<MoveCameraRightFunc>>()(
                 camera, amount
             )
         }
@@ -117,17 +115,17 @@ fun ktSetMoveCameraRightFunc(callback: CPointer<CFunction<(CCamera, Float) -> Un
 }
 
 @OptIn(ExperimentalForeignApi::class)
-typealias PitchCameraUpFunc = (CCamera, Float) -> Unit
+typealias PitchCameraFunc = (CCamera, Float) -> Unit
 
 @OptIn(ExperimentalForeignApi::class)
-var c_pitchCameraUp: PitchCameraUpFunc? = null
+var c_pitchCamera: PitchCameraFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
-@CName("ktSetPitchCameraUpFunc")
-fun ktSetPitchCameraUpFunc(callback: CPointer<CFunction<(CCamera, Float) -> Unit>>) {
-    c_pitchCameraUp = { camera, amount ->
+@CName("ktSetPitchCameraFunc")
+fun ktSetPitchCameraFunc(callback: CPointer<CFunction<PitchCameraFunc>>) {
+    c_pitchCamera = { camera, amount ->
         memScoped {
-            callback.reinterpret<CFunction<(CCamera, Float) -> Unit>>()(
+            callback.reinterpret<CFunction<PitchCameraFunc>>()(
                 camera, amount
             )
         }
@@ -135,17 +133,17 @@ fun ktSetPitchCameraUpFunc(callback: CPointer<CFunction<(CCamera, Float) -> Unit
 }
 
 @OptIn(ExperimentalForeignApi::class)
-typealias PitchCameraDownFunc = (CCamera, Float) -> Unit
+typealias YawCameraFunc = (CCamera, Float) -> Unit
 
 @OptIn(ExperimentalForeignApi::class)
-var c_pitchCameraDown: PitchCameraDownFunc? = null
+var c_yawCamera: YawCameraFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
-@CName("ktSetPitchCameraDownFunc")
-fun ktSetPitchCameraDownFunc(callback: CPointer<CFunction<(CCamera, Float) -> Unit>>) {
-    c_pitchCameraDown = { camera, amount ->
+@CName("ktSetYawCameraFunc")
+fun ktSetYawCameraFunc(callback: CPointer<CFunction<YawCameraFunc>>) {
+    c_yawCamera = { camera, amount ->
         memScoped {
-            callback.reinterpret<CFunction<(CCamera, Float) -> Unit>>()(
+            callback.reinterpret<CFunction<YawCameraFunc>>()(
                 camera, amount
             )
         }
@@ -153,36 +151,36 @@ fun ktSetPitchCameraDownFunc(callback: CPointer<CFunction<(CCamera, Float) -> Un
 }
 
 @OptIn(ExperimentalForeignApi::class)
-typealias YawCameraLeftFunc = (CCamera, Float) -> Unit
+typealias SetCameraLookAtFunc = (CCamera, Float, Float, Float) -> Unit
 
 @OptIn(ExperimentalForeignApi::class)
-var c_yawCameraLeft: YawCameraLeftFunc? = null
+var c_setCameraLookAt: SetCameraLookAtFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
-@CName("ktSetYawCameraLeftFunc")
-fun ktSetYawCameraLeftFunc(callback: CPointer<CFunction<(CCamera, Float) -> Unit>>) {
-    c_yawCameraLeft = { camera, amount ->
+@CName("ktSetCameraLookAtFunc")
+fun ktSetCameraLookAtFunc(callback: CPointer<CFunction<SetCameraLookAtFunc>>) {
+    c_setCameraLookAt = { camera, x, y, z ->
         memScoped {
-            callback.reinterpret<CFunction<(CCamera, Float) -> Unit>>()(
-                camera, amount
+            callback.reinterpret<CFunction<SetCameraLookAtFunc>>()(
+                camera, x, y, z
             )
         }
     }
 }
 
 @OptIn(ExperimentalForeignApi::class)
-typealias YawCameraRightFunc = (CCamera, Float) -> Unit
+typealias PositionCameraFunc = (CCamera, Float, Float, Float) -> Unit
 
 @OptIn(ExperimentalForeignApi::class)
-var c_yawCameraRight: YawCameraRightFunc? = null
+var c_positionCamera: PositionCameraFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
-@CName("ktSetYawCameraRightFunc")
-fun ktSetYawCameraRightFunc(callback: CPointer<CFunction<(CCamera, Float) -> Unit>>) {
-    c_yawCameraRight = { camera, amount ->
+@CName("ktSetPositionCameraFunc")
+fun ktSetPositionCameraFunc(callback: CPointer<CFunction<PositionCameraFunc>>) {
+    c_positionCamera = { camera, x, y, z ->
         memScoped {
-            callback.reinterpret<CFunction<(CCamera, Float) -> Unit>>()(
-                camera, amount
+            callback.reinterpret<CFunction<PositionCameraFunc>>()(
+                camera, x, y, z
             )
         }
     }
@@ -196,10 +194,10 @@ var c_applyCameraChanges: ApplyCameraChangesFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktSetApplyCameraChangesFunc")
-fun ktSetApplyCameraChangesFunc(callback: CPointer<CFunction<(CCamera) -> Unit>>) {
+fun ktSetApplyCameraChangesFunc(callback: CPointer<CFunction<ApplyCameraChangesFunc>>) {
     c_applyCameraChanges = { camera ->
         memScoped {
-            callback.reinterpret<CFunction<(CCamera) -> Unit>>()(camera)
+            callback.reinterpret<CFunction<ApplyCameraChangesFunc>>()(camera)
         }
     }
 }

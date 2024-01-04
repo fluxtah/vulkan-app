@@ -70,16 +70,16 @@ private fun handleCameraInput(scene: Scene, deltaTime: Float) {
     }
 
     if (isKeyPressed(Key.Up)) {
-        camera.pitchUp(cameraRotationSpeed)
+        camera.pitch(cameraRotationSpeed)
     }
     if (isKeyPressed(Key.Down)) {
-        camera.pitchDown(cameraRotationSpeed)
+        camera.pitch(-cameraRotationSpeed)
     }
     if (isKeyPressed(Key.Left)) {
-        camera.yawLeft(cameraRotationSpeed)
+        camera.yaw(cameraRotationSpeed)
     }
     if (isKeyPressed(Key.Right)) {
-        camera.yawRight(cameraRotationSpeed)
+        camera.yaw(-cameraRotationSpeed)
     }
 
     camera.applyChanges()

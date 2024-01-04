@@ -62,6 +62,8 @@ class EntityBuilder(private val modelPath: String) {
 
     private var onSceneEntityUpdate: OnSceneEntityUpdate? = null
 
+    private val behaviors = mutableListOf<EntityBehavior>()
+
     fun position(x: Float = 0f, y: Float = 0f, z: Float = 0f) {
         positionX = x
         positionY = y
@@ -82,6 +84,10 @@ class EntityBuilder(private val modelPath: String) {
 
     fun onSceneUpdate(block: OnSceneEntityUpdate) {
         onSceneEntityUpdate = block
+    }
+
+    fun behaviour(behavior: EntityBehavior) {
+        behaviors.add(behavior)
     }
 
     @OptIn(ExperimentalForeignApi::class)
@@ -109,7 +115,8 @@ class EntityBuilder(private val modelPath: String) {
                 initialPositionY = positionY,
                 initialPositionZ = positionZ
             ),
-            onSceneEntityUpdate = onSceneEntityUpdate
+            onSceneEntityUpdate = onSceneEntityUpdate,
+            behaviors = behaviors
         )
     }
 }

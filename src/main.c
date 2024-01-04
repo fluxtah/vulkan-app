@@ -14,7 +14,7 @@
 #include "include/vulkan/context.h"
 #include "include/vulkan/render.h"
 
-#include "kotlin-game/build/bin/native/releaseShared/libkotlin_game_api.h"
+#include "libkotlin_game_api.h"
 #include "kotlin-game/cinterop/model.h"
 #include "include/ubo.h"
 #include "include/renderobject.h"
@@ -116,12 +116,12 @@ void bindKotlinApi() {
     ktSetMoveCameraBackwardFunc(moveCameraBackward);
     ktSetMoveCameraLeftFunc(moveCameraLeft);
     ktSetMoveCameraRightFunc(moveCameraRight);
-    ktSetPitchCameraUpFunc(pitchCameraUp);
-    ktSetPitchCameraDownFunc(pitchCameraDown);
-    ktSetYawCameraLeftFunc(yawCameraLeft);
-    ktSetYawCameraRightFunc(yawCameraRight);
+    ktSetPitchCameraFunc(pitchCamera);
+    ktSetYawCameraFunc(yawCamera);
+    ktSetPositionCameraFunc(positionCamera);
     ktSetApplyCameraChangesFunc(applyCameraChanges);
     ktSetActiveCameraFunc(setActiveCamera);
+    ktSetCameraLookAtFunc(setCameraLookAt);
 
     // Light
     ktSetCreateLightFunc(createLight);

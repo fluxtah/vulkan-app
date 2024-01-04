@@ -21,29 +21,17 @@ typedef struct Camera {
 } Camera;
 
 Camera *createCamera(CreateCameraInfo *info);
-
 void destroyCamera(Camera *camera);
-
 void applyCameraChanges(Camera *camera);
-
 void setLookAtTarget(Camera *camera, vec3 target);
-
 void disableLookAtTarget(Camera *camera);
-
 void moveCameraForward(Camera *camera, float speed);
-
 void moveCameraBackward(Camera *camera, float speed);
-
 void moveCameraLeft(Camera *camera, float speed);
-
 void moveCameraRight(Camera *camera, float speed);
-
-void pitchCameraUp(Camera *camera, float amount);
-
-void pitchCameraDown(Camera *camera, float amount);
-
-void yawCameraLeft(Camera *camera, float amount);
-
-void yawCameraRight(Camera *camera, float amount);
+void pitchCamera(Camera *camera, float amount);
+void yawCamera(Camera *camera, float amount);
+void positionCamera(Camera *camera, float x, float y, float z);
+void setCameraLookAt(Camera *camera, float x, float y, float z);
 
 #endif //APP_CAMERA_H

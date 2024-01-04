@@ -39,9 +39,12 @@ fun ktUpdateApplication(time: Float, deltaTime: Float) {
     val activeSceneInfo = activeScene
     if (activeSceneInfo != null) {
         activeSceneInfo.onSceneUpdate?.invoke(activeSceneInfo.scene, time, deltaTime)
-
-        activeSceneInfo.scene.entities.values.forEach {
-            it.onSceneEntityUpdate?.invoke(activeSceneInfo.scene, it.entity, time, deltaTime)
+        val scene = activeSceneInfo.scene
+        scene.entities.values.forEach {
+            it.behaviors.forEach { behavior ->
+                behavior.update(scene, it.entity, time, deltaTime)
+            }
+            it.onSceneEntityUpdate?.invoke(scene, it.entity, time, deltaTime)
         }
     }
     applicationInstance.update(time, deltaTime)

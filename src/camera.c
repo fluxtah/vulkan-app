@@ -44,7 +44,6 @@ void applyCameraChanges(Camera *camera) {
     glm_perspective(glm_rad(camera->fov), camera->aspectRatio, camera->nearPlane, camera->farPlane, camera->proj);
     camera->proj[1][1] *= -1; // Adjust for Vulkan's clip space
 
-//    printf("Camera Direction: %f, %f, %f\n", camera->direction[0], camera->direction[1], camera->direction[2]);
 }
 
 void setLookAtTarget(Camera *camera, vec3 target) {
@@ -85,20 +84,39 @@ void moveCameraRight(Camera *camera, float amount) {
     glm_vec3_add(camera->position, right, camera->position);
 }
 
-void pitchCameraUp(Camera *camera, float amount) {
+void pitchCamera(Camera *camera, float amount) {
     camera->pitch += amount;
 }
 
-void pitchCameraDown(Camera *camera, float amount) {
-    camera->pitch -= amount;
-}
-
-void yawCameraLeft(Camera *camera, float amount) {
+void yawCamera(Camera *camera, float amount) {
     camera->yaw -= amount;
 }
 
-void yawCameraRight(Camera *camera, float amount) {
-    camera->yaw += amount;
+void positionCamera(Camera *camera, float x, float y, float z) {
+    camera->position[0] = x;
+    camera->position[1] = y;
+    camera->position[2] = z;
+}
+
+void setCameraLookAt(Camera *camera, float x, float y, float z) {
+    vec3 target = (vec3) {x, y, z};
+    glm_vec3_copy(target, camera->target); // Update the target
+
+    // Calculate new direction
+    glm_vec3_sub(target, camera->position, camera->direction);
+    glm_vec3_normalize(camera->direction);
+
+    // Calculate yaw
+    camera->yaw = atan2f(camera->direction[2], camera->direction[0]);
+
+    // Calculate pitch
+    float flatDistance = sqrtf(
+            camera->direction[0] * camera->direction[0] + camera->direction[2] * camera->direction[2]);
+    camera->pitch = atan2f(camera->direction[1], flatDistance);
+
+    // Convert radians to degrees
+    camera->pitch *= 180.0f / M_PI;
+    camera->yaw *= 180.0f / M_PI;
 }
 
 void destroyCamera(Camera *camera) {
