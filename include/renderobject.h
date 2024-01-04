@@ -41,6 +41,8 @@ RenderObject *createRenderObjectFromFile(VulkanContext *context, const char *fil
 void setupTextureFromImageData(VulkanContext *context, ModelImageData *imageData, ImageMemory *imageMemory);
 
 void rotateRenderObject(RenderObject *obj, float x, float y, float z);
+void translateRenderObject(RenderObject *obj, float x, float y, float z);
+void positionRenderObject(RenderObject *obj, float x, float y, float z);
 
 void destroyRenderObject(VulkanContext *context, RenderObject *obj);
 #endif //APP_RENDEROBJECT_H

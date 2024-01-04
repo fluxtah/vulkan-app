@@ -131,6 +131,8 @@ void bindKotlinApi() {
     ktSetCreateEntityFunc(createRenderObjectFromFile);
     ktSetDestroyEntityFunc(destroyRenderObject);
     ktSetRotateEntityFunc(rotateRenderObject);
+    ktSetPositionEntityFunc(positionRenderObject);
+    ktSetTranslateEntityFunc(translateRenderObject);
 }
 
 int main() {
@@ -261,16 +263,16 @@ int main() {
      * MAIN LOOP
      */
     while (!glfwWindowShouldClose(context.window)) {
-        float currentFrameTime = (float) glfwGetTime();
-        float deltaTime = currentFrameTime - lastFrameTime;
-        lastFrameTime = currentFrameTime;
+        float time = (float) glfwGetTime();
+        float deltaTime = time - lastFrameTime;
+        lastFrameTime = time;
 
         glfwPollEvents();
 
         VkSemaphore signalSemaphores[] = {renderFinishedSemaphore};
         VkSemaphore waitSemaphores[] = {imageAvailableSemaphore};
 
-        ktUpdateApplication(currentFrameTime, deltaTime);
+        ktUpdateApplication(time, deltaTime);
 
         for (size_t i = 0; i < numRenderObjects; i++) {
             RenderObject *obj = renderObjects[i];

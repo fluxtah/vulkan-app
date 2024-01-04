@@ -6,6 +6,7 @@ import com.fluxtah.application.api.interop.c_destroyCamera
 import com.fluxtah.application.api.interop.c_destroyEntity
 import com.fluxtah.application.api.interop.c_destroyLight
 import com.fluxtah.application.api.interop.c_isKeyPressed
+import com.fluxtah.application.apps.shipgame.ShipGame
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlin.experimental.ExperimentalNativeApi
 
@@ -23,7 +24,7 @@ private lateinit var applicationInstance: Application
 @OptIn(kotlin.experimental.ExperimentalNativeApi::class)
 @CName("ktCreateApplication")
 fun ktCreateApplication() {
-    applicationInstance = MyApplication()
+    applicationInstance = ShipGame()
 }
 
 @OptIn(kotlin.experimental.ExperimentalNativeApi::class)

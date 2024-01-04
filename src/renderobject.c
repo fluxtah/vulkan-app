@@ -105,6 +105,18 @@ void rotateRenderObject(RenderObject *obj, float x, float y, float z) {
         obj->rotation[2] += z;
 }
 
+void translateRenderObject(RenderObject *obj, float x, float y, float z) {
+    obj->position[0] += x;
+    obj->position[1] += y;
+    obj->position[2] += z;
+}
+
+void positionRenderObject(RenderObject *obj, float x, float y, float z) {
+    obj->position[0] = x;
+    obj->position[1] = y;
+    obj->position[2] = z;
+}
+
 void destroyRenderObject(VulkanContext *context, RenderObject *obj) {
     // Destroy UBO's
     destroyBufferMemory(context, obj->transformUBO);

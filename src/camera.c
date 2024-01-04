@@ -2,14 +2,6 @@
 
 
 Camera *createCamera(CreateCameraInfo *info) {
-    printf("Camera Info x:%f\n", info->positionX);
-    printf("Camera Info y:%f\n", info->positionY);
-    printf("Camera Info z:%f\n", info->positionY);
-    printf("Camera Info aspect:%f\n", info->aspect);
-    printf("Camera Info near:%f\n", info->near);
-    printf("Camera Info far:%f\n", info->far);
-    printf("Camera Info fov:%f\n", info->fov);
-
     Camera *camera = malloc(sizeof(Camera));
     vec3 position = {info->positionX, info->positionY, info->positionZ};
     glm_vec3_copy(position, camera->position); // Set the camera position

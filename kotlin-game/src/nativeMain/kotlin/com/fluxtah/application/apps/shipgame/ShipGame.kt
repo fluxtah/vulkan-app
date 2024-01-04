@@ -1,16 +1,13 @@
-package com.fluxtah.application
+package com.fluxtah.application.apps.shipgame
 
 import com.fluxtah.application.api.*
 import com.fluxtah.application.api.input.Key
 
-class MyApplication : Application {
+class ShipGame : Application {
     override fun initialize() {
         scene("main") {
             camera("camera1") {
-                position(0.0f, 0.0f, 2.0f)
-            }
-            camera("camera2") {
-                position(0.0f, 0.0f, 4.0f)
+                position(0.0f, 5.0f, 4.0f)
             }
 
             light("light") {
@@ -22,15 +19,12 @@ class MyApplication : Application {
                 position(0.0f, 0.0f, 0.0f)
             }
 
-            entity("sphere", "models/sphere.glb") {
-                position(0.0f, 0.0f, 0.0f)
-                onSceneUpdate { _, entity, _, deltaTime ->
-                    entity.rotate(0.0f, 20.5f * deltaTime, 20.5f * deltaTime)
-                }
-            }
+            spaceship()
 
             onSceneCreated { scene ->
                 scene.setActiveCamera("camera1")
+                scene.activeCamera()?.pitchDown(45.0f)
+                scene.activeCamera()?.yawLeft(180.0f)
             }
 
             onSceneUpdate { scene, _, deltaTime ->

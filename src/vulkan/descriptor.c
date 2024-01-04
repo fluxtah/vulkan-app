@@ -2,15 +2,15 @@
 
 VkDescriptorPool createBasicShaderDescriptorPool(VkDevice device) {
     VkDescriptorPoolSize poolSizes[] = {
-            {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,         100}, // TODO gonna need to get a real number here
-            {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 100} // diffuse and normal map
+            {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,         500}, // TODO gonna need to get a real number here
+            {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 500} // diffuse and normal map
     };
 
     VkDescriptorPoolCreateInfo poolInfo = {};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.poolSizeCount = 2;
     poolInfo.pPoolSizes = poolSizes;
-    poolInfo.maxSets = 50; // Total number of descriptor sets
+    poolInfo.maxSets = 1000; // Total number of descriptor sets
 
     VkDescriptorPool descriptorPool;
     if (vkCreateDescriptorPool(device, &poolInfo, NULL, &descriptorPool) != VK_SUCCESS) {

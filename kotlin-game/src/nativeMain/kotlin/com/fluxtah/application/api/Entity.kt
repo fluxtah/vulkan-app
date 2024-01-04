@@ -1,15 +1,50 @@
 package com.fluxtah.application.api
 
-import com.fluxtah.application.api.interop.CEntity
-import com.fluxtah.application.api.interop.c_createEntity
-import com.fluxtah.application.api.interop.c_rotateEntity
+import com.fluxtah.application.api.interop.*
 import com.fluxtah.application.api.interop.model.CreateEntityInfo
 import kotlinx.cinterop.*
 
 @OptIn(ExperimentalForeignApi::class)
-class Entity(val handle: CEntity) {
+class Entity(
+    val handle: CEntity,
+    initialPositionX: Float = 0.0f,
+    initialPositionY: Float = 0.0f,
+    initialPositionZ: Float = 0.0f
+) {
+    private var _positionX: Float = initialPositionX
+    val positionX: Float
+        get() {
+            return _positionX
+        }
+
+    private var _positionY: Float = initialPositionY
+    val positionY: Float
+        get() {
+            return _positionY
+        }
+
+    private var _positionZ: Float = initialPositionZ
+    val positionZ: Float
+        get() {
+            return _positionZ
+        }
+
+    fun position(x: Float? = null, y: Float? = null, z: Float? = null) {
+        _positionX = x ?: _positionX
+        _positionY = y ?: _positionY
+        _positionZ = z ?: _positionZ
+        c_positionEntity!!.invoke(handle, _positionX, _positionY, _positionZ)
+    }
+
     fun rotate(x: Float, y: Float, z: Float) {
         c_rotateEntity!!.invoke(handle, x, y, z)
+    }
+
+    fun translate(x: Float = 0.0f, y: Float = 0.0f, z: Float = 0.0f) {
+        _positionX += x
+        _positionY += y
+        _positionZ += z
+        c_translateEntity!!.invoke(handle, x, y, z)
     }
 }
 
@@ -68,7 +103,12 @@ class EntityBuilder(private val modelPath: String) {
         }
 
         return EntityInfo(
-            entity = Entity(cEntity),
+            entity = Entity(
+                handle = cEntity,
+                initialPositionX = positionX,
+                initialPositionY = positionY,
+                initialPositionZ = positionZ
+            ),
             onSceneEntityUpdate = onSceneEntityUpdate
         )
     }

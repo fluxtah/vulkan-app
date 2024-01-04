@@ -78,8 +78,44 @@ var c_rotateEntity: RotateEntityFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktSetRotateEntityFunc")
-fun ktSetRotateEntityFunc(callback: CPointer<CFunction<(CCamera, Float, Float, Float) -> Unit>>) {
+fun ktSetRotateEntityFunc(callback: CPointer<CFunction<(CEntity, Float, Float, Float) -> Unit>>) {
     c_rotateEntity = { entity, x, y, z ->
+        memScoped {
+            callback.reinterpret<CFunction<(CEntity, Float, Float, Float) -> Unit>>()(
+                entity, x, y, z
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+typealias TranslateEntityFunc = (CEntity, Float, Float, Float) -> Unit
+
+@OptIn(ExperimentalForeignApi::class)
+var c_translateEntity: TranslateEntityFunc? = null
+
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@CName("ktSetTranslateEntityFunc")
+fun ktSetTranslateEntityFunc(callback: CPointer<CFunction<(CEntity, Float, Float, Float) -> Unit>>) {
+    c_translateEntity = { entity, x, y, z ->
+        memScoped {
+            callback.reinterpret<CFunction<(CEntity, Float, Float, Float) -> Unit>>()(
+                entity, x, y, z
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+typealias PositionEntityFunc = (CEntity, Float, Float, Float) -> Unit
+
+@OptIn(ExperimentalForeignApi::class)
+var c_positionEntity: PositionEntityFunc? = null
+
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@CName("ktSetPositionEntityFunc")
+fun ktSetPositionEntityFunc(callback: CPointer<CFunction<(CEntity, Float, Float, Float) -> Unit>>) {
+    c_positionEntity = { entity, x, y, z ->
         memScoped {
             callback.reinterpret<CFunction<(CEntity, Float, Float, Float) -> Unit>>()(
                 entity, x, y, z
