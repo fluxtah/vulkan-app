@@ -9,7 +9,10 @@ class Entity(
     val handle: CEntity,
     initialPositionX: Float = 0.0f,
     initialPositionY: Float = 0.0f,
-    initialPositionZ: Float = 0.0f
+    initialPositionZ: Float = 0.0f,
+    initialRotationX: Float = 0.0f,
+    initialRotationY: Float = 0.0f,
+    initialRotationZ: Float = 0.0f,
 ) {
     private var _positionX: Float = initialPositionX
     val positionX: Float
@@ -29,6 +32,24 @@ class Entity(
             return _positionZ
         }
 
+    private var _rotationX: Float = initialRotationX
+    val rotationX: Float
+        get() {
+            return _rotationX
+        }
+
+    private var _rotationY: Float = initialRotationY
+    val rotationY: Float
+        get() {
+            return _rotationY
+        }
+
+    private var _rotationZ: Float = initialRotationZ
+    val rotationZ: Float
+        get() {
+            return _rotationZ
+        }
+
     fun position(x: Float? = null, y: Float? = null, z: Float? = null) {
         _positionX = x ?: _positionX
         _positionY = y ?: _positionY
@@ -36,7 +57,10 @@ class Entity(
         c_positionEntity!!.invoke(handle, _positionX, _positionY, _positionZ)
     }
 
-    fun rotate(x: Float, y: Float, z: Float) {
+    fun rotate(x: Float = 0f, y: Float = 0f, z: Float = 0f) {
+        _rotationX += x
+        _rotationY += y
+        _rotationZ += z
         c_rotateEntity!!.invoke(handle, x, y, z)
     }
 

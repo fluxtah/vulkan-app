@@ -3,6 +3,7 @@ package com.fluxtah.application.apps.shipgame
 import com.fluxtah.application.api.*
 import com.fluxtah.application.api.input.Key
 import com.fluxtah.application.apps.shipgame.ship.ThrustBehavior
+import com.fluxtah.application.apps.shipgame.ship.YawBehavior
 
 class ShipGame : Application {
     override fun initialize() {
@@ -26,6 +27,10 @@ class ShipGame : Application {
             entity("ship", "models/ship.glb") {
                 position(0.0f, 0.0f, 0.0f)
                 behaviour(ThrustBehavior(isThrusting = { isKeyPressed(Key.Equal) }))
+                behaviour(YawBehavior(
+                    yawLeft = { isKeyPressed(Key.A) },
+                    yawRight = { isKeyPressed(Key.D) }
+                ))
             }
 
             var chaseCam: ChaseCamera? = null
