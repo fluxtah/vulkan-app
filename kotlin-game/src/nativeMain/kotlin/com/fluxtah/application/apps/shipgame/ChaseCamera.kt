@@ -7,8 +7,8 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 class ChaseCamera(
-    val camera: Camera,
-    val target: Entity,
+    private val camera: Camera,
+    private val target: Entity,
     private var offset: Vector3 = Vector3(0f, 3f, -1.5f)) {
     private var position: Vector3 = Vector3()
     private var smoothingFactor = 1.5f // Adjust for desired smoothing
@@ -20,7 +20,7 @@ class ChaseCamera(
         // Calculate desired camera position based on target's position and rotated offset
         val desiredPosition = Vector3(target.positionX, target.positionY, target.positionZ) + rotatedOffset
 
-        // Optionally, add smoothing/lerping for smoother camera movement
+        // Add smoothing/lerping for smoother camera movement
         position.lerp(desiredPosition, deltaTime * smoothingFactor)
 
         // Update the camera's position

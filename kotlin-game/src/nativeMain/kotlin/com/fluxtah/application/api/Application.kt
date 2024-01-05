@@ -1,6 +1,5 @@
 package com.fluxtah.application.api
 
-import com.fluxtah.application.MyApplication
 import com.fluxtah.application.api.input.Key
 import com.fluxtah.application.api.interop.c_destroyCamera
 import com.fluxtah.application.api.interop.c_destroyEntity

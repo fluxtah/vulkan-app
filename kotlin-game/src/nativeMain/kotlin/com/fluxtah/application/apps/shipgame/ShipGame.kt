@@ -5,7 +5,6 @@ import com.fluxtah.application.api.input.Key
 import com.fluxtah.application.apps.shipgame.ship.ForwardMovementBehavior
 import com.fluxtah.application.apps.shipgame.ship.ThrustBehavior
 import com.fluxtah.application.apps.shipgame.ship.YawBehavior
-import platform.posix.fork
 
 class ShipGame : Application {
     override fun initialize() {
@@ -19,8 +18,10 @@ class ShipGame : Application {
             }
 
             light("light") {
+                type(LightType.Directional)
                 color(1.0f, 1.0f, 1.0f, 1.0f)
                 position(0.0f, 5.0f, 0.0f)
+                direction(0.5f, -1.0f, 0.0f)
                 intensity(1.0f)
             }
 

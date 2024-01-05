@@ -10,8 +10,15 @@ import kotlinx.cinterop.memScoped
 @OptIn(ExperimentalForeignApi::class)
 class Light(val handle: CLight)
 
+enum class LightType(val value: Int) {
+    Point(0),
+    Spot(1),
+    Directional(2),
+}
+
 @SceneDsl
 class LightBuilder {
+    private var lightType = LightType.Directional
     private var colorR: Float = 1.0f
     private var colorG: Float = 1.0f
     private var colorB: Float = 1.0f
@@ -23,6 +30,10 @@ class LightBuilder {
     private var directionY: Float = 0.0f
     private var directionZ: Float = 0.0f
     private var intensity: Float = 1.0f
+
+    fun type(type: LightType) {
+        lightType = type
+    }
 
     fun color(r: Float, g: Float, b: Float, a: Float) {
         colorR = r
@@ -50,7 +61,7 @@ class LightBuilder {
     @OptIn(ExperimentalForeignApi::class)
     fun build(): Light {
         val info = cValue<CreateLightInfo> {
-            type = 42 // TODO unsupported at moment
+            type = this@LightBuilder.lightType.value
             colorR = this@LightBuilder.colorR
             colorG = this@LightBuilder.colorG
             colorB = this@LightBuilder.colorB

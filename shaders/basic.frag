@@ -9,8 +9,8 @@ layout(location = 3) in vec4 tangent;
 layout(location = 0) out vec4 outColor;
 
 struct Light {
-    int type;// point = 0, spot = 1
-    vec4 color;// rgba: 'a' could be used for another property like light radius
+    int type; // point = 0, spot = 1, directional
+    vec4 color;
     vec3 position;
     vec3 direction;
     float intensity;
@@ -37,38 +37,75 @@ float calculateAttenuation(vec3 lightPos, vec3 fragPos) {
     return attenuation;
 }
 
+vec3 calculateDiffuseReflection(Light light, vec3 norm, vec3 lightDir, vec3 fresnel, float metallic) {
+    // Diffuse Reflection
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = (1.0 - metallic) * diff * light.color.rgb * light.intensity;
+    diffuse *= (1.0 - fresnel);
+    return diffuse;
+}
+
+vec3 calculatePointLight(Light light, vec3 fresnel, vec3 norm, vec3 fragPos, vec3 viewDir, float metallic, float roughness, vec3 textureColor) {
+    vec3 lightDir = normalize(light.position - fragPos);
+    vec3 halfDir = normalize(lightDir + viewDir);
+
+    vec3 diffuse = calculateDiffuseReflection(light, norm, lightDir, fresnel, metallic);
+
+    // Specular Reflection
+    float spec = pow(max(dot(norm, halfDir), 0.0), mix(16.0, 256.0, roughness)); // Increased spec power
+    vec3 specular = spec * light.color.rgb * light.intensity * fresnel;
+
+    // Use the calculateAttenuation function
+    float attenuation = calculateAttenuation(light.position, fragPos);
+    diffuse *= attenuation;
+    specular *= attenuation;
+
+    return diffuse + specular;
+}
+
+vec3 calculateSpotLight(Light light, vec3 fresnel, vec3 norm, vec3 fragPos, vec3 viewDir, float metallic, float roughness, vec3 textureColor) {
+    vec3 lightDir = normalize(-light.direction);
+    vec3 halfDir = normalize(lightDir + viewDir);
+
+    // Diffuse Reflection
+    vec3 diffuse = calculateDiffuseReflection(light, norm, lightDir, fresnel, metallic);
+
+    // Specular Reflection
+    float spec = pow(max(dot(norm, halfDir), 0.0), mix(16.0, 256.0, roughness)); // Increased spec power
+    vec3 specular = spec * light.color.rgb * light.intensity * fresnel;
+
+    // Use the calculateAttenuation function
+    float attenuation = calculateAttenuation(light.position, fragPos);
+    diffuse *= attenuation;
+    specular *= attenuation;
+
+    return diffuse + specular;
+}
+
+vec3 calculateDirectionalLight(Light light, vec3 fresnel, vec3 norm, vec3 viewDir, float metallic, float roughness, vec3 textureColor) {
+    vec3 lightDir = normalize(-light.direction);
+    vec3 diffuse = calculateDiffuseReflection(light, norm, lightDir, fresnel, metallic);
+
+    return diffuse;
+}
+
 vec3 calculateLight(vec3 norm, vec3 fragPos, vec3 viewDir, float metallic, float roughness, vec3 textureColor) {
     vec3 result = vec3(0.0);
     vec3 F0 = vec3(0.04);
     F0 = mix(F0, textureColor, metallic);
+    vec3 fresnel = fresnelSchlick(max(dot(viewDir, norm), 0.0), F0);
 
     for (int i = 0; i < ubo.numLightsInUse; i++) {
         Light light = ubo.lights[i];
-        vec3 lightDir = normalize(light.position - fragPos);
-        vec3 halfDir = normalize(lightDir + viewDir);
-
-        vec3 fresnel = fresnelSchlick(max(dot(viewDir, norm), 0.0), F0);
-
-        // Adjusted Ambient Component
-        vec3 ambient = ubo.ambientLightColor * light.color.rgb * light.intensity;
-
-        // Diffuse Reflection
-        float diff = max(dot(norm, lightDir), 0.0);
-        vec3 diffuse = (1.0 - metallic) * diff * light.color.rgb * light.intensity;
-        diffuse *= (1.0 - fresnel);
-
-        // Specular Reflection
-        float spec = pow(max(dot(norm, halfDir), 0.0), mix(16.0, 256.0, roughness)); // Increased spec power
-        vec3 specular = spec * light.color.rgb * light.intensity * fresnel;
-
-        // Use the calculateAttenuation function
-        float attenuation = calculateAttenuation(light.position, fragPos);
-        diffuse *= attenuation;
-        specular *= attenuation;
-
-        result += ambient + diffuse + specular;
+        if (light.type == 0) {
+            result += calculatePointLight(light, fresnel, norm, fragPos, viewDir, metallic, roughness, textureColor.rgb);
+        } else if (light.type == 1) {
+            result += calculateSpotLight(light, fresnel, norm, fragPos, viewDir, metallic, roughness, textureColor.rgb);
+        } else if (light.type == 2) {
+            result += calculateDirectionalLight(light, fresnel, norm, viewDir, metallic, roughness, textureColor.rgb);
+        }
     }
-    return result;
+    return result + ubo.ambientLightColor;
 }
 
 vec3 gammaCorrect(vec3 color) {
