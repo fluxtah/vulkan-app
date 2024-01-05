@@ -32,21 +32,29 @@ fun ktInitApplication() {
     applicationInstance.initialize()
 }
 
+private const val fixedTimeStep = 1.0f / 60.0f // Fixed timestep (e.g., 60 updates per second)
+private var accumulatedTime = 0.0f
+
 @OptIn(kotlin.experimental.ExperimentalNativeApi::class)
 @CName("ktUpdateApplication")
 fun ktUpdateApplication(time: Float, deltaTime: Float) {
     val activeSceneInfo = activeScene
-    if (activeSceneInfo != null) {
-        activeSceneInfo.onSceneUpdate?.invoke(activeSceneInfo.scene, time, deltaTime)
-        val scene = activeSceneInfo.scene
-        scene.entities.values.forEach {
-            it.behaviors.forEach { behavior ->
-                behavior.update(scene, it.entity, time, deltaTime)
+    accumulatedTime += deltaTime
+
+    while (accumulatedTime >= fixedTimeStep) {
+        if (activeSceneInfo != null) {
+            activeSceneInfo.onSceneUpdate?.invoke(activeSceneInfo.scene, time, fixedTimeStep)
+            val scene = activeSceneInfo.scene
+            scene.entities.values.forEach {
+                it.behaviors.forEach { behavior ->
+                    behavior.update(scene, it.entity, time, fixedTimeStep)
+                }
+                it.onSceneEntityUpdate?.invoke(scene, it.entity, time, fixedTimeStep)
             }
-            it.onSceneEntityUpdate?.invoke(scene, it.entity, time, deltaTime)
         }
+        applicationInstance.update(time, fixedTimeStep)
+        accumulatedTime -= fixedTimeStep
     }
-    applicationInstance.update(time, deltaTime)
 }
 
 @OptIn(ExperimentalNativeApi::class, ExperimentalForeignApi::class)

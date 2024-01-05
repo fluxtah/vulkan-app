@@ -12,28 +12,26 @@ class ForwardMovementBehavior(private val isMovingForward: () -> Boolean) : Enti
     private var forwardVelocity = 0.0f
     private val forwardAcceleration = 1.0f // Adjust for desired acceleration
     private val maxForwardSpeed = 5.0f // Adjust for max speed
-    private val fixedTimeStep = 1.0f / 60.0f // Fixed timestep (e.g., 60 updates per second)
-    private var accumulatedTime = 0.0f
 
     override fun update(scene: Scene, entity: Entity, time: Float, deltaTime: Float) {
-        accumulatedTime += deltaTime
 
-        while (accumulatedTime >= fixedTimeStep) {
-            if (isMovingForward()) {
-                // Increase forward velocity
-                forwardVelocity = (forwardVelocity + forwardAcceleration * fixedTimeStep).coerceAtMost(maxForwardSpeed)
-            } else {
-                // Slow down if not moving forward
-                forwardVelocity = (forwardVelocity - forwardAcceleration * fixedTimeStep).coerceAtLeast(0.0f)
-            }
-
-            // Calculate new position based on forward velocity
-            val newPosition = Vector3(entity.positionX, entity.positionY, entity.positionZ) + calculateForwardMovement(entity.rotationY, forwardVelocity * fixedTimeStep)
-
-            entity.position(newPosition.x, newPosition.y, newPosition.z)
-
-            accumulatedTime -= fixedTimeStep
+        //    while (accumulatedTime >= fixedTimeStep) {
+        forwardVelocity = if (isMovingForward()) {
+            // Increase forward velocity
+            (forwardVelocity + forwardAcceleration * deltaTime).coerceAtMost(maxForwardSpeed)
+        } else {
+            // Slow down if not moving forward
+            (forwardVelocity - forwardAcceleration * deltaTime).coerceAtLeast(0.0f)
         }
+
+        // Calculate new position based on forward velocity
+        val newPosition = Vector3(entity.positionX, entity.positionY, entity.positionZ) + calculateForwardMovement(
+            entity.rotationY,
+            forwardVelocity * deltaTime
+        )
+
+        entity.position(newPosition.x, newPosition.y, newPosition.z)
+        //   }
     }
 
     private fun calculateForwardMovement(yaw: Float, distance: Float): Vector3 {
