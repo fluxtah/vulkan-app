@@ -6,9 +6,11 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-class ChaseCamera(val camera: Camera, val target: Entity) {
+class ChaseCamera(
+    val camera: Camera,
+    val target: Entity,
+    private var offset: Vector3 = Vector3(0f, 3f, -1.5f)) {
     private var position: Vector3 = Vector3()
-    private var offset: Vector3 = Vector3(0f, 5f, -5f) // Adjust for desired camera position
     private var smoothingFactor = 1.5f // Adjust for desired smoothing
 
     fun update(deltaTime: Float) {
@@ -43,6 +45,7 @@ class ChaseCamera(val camera: Camera, val target: Entity) {
         // Set your camera's position here
         camera.position(pos.x, pos.y, pos.z)
         camera.lookAt(target.positionX, target.positionY, target.positionZ)
+        camera.pitch(20f)
         camera.applyChanges()
     }
 }

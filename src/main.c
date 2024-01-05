@@ -45,7 +45,12 @@ void updateLightsUBO(VkDevice device, RenderObject *renderObject, Camera *camera
     }
 
     LightingUBO lightingUBO = {0};
-    lightingUBO.numLightsInUse = ktLights->size;
+    if(ktLights->size > MAX_LIGHTS) {
+        lightingUBO.numLightsInUse = MAX_LIGHTS;
+    } else {
+        lightingUBO.numLightsInUse = ktLights->size;
+    }
+
     memcpy(lightingUBO.lights, lights, sizeof(Light) * lightingUBO.numLightsInUse);
     glm_vec3_copy(camera->position, lightingUBO.cameraPos);
     glm_vec3_copy((vec3) {0.04f, 0.04f, 0.04f}, lightingUBO.ambientLightColor);

@@ -2,14 +2,17 @@ package com.fluxtah.application.apps.shipgame
 
 import com.fluxtah.application.api.*
 import com.fluxtah.application.api.input.Key
+import com.fluxtah.application.apps.shipgame.ship.ForwardMovementBehavior
 import com.fluxtah.application.apps.shipgame.ship.ThrustBehavior
 import com.fluxtah.application.apps.shipgame.ship.YawBehavior
+import platform.posix.fork
 
 class ShipGame : Application {
     override fun initialize() {
         scene("main") {
             camera("camera1") {
                 position(4.0f, 5.0f, -4.0f)
+                fieldOfView(90.0f)
             }
             camera("camera2") {
                 position(4.0f, 5.0f, -4.0f)
@@ -17,20 +20,23 @@ class ShipGame : Application {
 
             light("light") {
                 color(1.0f, 1.0f, 1.0f, 1.0f)
-                position(0.0f, 1.0f, 1.7f)
+                position(0.0f, 5.0f, 0.0f)
+                intensity(1.0f)
             }
 
             entity("plane", "models/plane.glb") {
                 position(0.0f, 0.0f, 0.0f)
+                scale(10f, 10f, 10f)
             }
 
             entity("ship", "models/ship.glb") {
                 position(0.0f, 0.0f, 0.0f)
-                behaviour(ThrustBehavior(isThrusting = { isKeyPressed(Key.Equal) }))
+                behaviour(ThrustBehavior(isThrusting = { isKeyPressed(Key.W) }))
                 behaviour(YawBehavior(
                     yawLeft = { isKeyPressed(Key.A) },
                     yawRight = { isKeyPressed(Key.D) }
                 ))
+                behaviour(ForwardMovementBehavior(isMovingForward = { isKeyPressed(Key.Up) }))
             }
 
             var chaseCam: ChaseCamera? = null
