@@ -32,12 +32,12 @@ class ShipGame : Application {
 
             entity("ship", "models/ship.glb") {
                 position(0.0f, 0.0f, 0.0f)
-                behaviour(ThrustBehavior(isThrusting = { isKeyPressed(Key.W) }))
+                behaviour(ThrustBehavior(isThrusting = { isKeyPressed(Key.Up) }))
                 behaviour(YawBehavior(
                     yawLeft = { isKeyPressed(Key.A) },
                     yawRight = { isKeyPressed(Key.D) }
                 ))
-                behaviour(ForwardMovementBehavior(isMovingForward = { isKeyPressed(Key.Up) }))
+                behaviour(ForwardMovementBehavior(isMovingForward = { isKeyPressed(Key.W) }))
             }
 
             var chaseCam: ChaseCamera? = null
@@ -48,23 +48,24 @@ class ShipGame : Application {
                 chaseCam = ChaseCamera(scene.activeCamera()!!, scene.entities["ship"]!!.entity)
             }
 
-            onSceneUpdate { scene, _, deltaTime ->
+            onBeforeSceneUpdate { scene, _, deltaTime ->
                 if (isKeyPressed(Key.Num1)) {
                     scene.setActiveCamera("camera1")
                 }
                 if (isKeyPressed(Key.Num2)) {
                     scene.setActiveCamera("camera2")
                 }
-
-                handleCameraInput(scene, deltaTime)
-                if (scene.activeCamera() == scene.cameras["camera2"]) {
-                    handleCameraInput(scene, deltaTime)
-                }
-
-                chaseCam?.update(deltaTime)
             }
 
+            onSceneUpdate { scene, _ ->
+                if (scene.activeCamera() == scene.cameras["camera2"]) {
+                    handleCameraInput(scene, fixedTimeStep)
+                }
+
+                chaseCam?.update(fixedTimeStep)
+            }
         }
+
         setActiveScene("main")
     }
 

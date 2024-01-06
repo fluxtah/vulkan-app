@@ -3,6 +3,7 @@ package com.fluxtah.application.apps.shipgame.ship
 import com.fluxtah.application.api.Entity
 import com.fluxtah.application.api.EntityBehavior
 import com.fluxtah.application.api.Scene
+import com.fluxtah.application.api.fixedTimeStep
 
 class YawBehavior(
     private val yawLeft: () -> Boolean,
@@ -10,7 +11,7 @@ class YawBehavior(
 ) : EntityBehavior {
     private val yawSpeed = 50.0f // Increased for faster rotation
 
-    override fun update(scene: Scene, entity: Entity, time: Float, deltaTime: Float) {
+    override fun update(scene: Scene, entity: Entity, time: Float) {
         var yawDirection = 0.0f
         if (yawLeft()) {
             yawDirection -= 1.0f
@@ -19,7 +20,7 @@ class YawBehavior(
             yawDirection += 1.0f
         }
 
-        val yawIncrement = yawSpeed * yawDirection * deltaTime
+        val yawIncrement = yawSpeed * yawDirection * fixedTimeStep
 
         // Apply the yaw increment to the entity's rotation
         entity.rotate(0.0f, -yawIncrement, 0.0f)

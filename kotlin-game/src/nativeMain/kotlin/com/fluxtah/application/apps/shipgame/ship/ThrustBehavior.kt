@@ -1,10 +1,7 @@
 package com.fluxtah.application.apps.shipgame.ship
 
-import com.fluxtah.application.api.Entity
-import com.fluxtah.application.api.EntityBehavior
-import com.fluxtah.application.api.Scene
+import com.fluxtah.application.api.*
 import com.fluxtah.application.api.input.Key
-import com.fluxtah.application.api.isKeyPressed
 
 class ThrustBehavior(private val isThrusting: () -> Boolean) : EntityBehavior {
     private var velocityY = 0.0f
@@ -18,13 +15,19 @@ class ThrustBehavior(private val isThrusting: () -> Boolean) : EntityBehavior {
     private val overshootDamping = 0.95f
     private val hoverDamping = 0.99f
     private val maxVelocity = 3.0f
+    private var thrusting = false
 
-    override fun update(scene: Scene, entity: Entity, time: Float, deltaTime: Float) {
+    override fun beforeUpdate(scene: Scene, entity: Entity, time: Float, deltaTime: Float) {
+        // We call native less often if we cache the result of isThrusting() before update() is called
+        thrusting = isThrusting()
+    }
+
+    override fun update(scene: Scene, entity: Entity, time: Float) {
         // Adjust thrust based on key input
-        if (isThrusting()) {
-            thrust = (thrust + thrustIncrement * deltaTime).coerceAtMost(maxThrust)
+        if (thrusting) {
+            thrust = (thrust + thrustIncrement * fixedTimeStep).coerceAtMost(maxThrust)
         } else if (thrust > 0.0f) {
-            thrust = (thrust - thrustIncrement * deltaTime).coerceAtLeast(0.0f)
+            thrust = (thrust - thrustIncrement * fixedTimeStep).coerceAtLeast(0.0f)
         }
 
         // Calculate forces and acceleration
@@ -33,8 +36,8 @@ class ThrustBehavior(private val isThrusting: () -> Boolean) : EntityBehavior {
         val acceleration = netForce / shipMass
 
         // Update velocity and position
-        velocityY += acceleration * deltaTime
-        positionY += velocityY * deltaTime
+        velocityY += acceleration * fixedTimeStep
+        positionY += velocityY * fixedTimeStep
 
         // Apply max velocity
         velocityY = velocityY.coerceAtMost(maxVelocity)

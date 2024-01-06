@@ -11,7 +11,9 @@ import kotlin.experimental.ExperimentalNativeApi
 
 interface Application {
     fun initialize()
-    fun update(time: Float, deltaTime: Float) {}
+    fun beforeUpdate(time: Float, deltaTime: Float) {}
+    fun update(time: Float) {}
+    fun afterUpdate(time: Float, deltaTime: Float) {}
 }
 
 fun isKeyPressed(key: Key): Boolean {
@@ -32,7 +34,7 @@ fun ktInitApplication() {
     applicationInstance.initialize()
 }
 
-private const val fixedTimeStep = 1.0f / 60.0f // Fixed timestep (e.g., 60 updates per second)
+const val fixedTimeStep = 1.0f / 60.0f // Fixed timestep (e.g., 60 updates per second)
 private var accumulatedTime = 0.0f
 
 @OptIn(kotlin.experimental.ExperimentalNativeApi::class)
@@ -40,21 +42,45 @@ private var accumulatedTime = 0.0f
 fun ktUpdateApplication(time: Float, deltaTime: Float) {
     val activeSceneInfo = activeScene
     accumulatedTime += deltaTime
+    val scene = activeSceneInfo?.scene
+
+    if (scene != null) {
+        activeSceneInfo.onSceneBeforeUpdate?.invoke(activeSceneInfo.scene, time, deltaTime)
+        scene.entities.values.forEach {
+            it.behaviors.forEach { behavior ->
+                behavior.beforeUpdate(scene, it.entity, time, deltaTime)
+            }
+            it.onSceneBeforeEntityUpdate?.invoke(scene, it.entity, time, deltaTime)
+        }
+    }
+
+    applicationInstance.beforeUpdate(time, deltaTime)
 
     while (accumulatedTime >= fixedTimeStep) {
-        if (activeSceneInfo != null) {
-            activeSceneInfo.onSceneUpdate?.invoke(activeSceneInfo.scene, time, fixedTimeStep)
-            val scene = activeSceneInfo.scene
+        if (scene != null) {
+            activeSceneInfo.onSceneUpdate?.invoke(activeSceneInfo.scene, time)
             scene.entities.values.forEach {
                 it.behaviors.forEach { behavior ->
-                    behavior.update(scene, it.entity, time, fixedTimeStep)
+                    behavior.update(scene, it.entity, time)
                 }
-                it.onSceneEntityUpdate?.invoke(scene, it.entity, time, fixedTimeStep)
+                it.onSceneEntityUpdate?.invoke(scene, it.entity, time)
             }
         }
-        applicationInstance.update(time, fixedTimeStep)
+        applicationInstance.update(time)
         accumulatedTime -= fixedTimeStep
     }
+
+    if (scene != null) {
+        activeSceneInfo.onSceneAfterUpdate?.invoke(activeSceneInfo.scene, time, deltaTime)
+        scene.entities.values.forEach {
+            it.behaviors.forEach { behavior ->
+                behavior.beforeUpdate(scene, it.entity, time, deltaTime)
+            }
+            it.onSceneAfterEntityUpdate?.invoke(scene, it.entity, time, deltaTime)
+        }
+    }
+
+    applicationInstance.afterUpdate(time, deltaTime)
 }
 
 @OptIn(ExperimentalNativeApi::class, ExperimentalForeignApi::class)

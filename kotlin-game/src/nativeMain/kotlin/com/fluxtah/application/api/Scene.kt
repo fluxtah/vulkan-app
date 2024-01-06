@@ -10,12 +10,16 @@ private val scenes = mutableMapOf<String, SceneInfo>()
 data class SceneInfo(
     val scene: Scene,
     val onSceneCreated: ((Scene) -> Unit)?,
-    val onSceneUpdate: OnSceneUpdate?
+    val onSceneUpdate: OnSceneUpdate?,
+    val onSceneBeforeUpdate: OnSceneBeforeUpdate?,
+    val onSceneAfterUpdate: OnSceneAfterUpdate?
 )
 
 data class EntityInfo(
     val entity: Entity,
     val onSceneEntityUpdate: OnSceneEntityUpdate?,
+    val onSceneBeforeEntityUpdate: OnSceneBeforeEntityUpdate?,
+    val onSceneAfterEntityUpdate: OnSceneAfterEntityUpdate?,
     val behaviors: MutableList<EntityBehavior>
 )
 
@@ -39,8 +43,12 @@ class Scene {
     }
 }
 
-typealias OnSceneUpdate = ((scene: Scene, time: Float, deltaTime: Float) -> Unit)
-typealias OnSceneEntityUpdate = ((scene: Scene, entity: Entity, time: Float, deltaTime: Float) -> Unit)
+typealias OnSceneUpdate = ((scene: Scene, time: Float) -> Unit)
+typealias OnSceneBeforeUpdate = ((scene: Scene, time: Float, deltaTime: Float) -> Unit)
+typealias OnSceneAfterUpdate = ((scene: Scene, time: Float, deltaTime: Float) -> Unit)
+typealias OnSceneEntityUpdate = ((scene: Scene, entity: Entity, time: Float) -> Unit)
+typealias OnSceneBeforeEntityUpdate = ((scene: Scene, entity: Entity, time: Float, deltaTime: Float) -> Unit)
+typealias OnSceneAfterEntityUpdate = ((scene: Scene, entity: Entity, time: Float, deltaTime: Float) -> Unit)
 
 fun Application.scene(): Scene {
     return activeScene?.scene ?: throw Exception("No active scene")
@@ -62,6 +70,8 @@ class SceneBuilder(val sceneId: String) {
 
     private var onSceneCreated: ((scene: Scene) -> Unit)? = null
     private var onSceneUpdate: OnSceneUpdate? = null
+    private var onSceneBeforeUpdate: OnSceneBeforeUpdate? = null
+    private var onSceneAfterUpdate: OnSceneAfterUpdate? = null
 
     fun camera(id: String, builder: CameraBuilder.() -> Unit) {
         if(cameras.containsKey(id)) {
@@ -106,7 +116,9 @@ class SceneBuilder(val sceneId: String) {
         return SceneInfo(
             scene,
             onSceneCreated,
-            onSceneUpdate
+            onSceneUpdate,
+            onSceneBeforeUpdate,
+            onSceneAfterUpdate
         )
     }
 
@@ -116,6 +128,12 @@ class SceneBuilder(val sceneId: String) {
 
     fun onSceneUpdate(block: OnSceneUpdate) {
         onSceneUpdate = block
+    }
+    fun onBeforeSceneUpdate(block: OnSceneBeforeUpdate) {
+        onSceneBeforeUpdate = block
+    }
+    fun onAfterSceneUpdate(block: OnSceneAfterUpdate) {
+        onSceneAfterUpdate = block
     }
 }
 

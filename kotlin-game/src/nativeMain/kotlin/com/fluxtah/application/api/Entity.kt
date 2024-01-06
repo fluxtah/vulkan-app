@@ -85,6 +85,8 @@ class EntityBuilder(private val modelPath: String) {
     private var scaleZ: Float = 1.0f
 
     private var onSceneEntityUpdate: OnSceneEntityUpdate? = null
+    private var onSceneBeforeEntityUpdate: OnSceneBeforeEntityUpdate? = null
+    private var onSceneAfterEntityUpdate: OnSceneAfterEntityUpdate? = null
 
     private val behaviors = mutableListOf<EntityBehavior>()
 
@@ -108,6 +110,14 @@ class EntityBuilder(private val modelPath: String) {
 
     fun onSceneUpdate(block: OnSceneEntityUpdate) {
         onSceneEntityUpdate = block
+    }
+
+    fun onSceneBeforeUpdate(block: OnSceneBeforeEntityUpdate) {
+        onSceneBeforeEntityUpdate = block
+    }
+
+    fun onSceneAfterUpdate(block: OnSceneAfterEntityUpdate) {
+        onSceneAfterEntityUpdate = block
     }
 
     fun behaviour(behavior: EntityBehavior) {
@@ -140,6 +150,8 @@ class EntityBuilder(private val modelPath: String) {
                 initialPositionZ = positionZ
             ),
             onSceneEntityUpdate = onSceneEntityUpdate,
+            onSceneBeforeEntityUpdate = onSceneBeforeEntityUpdate,
+            onSceneAfterEntityUpdate = onSceneAfterEntityUpdate,
             behaviors = behaviors
         )
     }
