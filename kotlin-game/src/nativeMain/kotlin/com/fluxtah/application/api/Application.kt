@@ -74,7 +74,7 @@ fun ktUpdateApplication(time: Float, deltaTime: Float) {
         activeSceneInfo.onSceneAfterUpdate?.invoke(activeSceneInfo.scene, time, deltaTime)
         scene.entities.values.forEach {
             it.behaviors.forEach { behavior ->
-                behavior.beforeUpdate(scene, it.entity, time, deltaTime)
+                behavior.afterUpdate(scene, it.entity, time, deltaTime)
             }
             it.onSceneAfterEntityUpdate?.invoke(scene, it.entity, time, deltaTime)
         }

@@ -5,10 +5,20 @@ import com.fluxtah.application.api.input.Key
 import com.fluxtah.application.apps.shipgame.ship.ForwardMovementBehavior
 import com.fluxtah.application.apps.shipgame.ship.ThrustBehavior
 import com.fluxtah.application.apps.shipgame.ship.YawBehavior
+import platform.posix.printf
 
+/*
+TODO
+1. Get sounds working
+2. Get guns working (firing projectiles)
+3. Have a reloading tile where ships fly over to reload guns
+4. Introduce enemies that can be shot down
+*/
 class ShipGame : Application {
     override fun initialize() {
         scene("main") {
+            printf("HELLO WORLD\n")
+            println("HELLO PRINT LN")
             camera("camera1") {
                 position(4.0f, 5.0f, -4.0f)
                 fieldOfView(90.0f)

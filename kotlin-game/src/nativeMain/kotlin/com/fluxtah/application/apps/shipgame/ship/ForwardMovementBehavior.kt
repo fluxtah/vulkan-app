@@ -4,7 +4,7 @@ import com.fluxtah.application.api.Entity
 import com.fluxtah.application.api.EntityBehavior
 import com.fluxtah.application.api.Scene
 import com.fluxtah.application.api.fixedTimeStep
-import com.fluxtah.application.apps.shipgame.Vector3
+import com.fluxtah.application.api.math.Vector3
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin

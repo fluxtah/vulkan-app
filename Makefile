@@ -249,6 +249,30 @@ src/renderobject.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/renderobject.c.s
 .PHONY : src/renderobject.c.s
 
+src/ubo_update.o: src/ubo_update.c.o
+.PHONY : src/ubo_update.o
+
+# target to build an object file
+src/ubo_update.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/ubo_update.c.o
+.PHONY : src/ubo_update.c.o
+
+src/ubo_update.i: src/ubo_update.c.i
+.PHONY : src/ubo_update.i
+
+# target to preprocess a source file
+src/ubo_update.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/ubo_update.c.i
+.PHONY : src/ubo_update.c.i
+
+src/ubo_update.s: src/ubo_update.c.s
+.PHONY : src/ubo_update.s
+
+# target to generate assembly for a file
+src/ubo_update.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/ubo_update.c.s
+.PHONY : src/ubo_update.c.s
+
 src/util_strings.o: src/util_strings.c.o
 .PHONY : src/util_strings.o
 
@@ -729,6 +753,9 @@ help:
 	@echo "... src/renderobject.o"
 	@echo "... src/renderobject.i"
 	@echo "... src/renderobject.s"
+	@echo "... src/ubo_update.o"
+	@echo "... src/ubo_update.i"
+	@echo "... src/ubo_update.s"
 	@echo "... src/util_strings.o"
 	@echo "... src/util_strings.i"
 	@echo "... src/util_strings.s"

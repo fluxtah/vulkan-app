@@ -17,6 +17,8 @@ add_executable(Game
         src/renderobject.c
 
         include/ubo.h
+        include/ubo_update.h
+        src/ubo_update.c
 
         include/util_strings.h
         src/util_strings.c
@@ -79,7 +81,10 @@ add_executable(Game
 
         libs/stb_image.h
         src/light.c
+
         include/light.h
+
+        libs/dr_wav.h
 )
 
 include_directories(kotlin-game/build/bin/native/releaseShared)
