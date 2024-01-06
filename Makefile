@@ -249,6 +249,30 @@ src/renderobject.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/renderobject.c.s
 .PHONY : src/renderobject.c.s
 
+src/sound.o: src/sound.c.o
+.PHONY : src/sound.o
+
+# target to build an object file
+src/sound.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/sound.c.o
+.PHONY : src/sound.c.o
+
+src/sound.i: src/sound.c.i
+.PHONY : src/sound.i
+
+# target to preprocess a source file
+src/sound.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/sound.c.i
+.PHONY : src/sound.c.i
+
+src/sound.s: src/sound.c.s
+.PHONY : src/sound.s
+
+# target to generate assembly for a file
+src/sound.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/sound.c.s
+.PHONY : src/sound.c.s
+
 src/ubo_update.o: src/ubo_update.c.o
 .PHONY : src/ubo_update.o
 
@@ -753,6 +777,9 @@ help:
 	@echo "... src/renderobject.o"
 	@echo "... src/renderobject.i"
 	@echo "... src/renderobject.s"
+	@echo "... src/sound.o"
+	@echo "... src/sound.i"
+	@echo "... src/sound.s"
 	@echo "... src/ubo_update.o"
 	@echo "... src/ubo_update.i"
 	@echo "... src/ubo_update.s"

@@ -19,6 +19,11 @@ go to website to get the SDK
 brew install cglm
 ```
 
+## Install OpenAL
+```
+brew install openal-soft
+```
+
 ## Compiling Shaders
 ```
 glslangvalidator -V shaders/basic.frag -o shaders/basic.frag.spv

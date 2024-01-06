@@ -1,6 +1,6 @@
 #include "include/vulkan/renderpass.h"
 
-VkRenderPass createRenderPass(VulkanContext *context) {
+VkRenderPass createRenderPass(ApplicationContext *context) {
     // Color attachment
     VkAttachmentReference colorAttachmentRef = {};
     colorAttachmentRef.attachment = 0;
@@ -66,6 +66,6 @@ VkRenderPass createRenderPass(VulkanContext *context) {
     return renderPass;
 }
 
-void destroyRenderPass(VulkanContext *context, VkRenderPass renderPass) {
+void destroyRenderPass(ApplicationContext *context, VkRenderPass renderPass) {
     vkDestroyRenderPass(context->device, renderPass, NULL);
 }

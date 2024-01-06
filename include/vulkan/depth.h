@@ -6,11 +6,11 @@
 #include <stdlib.h>
 
 #include "image.h"
-#include "context.h"
+#include "include/context.h"
 
 VkFormat findDepthFormat(VkPhysicalDevice physicalDevice);
 
-void createDepthResources(VulkanContext *context, VkCommandPool commandPool, VkImage *depthImage,
+void createDepthResources(ApplicationContext *context, VkCommandPool commandPool, VkImage *depthImage,
                           VkDeviceMemory *depthImageMemory, VkImageView *depthImageView);
 
 #endif //VULKAN_DEPTH_H

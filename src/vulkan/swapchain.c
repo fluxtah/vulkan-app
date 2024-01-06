@@ -1,6 +1,6 @@
 #include "include/vulkan/swapchain.h"
 
-VkSwapchainKHR createSwapChain(VulkanContext *context) {
+VkSwapchainKHR createSwapChain(ApplicationContext *context) {
     VkSurfaceCapabilitiesKHR capabilities;
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(context->physicalDevice, context->surface, &capabilities);
 
@@ -45,7 +45,7 @@ VkSwapchainKHR createSwapChain(VulkanContext *context) {
     return swapChain;
 }
 
-void createSwapChainImageViews(VulkanContext *context) {
+void createSwapChainImageViews(ApplicationContext *context) {
     vkGetSwapchainImagesKHR(context->device, context->swapChain, &context->swapChainImageCount, NULL);
 
     VkImage *swapChainImages = malloc(sizeof(VkImage) * context->swapChainImageCount);

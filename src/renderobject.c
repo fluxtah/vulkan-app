@@ -1,6 +1,6 @@
 #include "include/renderobject.h"
 
-RenderObject *createRenderObjectFromFile(VulkanContext *context, const char *filename, CreateEntityInfo *info) {
+RenderObject *createRenderObjectFromFile(ApplicationContext *context, const char *filename, CreateEntityInfo *info) {
     RenderObject *obj = malloc(sizeof(RenderObject));
     obj->scale[0] = info->scaleX;
     obj->scale[1] = info->scaleY;
@@ -71,7 +71,7 @@ RenderObject *createRenderObjectFromFile(VulkanContext *context, const char *fil
     return obj;
 }
 
-void setupTextureFromImageData(VulkanContext *context, ModelImageData *imageData, ImageMemory *imageMemory) {
+void setupTextureFromImageData(ApplicationContext *context, ModelImageData *imageData, ImageMemory *imageMemory) {
     // Create a staging buffer for the image data
     BufferMemory *textureStagingBuffer = (BufferMemory *) malloc(sizeof(BufferMemory));
     createStagingBufferMemory(context, imageData->image_size, imageData->image_data, textureStagingBuffer);
@@ -117,7 +117,7 @@ void positionRenderObject(RenderObject *obj, float x, float y, float z) {
     obj->position[2] = z;
 }
 
-void destroyRenderObject(VulkanContext *context, RenderObject *obj) {
+void destroyRenderObject(ApplicationContext *context, RenderObject *obj) {
     // Destroy UBO's
     destroyBufferMemory(context, obj->transformUBO);
     destroyBufferMemory(context, obj->lightingUBO);

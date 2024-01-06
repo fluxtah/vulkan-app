@@ -1,6 +1,6 @@
 #include "include/vulkan/render.h"
 
-void renderSubmit(VulkanContext *context, VkSemaphore *waitSemaphores, VkSemaphore *signalSemaphores,
+void renderSubmit(ApplicationContext *context, VkSemaphore *waitSemaphores, VkSemaphore *signalSemaphores,
                   VkFence inFlightFence, VkCommandBuffer *commandBuffers, uint32_t imageIndex) {
     VkSubmitInfo submitInfo = {};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -22,7 +22,7 @@ void renderSubmit(VulkanContext *context, VkSemaphore *waitSemaphores, VkSemapho
     }
 }
 
-void renderPresent(VulkanContext *context, VkSwapchainKHR swapChain, VkSemaphore *signalSemaphores, uint32_t imageIndex) {
+void renderPresent(ApplicationContext *context, VkSwapchainKHR swapChain, VkSemaphore *signalSemaphores, uint32_t imageIndex) {
     VkPresentInfoKHR presentInfo = {};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     presentInfo.waitSemaphoreCount = 1;

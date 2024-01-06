@@ -12,16 +12,16 @@
 #include "include/vulkan/commandbuffer.h"
 #include "include/vulkan/descriptor.h"
 #include "include/vulkan/depth.h"
-#include "include/vulkan/context.h"
+#include "include/context.h"
 #include "include/vulkan/render.h"
 
 #include "libkotlin_game_api.h"
 #include "kotlin-game/cinterop/model.h"
-#include "include/ubo.h"
 #include "include/ubo_update.h"
 #include "include/renderobject.h"
 #include "include/camera.h"
 #include "include/light.h"
+#include "include/sound.h"
 
 #include <stdlib.h>
 #include <vulkan/vulkan.h>
@@ -52,7 +52,7 @@ int isKeyPressed(int key) {
     return -1;
 }
 
-void setActiveCamera(VulkanContext *context, Camera *camera) {
+void setActiveCamera(ApplicationContext *context, Camera *camera) {
     context->activeCamera = camera;
 
     // Default to extent
@@ -98,11 +98,16 @@ int main() {
     // Create the Kotlin Application
     ktCreateApplication();
 
-    VulkanContext context;
+    ApplicationContext context;
     if (setupVulkan(&context) == -1) {
         printf("Something went wrong with setting up Vulkan");
         return -1;
     }
+    context.audioContext = createAudioContext();
+
+    AudioSource *sound = loadSound("sounds/rough-riddim-005.wav");
+
+    playSound(sound);
 
     glfwSetKeyCallback(context.window, key_callback);
 
@@ -289,6 +294,9 @@ int main() {
     context.activeCamera = NULL;
 
     vkDestroySwapchainKHR(context.device, context.swapChain, NULL);
+
+    destroySound(sound);
+    destroyAudioContext(context.audioContext);
 
     destroyVulkan(&context);
 

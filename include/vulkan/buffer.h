@@ -2,7 +2,7 @@
 #define VULKAN_BUFFER_H
 
 #include "include/vulkan/memory.h"
-#include "context.h"
+#include "include/context.h"
 #include <vulkan/vulkan.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -13,14 +13,14 @@ typedef struct {
     VkDeviceMemory memory;
 } BufferMemory;
 
-void createBufferMemory(VulkanContext *context, BufferMemory *bufferMemory, VkDeviceSize size, VkBufferUsageFlags usage,
+void createBufferMemory(ApplicationContext *context, BufferMemory *bufferMemory, VkDeviceSize size, VkBufferUsageFlags usage,
                         VkMemoryPropertyFlags properties);
 
-void destroyBufferMemory(VulkanContext *context, BufferMemory *bufferMemory);
+void destroyBufferMemory(ApplicationContext *context, BufferMemory *bufferMemory);
 
-BufferMemory createStagingBufferMemory(VulkanContext *context, VkDeviceSize size, const void *data, BufferMemory *stagingBufferMemory);
+BufferMemory createStagingBufferMemory(ApplicationContext *context, VkDeviceSize size, const void *data, BufferMemory *stagingBufferMemory);
 
-void createStagedBufferMemory(VulkanContext *context, VkCommandPool commandPool,
+void createStagedBufferMemory(ApplicationContext *context, VkCommandPool commandPool,
                               BufferMemory *bufferMemory, VkDeviceSize size,
                               VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, void *data);
 

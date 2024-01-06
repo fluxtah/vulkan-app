@@ -5,7 +5,6 @@ import com.fluxtah.application.api.input.Key
 import com.fluxtah.application.apps.shipgame.ship.ForwardMovementBehavior
 import com.fluxtah.application.apps.shipgame.ship.ThrustBehavior
 import com.fluxtah.application.apps.shipgame.ship.YawBehavior
-import platform.posix.printf
 
 /*
 TODO
@@ -17,8 +16,6 @@ TODO
 class ShipGame : Application {
     override fun initialize() {
         scene("main") {
-            printf("HELLO WORLD\n")
-            println("HELLO PRINT LN")
             camera("camera1") {
                 position(4.0f, 5.0f, -4.0f)
                 fieldOfView(90.0f)
@@ -30,7 +27,15 @@ class ShipGame : Application {
             light("light") {
                 type(LightType.Directional)
                 color(1.0f, 1.0f, 1.0f, 1.0f)
-                position(0.0f, 5.0f, 0.0f)
+                position(0.0f, 50.0f, 0.0f)
+                direction(0.5f, -1.0f, 0.0f)
+                intensity(1.0f)
+            }
+
+            light("light2") {
+                type(LightType.Point)
+                color(1.0f, 1.0f, 1.0f, 1.0f)
+                position(0.0f, 1.5f, 0.0f)
                 direction(0.5f, -1.0f, 0.0f)
                 intensity(1.0f)
             }

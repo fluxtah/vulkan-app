@@ -3,6 +3,7 @@ project(Game C)
 
 find_package(Vulkan REQUIRED)
 find_package(glfw3 REQUIRED)
+find_package(OpenAL REQUIRED)
 
 add_executable(Game
         src/main.c
@@ -71,7 +72,7 @@ add_executable(Game
         include/vulkan/sampler.h
         src/vulkan/sampler.c
 
-        include/vulkan/context.h
+        include/context.h
 
         include/camera.h
         src/camera.c
@@ -85,12 +86,17 @@ add_executable(Game
         include/light.h
 
         libs/dr_wav.h
+        src/sound.c
+        include/sound.h
 )
 
 include_directories(kotlin-game/build/bin/native/releaseShared)
 include_directories(kotlin-game/cinterop)
 target_include_directories(Game PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(Game PRIVATE ${Vulkan_INCLUDE_DIRS})
+target_include_directories(Game PRIVATE ${OPENAL_INCLUDE_DIRS})
+
+target_link_libraries(Game OpenAL::OpenAL)
 
 add_library(kotlin_library SHARED IMPORTED)
 set_target_properties(kotlin_library PROPERTIES

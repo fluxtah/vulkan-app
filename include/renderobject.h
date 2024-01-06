@@ -4,7 +4,7 @@
 #include "include/modeldata.h"
 #include "include/ubo.h"
 #include "include/vulkan/buffer.h"
-#include "include/vulkan/context.h"
+#include "context.h"
 #include "include/vulkan/descriptor.h"
 #include "include/vulkan/image.h"
 
@@ -37,12 +37,12 @@ typedef struct {
 
 } RenderObject;
 
-RenderObject *createRenderObjectFromFile(VulkanContext *context, const char *filename, CreateEntityInfo *info);
-void setupTextureFromImageData(VulkanContext *context, ModelImageData *imageData, ImageMemory *imageMemory);
+RenderObject *createRenderObjectFromFile(ApplicationContext *context, const char *filename, CreateEntityInfo *info);
+void setupTextureFromImageData(ApplicationContext *context, ModelImageData *imageData, ImageMemory *imageMemory);
 
 void rotateRenderObject(RenderObject *obj, float x, float y, float z);
 void translateRenderObject(RenderObject *obj, float x, float y, float z);
 void positionRenderObject(RenderObject *obj, float x, float y, float z);
 
-void destroyRenderObject(VulkanContext *context, RenderObject *obj);
+void destroyRenderObject(ApplicationContext *context, RenderObject *obj);
 #endif //APP_RENDEROBJECT_H

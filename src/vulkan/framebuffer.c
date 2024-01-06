@@ -1,6 +1,6 @@
 #include "include/vulkan/framebuffer.h"
 
-VkFramebuffer *createSwapChainFramebuffers(VulkanContext *context, VkImageView *swapChainImageViews, uint32_t imageCount,
+VkFramebuffer *createSwapChainFramebuffers(ApplicationContext *context, VkImageView *swapChainImageViews, uint32_t imageCount,
                                            VkRenderPass renderPass, VkImageView depthImageView) {
     // Allocate memory for framebuffers
     VkFramebuffer *swapChainFramebuffers = malloc(sizeof(VkFramebuffer) * imageCount);

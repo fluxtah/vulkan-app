@@ -54,9 +54,9 @@ class ThrustBehavior(private val isThrusting: () -> Boolean) : EntityBehavior {
         entity.position(y = state.positionY)
     }
 
-    override fun afterUpdate(scene: Scene, entity: Entity, time: Float, deltaTime: Float) {
-        println("\rState: $state")
-    }
+//    override fun afterUpdate(scene: Scene, entity: Entity, time: Float, deltaTime: Float) {
+//        println("\rState: $state")
+//    }
 
     data class ThrustBehaviorState(
         var velocityY: Float = 0.0f,

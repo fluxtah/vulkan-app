@@ -90,7 +90,7 @@ VkDevice createLogicalDevice(VkPhysicalDevice physicalDevice, VkSurfaceKHR surfa
     return device;
 }
 
-VkSurfaceFormatKHR getBestSurfaceFormat(VulkanContext *context) {
+VkSurfaceFormatKHR getBestSurfaceFormat(ApplicationContext *context) {
     uint32_t formatCount;
     vkGetPhysicalDeviceSurfaceFormatsKHR(context->physicalDevice, context->surface, &formatCount, NULL);
     VkSurfaceFormatKHR *formats = malloc(formatCount * sizeof(VkSurfaceFormatKHR));
@@ -111,7 +111,7 @@ VkSurfaceFormatKHR getBestSurfaceFormat(VulkanContext *context) {
     return surfaceFormat;
 }
 
-VkPresentModeKHR getBestPresentMode(VulkanContext *context) {
+VkPresentModeKHR getBestPresentMode(ApplicationContext *context) {
     uint32_t presentModeCount;
     vkGetPhysicalDeviceSurfacePresentModesKHR(context->physicalDevice, context->surface, &presentModeCount, NULL);
     VkPresentModeKHR *presentModes = malloc(presentModeCount * sizeof(VkPresentModeKHR));
@@ -132,7 +132,7 @@ VkPresentModeKHR getBestPresentMode(VulkanContext *context) {
     return presentMode;
 }
 
-int setupVulkan(VulkanContext *context) {
+int setupVulkan(ApplicationContext *context) {
     context->window = initWindow();
     if (!context->window)
         return -1;
@@ -177,7 +177,7 @@ int setupVulkan(VulkanContext *context) {
     return 0;
 }
 
-void destroyVulkan(VulkanContext *context) {
+void destroyVulkan(ApplicationContext *context) {
     vkDestroySampler(context->device, context->sampler, NULL);
     vkDestroyCommandPool(context->device, context->commandPool, NULL);
     vkDestroySurfaceKHR(context->instance, context->surface, NULL);

@@ -19,7 +19,7 @@ VkFormat findDepthFormat(VkPhysicalDevice physicalDevice) {
 }
 
 void
-createDepthResources(VulkanContext *context, VkCommandPool commandPool, VkImage *depthImage,
+createDepthResources(ApplicationContext *context, VkCommandPool commandPool, VkImage *depthImage,
                      VkDeviceMemory *depthImageMemory, VkImageView *depthImageView) {
     VkFormat depthFormat = findDepthFormat(context->physicalDevice);
 

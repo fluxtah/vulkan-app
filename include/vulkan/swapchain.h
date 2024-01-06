@@ -5,9 +5,9 @@
 #include <GLFW/glfw3.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "context.h"
+#include "include/context.h"
 
-VkSwapchainKHR createSwapChain(VulkanContext *context);
-void createSwapChainImageViews(VulkanContext *context);
+VkSwapchainKHR createSwapChain(ApplicationContext *context);
+void createSwapChainImageViews(ApplicationContext *context);
 
 #endif // VULKAN_SWAPCHAIN_H

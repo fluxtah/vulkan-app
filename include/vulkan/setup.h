@@ -1,7 +1,7 @@
 #ifndef VULKAN_SETUP_H
 #define VULKAN_SETUP_H
 
-#include "context.h"
+#include "include/context.h"
 #include "include/window.h"
 #include "instance.h"
 #include "physicaldevice.h"
@@ -15,14 +15,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int setupVulkan(VulkanContext *context);
-void destroyVulkan(VulkanContext *context);
+int setupVulkan(ApplicationContext *context);
+void destroyVulkan(ApplicationContext *context);
 
 VkSurfaceKHR createVulkanSurface(VkInstance instance, GLFWwindow *window);
 
-VkSurfaceFormatKHR getBestSurfaceFormat(VulkanContext *context);
+VkSurfaceFormatKHR getBestSurfaceFormat(ApplicationContext *context);
 
-VkPresentModeKHR getBestPresentMode(VulkanContext *context);
+VkPresentModeKHR getBestPresentMode(ApplicationContext *context);
 
 VkDevice createLogicalDevice(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32_t *graphicsQueueFamilyIndex,
                              uint32_t *presentQueueFamilyIndex);
