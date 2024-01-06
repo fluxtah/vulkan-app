@@ -14,19 +14,19 @@ typealias CEntity = CPointer<CPointed>
 typealias CCreateEntityInfo = CPointer<CreateEntityInfo>
 
 @OptIn(ExperimentalForeignApi::class)
-typealias CreateEntityFunc = (CVulkanContext, String, CCreateEntityInfo) -> CEntity
+typealias CreateEntityFunc = (CVulkanContext, CPointer<ByteVar>, CCreateEntityInfo) -> CEntity
 
 @OptIn(ExperimentalForeignApi::class)
 var c_createEntity: CreateEntityFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktSetCreateEntityFunc")
-fun ktSetCreateEntityFunc(callback: CPointer<CFunction<(CVulkanContext, CPointer<ByteVar>, CCreateEntityInfo) -> CEntity>>) {
+fun ktSetCreateEntityFunc(callback: CPointer<CFunction<CreateEntityFunc>>) {
     c_createEntity = { context, name, info ->
         memScoped {
-            callback.reinterpret<CFunction<(CVulkanContext, CPointer<ByteVar>, CCreateEntityInfo) -> CEntity>>()(
+            callback.reinterpret<CFunction<CreateEntityFunc>>()(
                 context,
-                name.cstr.ptr,
+                name,
                 info
             )
         }

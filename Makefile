@@ -67,8 +67,8 @@ CMAKE_BINARY_DIR = /Users/ian.warwick/Documents/sdev/game
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
-	/opt/homebrew/Cellar/cmake/3.28.0/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "No interactive CMake dialog available..."
+	/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -152,6 +152,30 @@ src/camera.s: src/camera.c.s
 src/camera.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/camera.c.s
 .PHONY : src/camera.c.s
+
+src/kotlin.o: src/kotlin.c.o
+.PHONY : src/kotlin.o
+
+# target to build an object file
+src/kotlin.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/kotlin.c.o
+.PHONY : src/kotlin.c.o
+
+src/kotlin.i: src/kotlin.c.i
+.PHONY : src/kotlin.i
+
+# target to preprocess a source file
+src/kotlin.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/kotlin.c.i
+.PHONY : src/kotlin.c.i
+
+src/kotlin.s: src/kotlin.c.s
+.PHONY : src/kotlin.s
+
+# target to generate assembly for a file
+src/kotlin.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/kotlin.c.s
+.PHONY : src/kotlin.c.s
 
 src/light.o: src/light.c.o
 .PHONY : src/light.o
@@ -765,6 +789,9 @@ help:
 	@echo "... src/camera.o"
 	@echo "... src/camera.i"
 	@echo "... src/camera.s"
+	@echo "... src/kotlin.o"
+	@echo "... src/kotlin.i"
+	@echo "... src/kotlin.s"
 	@echo "... src/light.o"
 	@echo "... src/light.i"
 	@echo "... src/light.s"

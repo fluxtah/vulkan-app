@@ -86,4 +86,8 @@ typedef struct EntityArray {
     int size;     // Size of the array
 } EntityArray;
 
+typedef struct CreateSoundInfo {
+    int loop;
+} CreateSoundInfo;
+
 #endif // MODEL_H

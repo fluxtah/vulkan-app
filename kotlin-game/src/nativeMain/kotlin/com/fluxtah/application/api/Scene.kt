@@ -29,9 +29,10 @@ annotation class SceneDsl
 @OptIn(ExperimentalForeignApi::class)
 class Scene {
     private var activeCamera: Camera? = null
-    val cameras = mutableMapOf<String, Camera>()
-    val lights = mutableMapOf<String, Light>()
-    val entities = mutableMapOf<String, EntityInfo>()
+    internal val cameras = mutableMapOf<String, Camera>()
+    internal val lights = mutableMapOf<String, Light>()
+    internal val entities = mutableMapOf<String, EntityInfo>()
+    internal val sounds = mutableMapOf<String, Sound>()
 
     fun setActiveCamera(id: String) {
         activeCamera = cameras[id] ?: throw Exception("Camera with id $id does not exist")
@@ -67,6 +68,7 @@ class SceneBuilder(val sceneId: String) {
     private val entities = mutableMapOf<String, () -> EntityInfo>()
     private val cameras = mutableMapOf<String, () -> Camera>()
     private val lights = mutableMapOf<String, () -> Light>()
+    val sounds = mutableMapOf<String, () -> Sound>()
 
     private var onSceneCreated: ((scene: Scene) -> Unit)? = null
     private var onSceneUpdate: OnSceneUpdate? = null
@@ -74,7 +76,7 @@ class SceneBuilder(val sceneId: String) {
     private var onSceneAfterUpdate: OnSceneAfterUpdate? = null
 
     fun camera(id: String, builder: CameraBuilder.() -> Unit) {
-        if(cameras.containsKey(id)) {
+        if (cameras.containsKey(id)) {
             throw Exception("Entity with id $id already exists")
         }
         cameras[id] = {
@@ -83,7 +85,7 @@ class SceneBuilder(val sceneId: String) {
     }
 
     fun light(id: String, builder: LightBuilder.() -> Unit) {
-        if(lights.containsKey(id)) {
+        if (lights.containsKey(id)) {
             throw Exception("Entity with id $id already exists")
         }
         lights[id] = {
@@ -93,11 +95,20 @@ class SceneBuilder(val sceneId: String) {
 
     @OptIn(ExperimentalForeignApi::class)
     fun entity(id: String, modelPath: String, builder: EntityBuilder.() -> Unit) {
-        if(entities.containsKey(id)) {
+        if (entities.containsKey(id)) {
             throw Exception("Entity with id $id already exists")
         }
         entities[id] = {
             EntityBuilder(modelPath).apply(builder).build()
+        }
+    }
+
+    fun sound(id: String, soundPath: String, builder: SoundBuilder.() -> Unit) {
+        if (sounds.containsKey(id)) {
+            throw Exception("Entity with id $id already exists")
+        }
+        sounds[id] = {
+            SoundBuilder(soundPath).apply(builder).build()
         }
     }
 
@@ -113,6 +124,10 @@ class SceneBuilder(val sceneId: String) {
         entities.forEach { (id, builder) ->
             scene.entities[id] = builder.invoke()
         }
+        sounds.forEach { (id, builder) ->
+            scene.sounds[id] = builder.invoke()
+        }
+
         return SceneInfo(
             scene,
             onSceneCreated,
@@ -129,9 +144,11 @@ class SceneBuilder(val sceneId: String) {
     fun onSceneUpdate(block: OnSceneUpdate) {
         onSceneUpdate = block
     }
+
     fun onBeforeSceneUpdate(block: OnSceneBeforeUpdate) {
         onSceneBeforeUpdate = block
     }
+
     fun onAfterSceneUpdate(block: OnSceneAfterUpdate) {
         onSceneAfterUpdate = block
     }
@@ -148,6 +165,14 @@ fun Application.setActiveScene(id: String) {
 
         // Only once if the scene is new
         sceneInfo.onSceneCreated?.invoke(sceneInfo.scene)
+
+        // Initialize behaviours
+        sceneInfo.scene.entities.forEach {
+            it.value.behaviors.forEach { behavior ->
+                behavior.initialize(sceneInfo.scene, it.value.entity)
+            }
+            it.value.onSceneEntityUpdate
+        }
 
         // Set as active scene
         scenes[id] = sceneInfo

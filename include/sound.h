@@ -6,14 +6,15 @@
 #include <OpenAL/al.h>
 #include <OpenAL//alc.h>
 #include "libs/dr_wav.h"
+#include "model.h"
 
-typedef struct AudioSource {
+typedef struct Sound {
     short *data;
     size_t bufferSize;
     uint32_t sampleRate;
     ALuint buffer;
     ALuint source;
-} AudioSource;
+} Sound;
 
 typedef struct AudioContext {
     ALCdevice *device;
@@ -24,12 +25,11 @@ AudioContext *createAudioContext();
 
 void destroyAudioContext(AudioContext *context);
 
-AudioSource *loadSound(const char *filename);
+Sound *loadSound(const char *filename, CreateSoundInfo *info);
+void destroySound(Sound *sound);
 
-void playSound(AudioSource *audioSource);
-
-void destroySound(AudioSource *sound);
-
-int hasSoundFinishedPlaying(AudioSource *sound);
+void playSound(Sound *sound);
+int isSoundPlaying(Sound *sound);
+void stopSound(Sound *sound);
 
 #endif //APP_SOUND_H

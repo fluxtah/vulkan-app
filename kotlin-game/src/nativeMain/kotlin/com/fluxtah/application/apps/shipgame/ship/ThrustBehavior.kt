@@ -1,10 +1,15 @@
 package com.fluxtah.application.apps.shipgame.ship
 
 import com.fluxtah.application.api.*
-import com.fluxtah.application.api.input.Key
 
 class ThrustBehavior(private val isThrusting: () -> Boolean) : EntityBehavior {
     private val state = ThrustBehaviorState()
+
+    lateinit var thrustSound: Sound
+
+    override fun initialize(scene: Scene, entity: Entity) {
+        thrustSound = scene.sounds["up-thrust"]!!
+    }
 
     override fun beforeUpdate(scene: Scene, entity: Entity, time: Float, deltaTime: Float) {
         // We call native less often if we cache the result of isThrusting() before update() is called
@@ -14,8 +19,10 @@ class ThrustBehavior(private val isThrusting: () -> Boolean) : EntityBehavior {
     override fun update(scene: Scene, entity: Entity, time: Float) {
         // Adjust thrust based on key input
         if (state.thrusting) {
+            thrustSound.playIfNotPlaying()
             state.thrust = (state.thrust + state.thrustIncrement * fixedTimeStep).coerceAtMost(state.maxThrust)
         } else if (state.thrust > 0.0f) {
+            thrustSound.stopIfPlaying()
             state.thrust = (state.thrust - state.thrustIncrement * fixedTimeStep).coerceAtLeast(0.0f)
         }
 

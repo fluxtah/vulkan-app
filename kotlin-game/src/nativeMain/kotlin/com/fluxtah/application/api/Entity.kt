@@ -139,7 +139,7 @@ class EntityBuilder(private val modelPath: String) {
         }
 
         val cEntity = memScoped {
-            c_createEntity!!.invoke(ApplicationContext.vulcanContext!!, modelPath, info.ptr)
+            c_createEntity!!.invoke(ApplicationContext.vulcanContext!!, modelPath.cstr.ptr, info.ptr)
         }
 
         return EntityInfo(

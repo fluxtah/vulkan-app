@@ -88,6 +88,9 @@ add_executable(Game
         libs/dr_wav.h
         src/sound.c
         include/sound.h
+
+        include/kotlin.h
+        src/kotlin.c
 )
 
 include_directories(kotlin-game/build/bin/native/releaseShared)

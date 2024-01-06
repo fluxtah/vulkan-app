@@ -55,6 +55,10 @@ class ShipGame : Application {
                 behaviour(ForwardMovementBehavior(isMovingForward = { isKeyPressed(Key.W) }))
             }
 
+            sound("up-thrust", "sounds/up-thrust.wav") {
+                loop(true)
+            }
+
             var chaseCam: ChaseCamera? = null
 
             onSceneCreated { scene ->

@@ -1,10 +1,7 @@
 package com.fluxtah.application.api
 
 import com.fluxtah.application.api.input.Key
-import com.fluxtah.application.api.interop.c_destroyCamera
-import com.fluxtah.application.api.interop.c_destroyEntity
-import com.fluxtah.application.api.interop.c_destroyLight
-import com.fluxtah.application.api.interop.c_isKeyPressed
+import com.fluxtah.application.api.interop.*
 import com.fluxtah.application.apps.shipgame.ShipGame
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlin.experimental.ExperimentalNativeApi
@@ -86,19 +83,26 @@ fun ktUpdateApplication(time: Float, deltaTime: Float) {
 @OptIn(ExperimentalNativeApi::class, ExperimentalForeignApi::class)
 @CName("ktDestroyApplication")
 fun ktDestroyApplication() {
-    val activeSceneInfo = activeScene
-    activeSceneInfo?.scene?.cameras?.forEach {
-        c_destroyCamera!!.invoke(it.value.handle)
-    }
-    activeSceneInfo?.scene?.cameras?.clear()
-    activeSceneInfo?.scene?.lights?.forEach {
-        c_destroyLight!!.invoke(it.value.handle)
-    }
-    activeSceneInfo?.scene?.lights?.clear()
-    activeSceneInfo?.scene?.entities?.forEach {
-        c_destroyEntity!!.invoke(ApplicationContext.vulcanContext!!, it.value.entity.handle)
-    }
-    activeSceneInfo?.scene?.entities?.clear()
+    // TODO: Destroy all scenes
+    activeScene?.scene?.destroy()
+}
 
-    // TODO destroy entities
+@OptIn(ExperimentalForeignApi::class)
+private fun Scene.destroy() {
+    cameras.forEach { camera ->
+        c_destroyCamera!!.invoke(camera.value.handle)
+    }
+    cameras.clear()
+    lights.forEach { light ->
+        c_destroyLight!!.invoke(light.value.handle)
+    }
+    lights.clear()
+    entities.forEach { entityInfo ->
+        c_destroyEntity!!.invoke(ApplicationContext.vulcanContext!!, entityInfo.value.entity.handle)
+    }
+    entities.clear()
+    sounds.forEach {
+        c_destroySound!!.invoke(it.value.handle)
+    }
+    sounds.clear()
 }

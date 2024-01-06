@@ -19,9 +19,8 @@
 #include "kotlin-game/cinterop/model.h"
 #include "include/ubo_update.h"
 #include "include/renderobject.h"
-#include "include/camera.h"
-#include "include/light.h"
 #include "include/sound.h"
+#include "include/kotlin.h"
 
 #include <stdlib.h>
 #include <vulkan/vulkan.h>
@@ -34,6 +33,14 @@
 static float lastFrameTime = 0.0f;
 static bool keys[1024];
 
+int isKeyPressed(int key) {
+    if (keys[key]) {
+        return 1;
+    }
+
+    return -1;
+}
+
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
     if (key >= 0 && key < 1024) {
         if (action == GLFW_PRESS) {
@@ -44,55 +51,9 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
     }
 }
 
-int isKeyPressed(int key) {
-    if (keys[key]) {
-        return 1;
-    }
-
-    return -1;
-}
-
-void setActiveCamera(ApplicationContext *context, Camera *camera) {
-    context->activeCamera = camera;
-
-    // Default to extent
-    if (camera->aspectRatio == 0.0f) {
-        camera->aspectRatio = (float) context->swapChainExtent.width / (float) context->swapChainExtent.height;
-        applyCameraChanges(camera);
-    }
-}
-
-void bindKotlinApi() {
+int main() {
     // Input
     ktSetIsKeyPressedFunc(isKeyPressed);
-
-    // Camera
-    ktSetCreateCameraFunc(createCamera);
-    ktSetDestroyCameraFunc(destroyCamera);
-    ktSetMoveCameraForwardFunc(moveCameraForward);
-    ktSetMoveCameraBackwardFunc(moveCameraBackward);
-    ktSetMoveCameraLeftFunc(moveCameraLeft);
-    ktSetMoveCameraRightFunc(moveCameraRight);
-    ktSetPitchCameraFunc(pitchCamera);
-    ktSetYawCameraFunc(yawCamera);
-    ktSetPositionCameraFunc(positionCamera);
-    ktSetApplyCameraChangesFunc(applyCameraChanges);
-    ktSetActiveCameraFunc(setActiveCamera);
-    ktSetCameraLookAtFunc(setCameraLookAt);
-
-    // Light
-    ktSetCreateLightFunc(createLight);
-    ktSetDestroyLightFunc(destroyLight);
-
-    // Entity
-    ktSetCreateEntityFunc(createRenderObjectFromFile);
-    ktSetDestroyEntityFunc(destroyRenderObject);
-    ktSetRotateEntityFunc(rotateRenderObject);
-    ktSetPositionEntityFunc(positionRenderObject);
-    ktSetTranslateEntityFunc(translateRenderObject);
-}
-
-int main() {
     bindKotlinApi();
 
     // Create the Kotlin Application
@@ -104,10 +65,6 @@ int main() {
         return -1;
     }
     context.audioContext = createAudioContext();
-
-    AudioSource *sound = loadSound("sounds/rough-riddim-005.wav");
-
-    playSound(sound);
 
     glfwSetKeyCallback(context.window, key_callback);
 
@@ -295,7 +252,6 @@ int main() {
 
     vkDestroySwapchainKHR(context.device, context.swapChain, NULL);
 
-    destroySound(sound);
     destroyAudioContext(context.audioContext);
 
     destroyVulkan(&context);
