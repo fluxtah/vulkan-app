@@ -1,5 +1,8 @@
 #version 450
 #define MAX_LIGHTS 5
+#define LIGHT_POINT 0
+#define LIGHT_SPOT 1
+#define LIGHT_DIRECTIONAL 2
 
 layout(location = 0) in vec3 fragPos;
 layout(location = 1) in vec3 normal;
@@ -51,7 +54,7 @@ vec3 calculateSpecularReflection(Light light, vec3 fresnel, vec3 norm, vec3 half
     return specular;
 }
 
-vec3 calculatePointLight(Light light, vec3 fresnel, vec3 norm, vec3 fragPos, vec3 viewDir, float metallic, float roughness, vec3 textureColor) {
+vec3 calculatePointLight(Light light, vec3 fresnel, vec3 norm, vec3 fragPos, vec3 viewDir, float metallic, float roughness) {
     vec3 lightDir = normalize(light.position - fragPos);
     vec3 halfDir = normalize(lightDir + viewDir);
     vec3 diffuse = calculateDiffuseReflection(light, norm, lightDir, fresnel, metallic);
@@ -64,7 +67,7 @@ vec3 calculatePointLight(Light light, vec3 fresnel, vec3 norm, vec3 fragPos, vec
     return diffuse + specular;
 }
 
-vec3 calculateSpotLight(Light light, vec3 fresnel, vec3 norm, vec3 fragPos, vec3 viewDir, float metallic, float roughness, vec3 textureColor) {
+vec3 calculateSpotLight(Light light, vec3 fresnel, vec3 norm, vec3 fragPos, vec3 viewDir, float metallic, float roughness) {
     vec3 lightDir = normalize(-light.direction);
     vec3 halfDir = normalize(lightDir + viewDir);
     vec3 diffuse = calculateDiffuseReflection(light, norm, lightDir, fresnel, metallic);
@@ -77,7 +80,7 @@ vec3 calculateSpotLight(Light light, vec3 fresnel, vec3 norm, vec3 fragPos, vec3
     return diffuse + specular;
 }
 
-vec3 calculateDirectionalLight(Light light, vec3 fresnel, vec3 norm, vec3 viewDir, float metallic, float roughness, vec3 textureColor) {
+vec3 calculateDirectionalLight(Light light, vec3 fresnel, vec3 norm, vec3 viewDir, float metallic, float roughness) {
     vec3 lightDir = normalize(-light.direction);
     vec3 halfDir = normalize(lightDir + viewDir);
     vec3 diffuse = calculateDiffuseReflection(light, norm, lightDir, fresnel, metallic);
@@ -95,12 +98,12 @@ vec3 calculateLight(vec3 norm, vec3 fragPos, vec3 viewDir, float metallic, float
 
     for (int i = 0; i < ubo.numLightsInUse; i++) {
         Light light = ubo.lights[i];
-        if (light.type == 0) {
-            result += calculatePointLight(light, fresnel, norm, fragPos, viewDir, metallic, roughness, textureColor.rgb);
-        } else if (light.type == 1) {
-            result += calculateSpotLight(light, fresnel, norm, fragPos, viewDir, metallic, roughness, textureColor.rgb);
-        } else if (light.type == 2) {
-            result += calculateDirectionalLight(light, fresnel, norm, viewDir, metallic, roughness, textureColor.rgb);
+        if (light.type == LIGHT_POINT) {
+            result += calculatePointLight(light, fresnel, norm, fragPos, viewDir, metallic, roughness);
+        } else if (light.type == LIGHT_SPOT) {
+            result += calculateSpotLight(light, fresnel, norm, fragPos, viewDir, metallic, roughness);
+        } else if (light.type == LIGHT_DIRECTIONAL) {
+            result += calculateDirectionalLight(light, fresnel, norm, viewDir, metallic, roughness);
         }
     }
 
@@ -119,14 +122,14 @@ void main() {
 
     vec3 viewDir = normalize(ubo.cameraPos - fragPos);
     vec3 metallicRoughness = texture(metallicRoughnessMapSampler, uv).rgb;
-    float metallic = 0.0f; // metallicRoughness.b;
-    float roughness = 0.5f; // metallicRoughness.g;
+    float metallic = metallicRoughness.b;
+    float roughness = metallicRoughness.g;
 
     vec4 textureColor = texture(texSampler, uv);
     vec3 lightingResult = calculateLight(norm, fragPos, viewDir, metallic, roughness, textureColor.rgb);
 
     // Apply Gamma Correction
-    vec3 result = gammaCorrect(lightingResult * textureColor.rgb);
-
+    //vec3 result = gammaCorrect(lightingResult * textureColor.rgb);
+    vec3 result = lightingResult * textureColor.rgb;
     outColor = vec4(result, 1.0f);
 }

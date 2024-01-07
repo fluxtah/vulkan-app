@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <OpenAL/al.h>
-#include <OpenAL//alc.h>
+#include <OpenAL/alc.h>
 #include "libs/dr_wav.h"
 #include "model.h"
 

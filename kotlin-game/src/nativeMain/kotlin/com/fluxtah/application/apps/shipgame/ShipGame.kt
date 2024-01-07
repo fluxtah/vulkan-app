@@ -52,7 +52,11 @@ class ShipGame : Application {
                     yawLeft = { isKeyPressed(Key.A) },
                     yawRight = { isKeyPressed(Key.D) }
                 ))
-                behaviour(ForwardMovementBehavior(isMovingForward = { isKeyPressed(Key.W) }))
+                behaviour(
+                    ForwardMovementBehavior(
+                        isMovingForward = { isKeyPressed(Key.W) },
+                        isBraking = { isKeyPressed(Key.S) })
+                )
             }
 
             sound("up-thrust", "sounds/up-thrust.wav") {

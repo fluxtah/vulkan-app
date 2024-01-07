@@ -6,7 +6,10 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-class ForwardMovementBehavior(private val isMovingForward: () -> Boolean) : EntityBehavior {
+class ForwardMovementBehavior(
+    private val isMovingForward: () -> Boolean,
+    private val isBraking: () -> Boolean,
+    ) : EntityBehavior {
     private var forwardVelocity = 0.0f
     private val forwardAcceleration = 1.0f // Adjust for desired acceleration
     private val maxForwardSpeed = 5.0f // Adjust for max speed
@@ -28,6 +31,10 @@ class ForwardMovementBehavior(private val isMovingForward: () -> Boolean) : Enti
             (forwardVelocity - forwardAcceleration * fixedTimeStep).coerceAtLeast(0.0f)
         }
 
+        if(isBraking()) {
+            forwardVelocity = lerp(forwardVelocity, 0.0f, 0.05f)
+        }
+
         // Calculate new position based on forward velocity
         val newPosition = Vector3(entity.positionX, entity.positionY, entity.positionZ) + calculateForwardMovement(
             entity.rotationY,
@@ -37,8 +44,12 @@ class ForwardMovementBehavior(private val isMovingForward: () -> Boolean) : Enti
         entity.position(newPosition.x, newPosition.y, newPosition.z)
     }
 
+    fun lerp(a: Float, b: Float, f: Float): Float {
+        return a + f * (b - a)
+    }
+
     override fun afterUpdate(scene: Scene, entity: Entity, time: Float, deltaTime: Float) {
-        engineSound.setPitch(0.7f + (forwardVelocity / maxForwardSpeed) * 0.5f)
+        engineSound.setPitch(0.7f + (forwardVelocity / maxForwardSpeed) * 0.6f)
     }
 
     private fun calculateForwardMovement(yaw: Float, distance: Float): Vector3 {

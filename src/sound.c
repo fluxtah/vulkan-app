@@ -102,3 +102,7 @@ int isSoundPlaying(Sound *sound) {
 void setSoundPitch(Sound *sound, float pitch) {
     alSourcef(sound->source, AL_PITCH, pitch);
 }
+
+//void setSoundPitch(Sound *sound, float pitch) {
+//    alSourcef(sound->source, AL_, pitch);
+//}
