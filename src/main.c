@@ -33,8 +33,8 @@
 static float lastFrameTime = 0.0f;
 static bool keys[1024];
 
-PipelineConfig *buildBasicShaderPipeline(ApplicationContext *context, VkRenderPass renderPass);
-void destroyShaderPipeline(ApplicationContext *context, PipelineConfig *pipelineConfig);
+PipelineConfig *createBasicShaderPipelineConfig(ApplicationContext *context, VkRenderPass renderPass);
+void destroyPipelineConfig(ApplicationContext *context, PipelineConfig *pipelineConfig);
 
 int isKeyPressed(int key) {
     if (keys[key]) {
@@ -89,7 +89,7 @@ int main() {
 
     VkRenderPass renderPass = createRenderPass(&context);
 
-    context.pipelineConfig = buildBasicShaderPipeline(&context, renderPass);
+    context.pipelineConfig = createBasicShaderPipelineConfig(&context, renderPass);
 
     context.swapChainFramebuffers = createSwapChainFramebuffers(&context, context.swapChainImageViews,
                                                                 context.swapChainImageCount, renderPass,
@@ -218,7 +218,7 @@ int main() {
     }
     free(context.swapChainImageViews);
 
-    destroyShaderPipeline(&context, context.pipelineConfig);
+    destroyPipelineConfig(&context, context.pipelineConfig);
 
     ktDestroyApplication();
 
@@ -235,7 +235,7 @@ int main() {
     return 0;
 }
 
-PipelineConfig *buildBasicShaderPipeline(ApplicationContext *context, VkRenderPass renderPass) {
+PipelineConfig *createBasicShaderPipelineConfig(ApplicationContext *context, VkRenderPass renderPass) {
     PipelineConfig  *pipelineConfig = malloc(sizeof(PipelineConfig));
 
     //
@@ -273,7 +273,7 @@ PipelineConfig *buildBasicShaderPipeline(ApplicationContext *context, VkRenderPa
     return pipelineConfig;
 }
 
-void destroyShaderPipeline(ApplicationContext *context, PipelineConfig *pipelineConfig) {
+void destroyPipelineConfig(ApplicationContext *context, PipelineConfig *pipelineConfig) {
     vkDestroyDescriptorPool(context->device, pipelineConfig->descriptorPool, NULL);
     vkDestroyDescriptorSetLayout(context->device, pipelineConfig->vertexShaderDescriptorSetLayout, NULL);
     vkDestroyDescriptorSetLayout(context->device, pipelineConfig->fragmentShaderDescriptorSetLayout, NULL);
