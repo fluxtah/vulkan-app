@@ -1,4 +1,4 @@
-package com.fluxtah.application.apps.shipgame.ship
+package com.fluxtah.application.apps.shipgame.behaviors
 
 import com.fluxtah.application.api.Entity
 import com.fluxtah.application.api.EntityBehavior

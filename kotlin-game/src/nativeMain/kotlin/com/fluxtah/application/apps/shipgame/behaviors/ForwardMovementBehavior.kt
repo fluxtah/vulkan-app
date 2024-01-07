@@ -1,18 +1,21 @@
-package com.fluxtah.application.apps.shipgame.ship
+package com.fluxtah.application.apps.shipgame.behaviors
 
 import com.fluxtah.application.api.*
 import com.fluxtah.application.api.math.Vector3
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 
 class ForwardMovementBehavior(
     private val isMovingForward: () -> Boolean,
-    private val isBraking: () -> Boolean,
-    ) : EntityBehavior {
+    private val isReversing: () -> Boolean,
+) : EntityBehavior {
     private var forwardVelocity = 0.0f
-    private val forwardAcceleration = 1.0f // Adjust for desired acceleration
+    private val acceleration = 1.0f // Adjust for desired acceleration
+    private val reversingFactor = 2.0f // Adjust for desired reverse speed
     private val maxForwardSpeed = 5.0f // Adjust for max speed
+    private val maxReverseSpeed = -1.0f // Adjust for max reverse speed
 
     private lateinit var engineSound: Sound
 
@@ -23,16 +26,23 @@ class ForwardMovementBehavior(
 
     override fun update(scene: Scene, entity: Entity, time: Float) {
 
-        forwardVelocity = if (isMovingForward()) {
-            // Increase forward velocity
-            (forwardVelocity + forwardAcceleration * fixedTimeStep).coerceAtMost(maxForwardSpeed)
-        } else {
-            // Slow down if not moving forward
-            (forwardVelocity - forwardAcceleration * fixedTimeStep).coerceAtLeast(0.0f)
-        }
-
-        if(isBraking()) {
-            forwardVelocity = lerp(forwardVelocity, 0.0f, 0.05f)
+        forwardVelocity = when {
+            isMovingForward() -> {
+                // Increase forward velocity
+                (forwardVelocity + acceleration * fixedTimeStep).coerceAtMost(maxForwardSpeed)
+            }
+            isReversing() -> {
+                // Decrease forward velocity for reverse movement
+                (forwardVelocity - (acceleration * reversingFactor) * fixedTimeStep).coerceAtLeast(maxReverseSpeed)
+            }
+            else -> {
+                // Slow down to a halt if not moving forward or reversing
+                if (forwardVelocity > 0) {
+                    (forwardVelocity - acceleration * fixedTimeStep).coerceAtLeast(0.0f)
+                } else {
+                    (forwardVelocity + acceleration * fixedTimeStep).coerceAtMost(0.0f)
+                }
+            }
         }
 
         // Calculate new position based on forward velocity
@@ -49,7 +59,7 @@ class ForwardMovementBehavior(
     }
 
     override fun afterUpdate(scene: Scene, entity: Entity, time: Float, deltaTime: Float) {
-        engineSound.setPitch(0.7f + (forwardVelocity / maxForwardSpeed) * 0.6f)
+        engineSound.setPitch(abs(0.7f + (forwardVelocity / maxForwardSpeed) * 0.6f))
     }
 
     private fun calculateForwardMovement(yaw: Float, distance: Float): Vector3 {

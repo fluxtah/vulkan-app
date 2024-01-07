@@ -17,7 +17,7 @@ GLFWwindow *initWindow() {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
     // Create a GLFW window
-    GLFWwindow *window = glfwCreateWindow(800, 600, "Vulkan Window", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(1920, 1080, "Vulkan Window", NULL, NULL);
     if (!window) {
         fprintf(stderr, "Failed to create GLFW window\n");
         glfwTerminate();

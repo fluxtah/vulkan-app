@@ -2,9 +2,10 @@ package com.fluxtah.application.apps.shipgame
 
 import com.fluxtah.application.api.*
 import com.fluxtah.application.api.input.Key
-import com.fluxtah.application.apps.shipgame.ship.ForwardMovementBehavior
-import com.fluxtah.application.apps.shipgame.ship.ThrustBehavior
-import com.fluxtah.application.apps.shipgame.ship.YawBehavior
+import com.fluxtah.application.apps.shipgame.behaviors.ForwardMovementBehavior
+import com.fluxtah.application.apps.shipgame.behaviors.PlasmaBoltBehaviour
+import com.fluxtah.application.apps.shipgame.behaviors.ThrustBehavior
+import com.fluxtah.application.apps.shipgame.behaviors.YawBehavior
 
 /*
 TODO
@@ -17,7 +18,7 @@ class ShipGame : Application {
     override fun initialize() {
         scene("main") {
             camera("camera1") {
-                position(4.0f, 5.0f, -4.0f)
+                position(4.0f, 6.0f, -4.0f)
                 fieldOfView(90.0f)
             }
             camera("camera2") {
@@ -28,7 +29,7 @@ class ShipGame : Application {
                 type(LightType.Directional)
                 color(1.0f, 1.0f, 1.0f, 1.0f)
                 position(0.0f, 50.0f, 0.0f)
-                direction(0.5f, -1.0f, 0.0f)
+                direction(-1.0f, -1.0f, 0.0f)
                 intensity(1.0f)
             }
 
@@ -55,10 +56,14 @@ class ShipGame : Application {
                 behaviour(
                     ForwardMovementBehavior(
                         isMovingForward = { isKeyPressed(Key.W) },
-                        isBraking = { isKeyPressed(Key.S) })
+                        isReversing = { isKeyPressed(Key.S) })
                 )
             }
 
+            entity("plasma-bolt", "models/plasma-bolt.glb") {
+                position(0.0f, 0.0f, 0.0f)
+                behaviour(PlasmaBoltBehaviour(fireButtonPressed = { isKeyPressed(Key.Space) }))
+            }
             sound("up-thrust", "sounds/up-thrust.wav") {
                 loop(true)
             }
@@ -66,7 +71,7 @@ class ShipGame : Application {
                 loop(true)
             }
             sound("sonic-boom", "sounds/sonic-boom.wav")
-
+            sound("plasma-bolt", "sounds/plasma-bolt.wav")
             var chaseCam: ChaseCamera? = null
 
             onSceneCreated { scene ->

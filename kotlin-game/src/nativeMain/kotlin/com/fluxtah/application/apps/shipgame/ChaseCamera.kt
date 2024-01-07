@@ -11,10 +11,10 @@ import kotlin.math.sin
 class ChaseCamera(
     private val camera: Camera,
     private val target: Entity,
-    private var offset: Vector3 = Vector3(0f, 3f, -1.5f)
+    private var offset: Vector3 = Vector3(0f, 3f, -1.2f)
 ) {
     private var position: Vector3 = Vector3()
-    private var smoothingFactor = 3.5f // Adjust for desired smoothing
+    private var smoothingFactor = 2.8f // Adjust for desired smoothing
 
     fun update(deltaTime: Float) {
         // Calculate the offset position based on target's rotation
