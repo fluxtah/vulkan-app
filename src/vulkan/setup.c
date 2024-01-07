@@ -132,7 +132,7 @@ VkPresentModeKHR getBestPresentMode(ApplicationContext *context) {
     return presentMode;
 }
 
-int setupVulkan(ApplicationContext *context) {
+int setupApplication(ApplicationContext *context) {
     context->window = initWindow();
     if (!context->window)
         return -1;
@@ -174,10 +174,24 @@ int setupVulkan(ApplicationContext *context) {
 
     createTextureSampler(context, &context->sampler);
 
+    context->audioContext = createAudioContext();
+
+    glfwSetKeyCallback(context->window, key_callback);
+
+    printGpuMemoryInfo(context->physicalDevice);
+    printDeviceLimits(context->physicalDevice);
+
+    context->swapChain = createSwapChain(context);
+    if (context->swapChain == VK_NULL_HANDLE)
+        return -1;
+
+    createSwapChainImageViews(context);
+
     return 0;
 }
 
-void destroyVulkan(ApplicationContext *context) {
+void destroyApplication(ApplicationContext *context) {
+    destroyAudioContext(context->audioContext);
     vkDestroySampler(context->device, context->sampler, NULL);
     vkDestroyCommandPool(context->device, context->commandPool, NULL);
     vkDestroySurfaceKHR(context->instance, context->surface, NULL);

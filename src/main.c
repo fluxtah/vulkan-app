@@ -2,24 +2,19 @@
 #define STB_IMAGE_IMPLEMENTATION
 #define DR_WAV_IMPLEMENTATION
 
-#include "include/vulkan/physicaldevice.h"
 #include "include/vulkan/setup.h"
-#include "include/vulkan/swapchain.h"
 #include "include/vulkan/renderpass.h"
-#include "include/vulkan/shaders.h"
-#include "include/vulkan/pipeline.h"
 #include "include/vulkan/framebuffer.h"
 #include "include/vulkan/commandbuffer.h"
-#include "include/vulkan/descriptor.h"
 #include "include/vulkan/depth.h"
 #include "include/context.h"
 #include "include/vulkan/render.h"
+#include "include/pipelineconfig.h"
 
 #include "libkotlin_game_api.h"
 #include "kotlin-game/cinterop/model.h"
 #include "include/ubo_update.h"
 #include "include/renderobject.h"
-#include "include/sound.h"
 #include "include/kotlin.h"
 
 #include <stdlib.h>
@@ -27,60 +22,25 @@
 #include <vulkan/vulkan_beta.h>
 #include <GLFW/glfw3.h>
 #include <stdio.h>
-#include <cglm/cglm.h>
 
-// Global or static variable
 static float lastFrameTime = 0.0f;
-static bool keys[1024];
-
-PipelineConfig *createBasicShaderPipelineConfig(ApplicationContext *context, VkRenderPass renderPass);
-void destroyPipelineConfig(ApplicationContext *context, PipelineConfig *pipelineConfig);
-
-int isKeyPressed(int key) {
-    if (keys[key]) {
-        return 1;
-    }
-
-    return -1;
-}
-
-void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
-    if (key >= 0 && key < 1024) {
-        if (action == GLFW_PRESS) {
-            keys[key] = true;
-        } else if (action == GLFW_RELEASE) {
-            keys[key] = false;
-        }
-    }
-}
 
 int main() {
-    // Input
-    ktSetIsKeyPressedFunc(isKeyPressed);
+    //
+    // Bind kotlin callbacks to C API functions
+    //
     bindKotlinApi();
+
+    ApplicationContext context;
+    ktSetVulkanContext(&context);
+
+    if (setupApplication(&context) == -1) {
+        printf("Something went wrong with setting up the application");
+        return -1;
+    }
 
     // Create the Kotlin Application
     ktCreateApplication();
-
-    ApplicationContext context;
-    if (setupVulkan(&context) == -1) {
-        printf("Something went wrong with setting up Vulkan");
-        return -1;
-    }
-    context.audioContext = createAudioContext();
-
-    glfwSetKeyCallback(context.window, key_callback);
-
-    printGpuMemoryInfo(context.physicalDevice);
-    printDeviceLimits(context.physicalDevice);
-
-    ktSetVulkanContext(&context);
-
-    context.swapChain = createSwapChain(&context);
-    if (context.swapChain == VK_NULL_HANDLE)
-        return -1;
-
-    createSwapChainImageViews(&context);
 
     VkImage depthImage;
     VkDeviceMemory depthImageMemory;
@@ -90,13 +50,12 @@ int main() {
     VkRenderPass renderPass = createRenderPass(&context);
 
     context.pipelineConfig = createBasicShaderPipelineConfig(&context, renderPass);
+    if (context.pipelineConfig->pipeline == VK_NULL_HANDLE)
+        return -1;
 
     context.swapChainFramebuffers = createSwapChainFramebuffers(&context, context.swapChainImageViews,
                                                                 context.swapChainImageCount, renderPass,
                                                                 depthImageView);
-
-    if (context.pipelineConfig->pipeline == VK_NULL_HANDLE)
-        return -1;
 
     VkCommandBuffer *commandBuffers = allocateCommandBuffers(context.device, context.commandPool,
                                                              context.swapChainImageCount);
@@ -226,60 +185,10 @@ int main() {
 
     vkDestroySwapchainKHR(context.device, context.swapChain, NULL);
 
-    destroyAudioContext(context.audioContext);
-
-    destroyVulkan(&context);
+    destroyApplication(&context);
 
     glfwTerminate();
 
     return 0;
 }
 
-PipelineConfig *createBasicShaderPipelineConfig(ApplicationContext *context, VkRenderPass renderPass) {
-    PipelineConfig  *pipelineConfig = malloc(sizeof(PipelineConfig));
-
-    //
-    // Create a descriptor pool
-    //
-    pipelineConfig->descriptorPool = createBasicShaderDescriptorPool(context->device);
-
-    //
-    // Create descriptor set layouts
-    //
-    pipelineConfig->vertexShaderDescriptorSetLayout = createVertexShaderDescriptorSetLayout(context->device);
-    pipelineConfig->fragmentShaderDescriptorSetLayout = createFragmentShaderDescriptorSetLayout(context->device);
-
-
-    pipelineConfig->vertexShaderModule = createShaderModule(context->device, "shaders/basic.vert.spv");
-    pipelineConfig->fragmentShaderModule = createShaderModule(context->device, "shaders/basic.frag.spv");
-
-    pipelineConfig->pipelineLayout = createPipelineLayout(context->device,
-                                                          pipelineConfig->vertexShaderDescriptorSetLayout,
-                                                          pipelineConfig->fragmentShaderDescriptorSetLayout);
-    Viewport viewport = (Viewport) {
-            0, 0,
-            (float) context->swapChainExtent.width,
-            (float) context->swapChainExtent.height,
-            0.0f,
-            1.0f
-    };
-    pipelineConfig->pipeline = createPipeline(
-            context->device,
-            pipelineConfig->pipelineLayout,
-            renderPass, viewport,
-            pipelineConfig->vertexShaderModule,
-            pipelineConfig->fragmentShaderModule);
-
-    return pipelineConfig;
-}
-
-void destroyPipelineConfig(ApplicationContext *context, PipelineConfig *pipelineConfig) {
-    vkDestroyDescriptorPool(context->device, pipelineConfig->descriptorPool, NULL);
-    vkDestroyDescriptorSetLayout(context->device, pipelineConfig->vertexShaderDescriptorSetLayout, NULL);
-    vkDestroyDescriptorSetLayout(context->device, pipelineConfig->fragmentShaderDescriptorSetLayout, NULL);
-    vkDestroyPipeline(context->device, pipelineConfig->pipeline, NULL);
-    vkDestroyPipelineLayout(context->device, pipelineConfig->pipelineLayout, NULL);
-    vkDestroyShaderModule(context->device, pipelineConfig->vertexShaderModule, NULL);
-    vkDestroyShaderModule(context->device, pipelineConfig->fragmentShaderModule, NULL);
-    free(context->pipelineConfig);
-}

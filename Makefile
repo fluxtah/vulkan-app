@@ -249,6 +249,30 @@ src/modeldata.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/modeldata.c.s
 .PHONY : src/modeldata.c.s
 
+src/pipelineconfig.o: src/pipelineconfig.c.o
+.PHONY : src/pipelineconfig.o
+
+# target to build an object file
+src/pipelineconfig.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelineconfig.c.o
+.PHONY : src/pipelineconfig.c.o
+
+src/pipelineconfig.i: src/pipelineconfig.c.i
+.PHONY : src/pipelineconfig.i
+
+# target to preprocess a source file
+src/pipelineconfig.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelineconfig.c.i
+.PHONY : src/pipelineconfig.c.i
+
+src/pipelineconfig.s: src/pipelineconfig.c.s
+.PHONY : src/pipelineconfig.s
+
+# target to generate assembly for a file
+src/pipelineconfig.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelineconfig.c.s
+.PHONY : src/pipelineconfig.c.s
+
 src/renderobject.o: src/renderobject.c.o
 .PHONY : src/renderobject.o
 
@@ -801,6 +825,9 @@ help:
 	@echo "... src/modeldata.o"
 	@echo "... src/modeldata.i"
 	@echo "... src/modeldata.s"
+	@echo "... src/pipelineconfig.o"
+	@echo "... src/pipelineconfig.i"
+	@echo "... src/pipelineconfig.s"
 	@echo "... src/renderobject.o"
 	@echo "... src/renderobject.i"
 	@echo "... src/renderobject.s"

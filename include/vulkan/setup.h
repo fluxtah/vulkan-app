@@ -8,6 +8,8 @@
 #include "commandpool.h"
 #include "depth.h"
 #include "sampler.h"
+#include "include/kotlin.h"
+#include "include/vulkan/swapchain.h"
 
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_beta.h>
@@ -15,8 +17,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int setupVulkan(ApplicationContext *context);
-void destroyVulkan(ApplicationContext *context);
+int setupApplication(ApplicationContext *context);
+void destroyApplication(ApplicationContext *context);
 
 VkSurfaceKHR createVulkanSurface(VkInstance instance, GLFWwindow *window);
 

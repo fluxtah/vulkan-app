@@ -62,6 +62,8 @@ typedef struct ApplicationContext {
     // App Data
     //
     Camera *activeCamera;
+
+    bool keys[1024];
 } ApplicationContext;
 
 #endif //VULKAN_CONTEXT_H
