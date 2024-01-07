@@ -94,6 +94,8 @@ add_executable(Game
 
         include/pipelineconfig.h
         src/pipelineconfig.c
+
+        include/imagememory.h
 )
 
 include_directories(kotlin-game/build/bin/native/releaseShared)

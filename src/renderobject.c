@@ -52,7 +52,7 @@ RenderObject *createRenderObjectFromFile(ApplicationContext *context, const char
     obj->metallicRoughnessMap = malloc(sizeof(ImageMemory));
     setupTextureFromImageData(context, obj->modelData->metallicRoughnessMapImageData, obj->metallicRoughnessMap);
 
-    // Create a descriptor sets
+    // Create descriptor sets
     allocateDescriptorSet(context->device, context->pipelineConfig->descriptorPool, context->pipelineConfig->vertexShaderDescriptorSetLayout, &obj->vertexDescriptorSet);
     allocateDescriptorSet(context->device, context->pipelineConfig->descriptorPool, context->pipelineConfig->fragmentShaderDescriptorSetLayout, &obj->fragmentDescriptorSet);
 

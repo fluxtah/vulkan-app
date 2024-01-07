@@ -92,6 +92,7 @@ int main() {
     /*
      * MAIN LOOP
      */
+
     while (!glfwWindowShouldClose(context.window)) {
         float time = (float) glfwGetTime();
         float deltaTime = time - lastFrameTime;
@@ -132,10 +133,11 @@ int main() {
                     numRenderObjects);
         }
 
+        //
+        // Update UBOs
+        //
         for (size_t i = 0; i < numRenderObjects; i++) {
             RenderObject *obj = renderObjects[i];
-
-            // Update UBO
             updateTransformUBO(context.device, obj, context.activeCamera);
             updateLightsUBO(context.device, obj, context.activeCamera);
         }
@@ -172,18 +174,11 @@ int main() {
     vkDestroyImage(context.device, depthImage, NULL);
     vkFreeMemory(context.device, depthImageMemory, NULL);
 
-    for (uint32_t i = 0; i < context.swapChainImageCount; i++) {
-        vkDestroyImageView(context.device, context.swapChainImageViews[i], NULL);
-    }
-    free(context.swapChainImageViews);
-
     destroyPipelineConfig(&context, context.pipelineConfig);
 
     ktDestroyApplication();
 
     context.activeCamera = NULL;
-
-    vkDestroySwapchainKHR(context.device, context.swapChain, NULL);
 
     destroyApplication(&context);
 
@@ -191,4 +186,3 @@ int main() {
 
     return 0;
 }
-

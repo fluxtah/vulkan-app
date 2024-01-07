@@ -191,6 +191,11 @@ int setupApplication(ApplicationContext *context) {
 }
 
 void destroyApplication(ApplicationContext *context) {
+    for (uint32_t i = 0; i < context->swapChainImageCount; i++) {
+        vkDestroyImageView(context->device, context->swapChainImageViews[i], NULL);
+    }
+    free(context->swapChainImageViews);
+    vkDestroySwapchainKHR(context->device, context->swapChain, NULL);
     destroyAudioContext(context->audioContext);
     vkDestroySampler(context->device, context->sampler, NULL);
     vkDestroyCommandPool(context->device, context->commandPool, NULL);

@@ -5,17 +5,12 @@
 #include "include/ubo.h"
 #include "include/vulkan/buffer.h"
 #include "context.h"
+#include "imagememory.h"
 #include "include/vulkan/descriptor.h"
 #include "include/vulkan/image.h"
 
 #include <cglm/cglm.h>
 #include <vulkan/vulkan.h>
-
-typedef struct {
-    VkImage image;
-    VkDeviceMemory memory;
-    VkImageView imageView;
-} ImageMemory;
 
 typedef struct {
     vec3 scale;
@@ -38,10 +33,13 @@ typedef struct {
 } RenderObject;
 
 RenderObject *createRenderObjectFromFile(ApplicationContext *context, const char *filename, CreateEntityInfo *info);
+
 void setupTextureFromImageData(ApplicationContext *context, ModelImageData *imageData, ImageMemory *imageMemory);
 
 void setRenderObjectPosition(RenderObject *obj, float x, float y, float z);
+
 void setRenderObjectRotation(RenderObject *obj, float x, float y, float z);
 
 void destroyRenderObject(ApplicationContext *context, RenderObject *obj);
+
 #endif //APP_RENDEROBJECT_H
