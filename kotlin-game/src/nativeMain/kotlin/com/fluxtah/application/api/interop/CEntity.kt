@@ -54,7 +54,8 @@ fun ktGetEntities(): CPointer<EntityArray> {
     if (activeScene == null) {
         throw RuntimeException("No active scene")
     }
-    val entities = activeScene!!.scene.entities.values.map { it.entity.handle } // Assuming handle is COpaquePointer
+    val entities = activeScene!!.scene.entities.values.filter { it.entity.visible }
+        .map { it.entity.handle } // Assuming handle is COpaquePointer
     val entityPointerArray = nativeHeap.allocArray<COpaquePointerVar>(entities.size)
 
     entities.forEachIndexed { index, light ->

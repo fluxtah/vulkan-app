@@ -21,11 +21,13 @@ class PlasmaBoltBehaviour(val fireButtonPressed: () -> Boolean) : EntityBehavior
     override fun initialize(scene: Scene, entity: Entity) {
         boltSound = scene.sounds["plasma-bolt"]!!
         shipEntity = scene.entities["ship"]!!.entity
+        entity.visible = false
     }
 
     override fun update(scene: Scene, entity: Entity, time: Float) {
         if (fireButtonPressed() && !isBoltFiring) {
             isBoltFiring = true
+            entity.visible = true
             initialPosition = Vector3(shipEntity.positionX, shipEntity.positionY, shipEntity.positionZ)
             firingDirection =
                 calculateDirectionFromRotation(shipEntity.rotationX, shipEntity.rotationY, shipEntity.rotationZ)
@@ -39,7 +41,6 @@ class PlasmaBoltBehaviour(val fireButtonPressed: () -> Boolean) : EntityBehavior
     }
 
     private fun firePlasmaBolt(entity: Entity, initialPosition: Vector3, firingDirection: Vector3) {
-        println("Fire plasma bolt!")
         entity.setPosition(initialPosition.x, initialPosition.y, initialPosition.z)
         // Assuming your engine can directly set the direction
         entity.setRotation(shipEntity.rotationX, shipEntity.rotationY, shipEntity.rotationZ)
@@ -57,6 +58,7 @@ class PlasmaBoltBehaviour(val fireButtonPressed: () -> Boolean) : EntityBehavior
         val distanceTraveled = distanceBetween(initialPosition, newPosition)
         if (distanceTraveled >= maxDistance) {
             isBoltFiring = false
+            entity.visible = false
         }
     }
 

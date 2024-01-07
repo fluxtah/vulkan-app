@@ -128,34 +128,6 @@ int main() {
     //
     ktInitApplication();
 
-    //
-    // Scene Objects
-    //
-    EntityArray *ktEntities = (EntityArray *) ktGetEntities();
-
-    int numRenderObjects = ktEntities->size;
-    RenderObject *renderObjects[ktEntities->size];
-
-    for (int i = 0; i < ktEntities->size; i++) {
-        RenderObject *renderObject = (RenderObject *) (ktEntities->entities[i]);
-        renderObjects[i] = renderObject;
-    }
-
-    free(ktEntities->entities);
-    free(ktEntities);
-
-    for (size_t i = 0; i < context.swapChainImageCount; i++) {
-        recordCommandBuffer(
-                commandBuffers[i],
-                renderPass,
-                context.swapChainFramebuffers[i],
-                context.swapChainExtent,
-                pipeline,
-                pipelineLayout,
-                renderObjects,
-                numRenderObjects);
-    }
-
     VkSemaphore imageAvailableSemaphore;
     VkSemaphore renderFinishedSemaphore;
     VkFence inFlightFence;
@@ -192,6 +164,34 @@ int main() {
         VkSemaphore waitSemaphores[] = {imageAvailableSemaphore};
 
         ktUpdateApplication(time, deltaTime);
+
+        //
+        // Get the list of entities we want to render
+        //w
+        EntityArray *ktEntities = (EntityArray *) ktGetEntities();
+
+        int numRenderObjects = ktEntities->size;
+        RenderObject *renderObjects[ktEntities->size];
+
+        for (int i = 0; i < ktEntities->size; i++) {
+            RenderObject *renderObject = (RenderObject *) (ktEntities->entities[i]);
+            renderObjects[i] = renderObject;
+        }
+
+        free(ktEntities->entities);
+        free(ktEntities);
+
+        for (size_t i = 0; i < context.swapChainImageCount; i++) {
+            recordCommandBuffer(
+                    commandBuffers[i],
+                    renderPass,
+                    context.swapChainFramebuffers[i],
+                    context.swapChainExtent,
+                    pipeline,
+                    pipelineLayout,
+                    renderObjects,
+                    numRenderObjects);
+        }
 
         for (size_t i = 0; i < numRenderObjects; i++) {
             RenderObject *obj = renderObjects[i];

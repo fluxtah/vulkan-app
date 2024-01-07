@@ -14,6 +14,8 @@ class Entity(
     initialRotationY: Float = 0.0f,
     initialRotationZ: Float = 0.0f,
 ) {
+    var visible: Boolean = true
+    
     private var _positionX: Float = initialPositionX
     val positionX: Float
         get() {
