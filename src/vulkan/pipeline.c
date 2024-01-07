@@ -165,7 +165,7 @@ VkPipeline createPipeline(VkDevice device, VkPipelineLayout pipelineLayout, VkRe
     pipelineInfo.pDepthStencilState = &depthStencil;
     pipelineInfo.pColorBlendState = &colorBlending; // Color blending state
     // Dynamic state if you're using dynamic states like viewport, scissor (optional)
-    pipelineInfo.layout = pipelineLayout; // Pipeline layout
+    pipelineInfo.layout = pipelineLayout; // PipelineConfig layout
     pipelineInfo.renderPass = renderPass; // Render pass
     pipelineInfo.subpass = 0;             // Index of the subpass where this pipeline will be used
 

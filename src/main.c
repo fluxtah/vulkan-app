@@ -33,6 +33,15 @@
 static float lastFrameTime = 0.0f;
 static bool keys[1024];
 
+typedef struct PipelineConfig {
+    VkShaderModule vertexShaderModule;
+    VkShaderModule fragmentShaderModule;
+    VkPipeline pipeline;
+    VkPipelineLayout pipelineLayout;
+} PipelineConfig;
+
+void buildBasicShaderPipeline(ApplicationContext *context, VkRenderPass renderPass, PipelineConfig *pipelineConfig);
+
 int isKeyPressed(int key) {
     if (keys[key]) {
         return 1;
@@ -96,26 +105,15 @@ int main() {
     createDepthResources(&context, context.commandPool, &depthImage, &depthImageMemory, &depthImageView);
 
     VkRenderPass renderPass = createRenderPass(&context);
-    VkShaderModule vertexShaderModule = createShaderModule(context.device, "shaders/basic.vert.spv");
-    VkShaderModule fragmentShaderModule = createShaderModule(context.device, "shaders/basic.frag.spv");
 
-    VkPipelineLayout pipelineLayout = createPipelineLayout(context.device,
-                                                           context.vertexShaderDescriptorSetLayout,
-                                                           context.fragmentShaderDescriptorSetLayout);
-    Viewport viewport = (Viewport) {
-            0, 0,
-            (float) context.swapChainExtent.width,
-            (float) context.swapChainExtent.height,
-            0.0f,
-            1.0f
-    };
-    VkPipeline pipeline = createPipeline(context.device, pipelineLayout, renderPass, viewport, vertexShaderModule,
-                                         fragmentShaderModule);
+    PipelineConfig pipelineConfig = {0};
+    buildBasicShaderPipeline(&context, renderPass, &pipelineConfig);
+
     context.swapChainFramebuffers = createSwapChainFramebuffers(&context, context.swapChainImageViews,
                                                                 context.swapChainImageCount, renderPass,
                                                                 depthImageView);
 
-    if (pipeline == VK_NULL_HANDLE)
+    if (pipelineConfig.pipeline == VK_NULL_HANDLE)
         return -1;
 
     VkCommandBuffer *commandBuffers = allocateCommandBuffers(context.device, context.commandPool,
@@ -187,8 +185,8 @@ int main() {
                     renderPass,
                     context.swapChainFramebuffers[i],
                     context.swapChainExtent,
-                    pipeline,
-                    pipelineLayout,
+                    pipelineConfig.pipeline,
+                    pipelineConfig.pipelineLayout,
                     renderObjects,
                     numRenderObjects);
         }
@@ -231,10 +229,10 @@ int main() {
     }
     free(context.swapChainFramebuffers);
 
-    vkDestroyPipeline(context.device, pipeline, NULL);
-    vkDestroyPipelineLayout(context.device, pipelineLayout, NULL);
-    vkDestroyShaderModule(context.device, vertexShaderModule, NULL);
-    vkDestroyShaderModule(context.device, fragmentShaderModule, NULL);
+    vkDestroyPipeline(context.device, pipelineConfig.pipeline, NULL);
+    vkDestroyPipelineLayout(context.device, pipelineConfig.pipelineLayout, NULL);
+    vkDestroyShaderModule(context.device, pipelineConfig.vertexShaderModule, NULL);
+    vkDestroyShaderModule(context.device, pipelineConfig.fragmentShaderModule, NULL);
     vkDestroyRenderPass(context.device, renderPass, NULL);
 
     vkDestroyImageView(context.device, depthImageView, NULL);
@@ -259,4 +257,26 @@ int main() {
     glfwTerminate();
 
     return 0;
+}
+
+void buildBasicShaderPipeline(ApplicationContext *context, VkRenderPass renderPass, PipelineConfig *pipelineConfig) {
+    pipelineConfig->vertexShaderModule = createShaderModule(context->device, "shaders/basic.vert.spv");
+    pipelineConfig->fragmentShaderModule = createShaderModule(context->device, "shaders/basic.frag.spv");
+
+    pipelineConfig->pipelineLayout = createPipelineLayout(context->device,
+                                                          context->vertexShaderDescriptorSetLayout,
+                                                          context->fragmentShaderDescriptorSetLayout);
+    Viewport viewport = (Viewport) {
+            0, 0,
+            (float) context->swapChainExtent.width,
+            (float) context->swapChainExtent.height,
+            0.0f,
+            1.0f
+    };
+    pipelineConfig->pipeline = createPipeline(
+            context->device,
+            pipelineConfig->pipelineLayout,
+            renderPass, viewport,
+            pipelineConfig->vertexShaderModule,
+            pipelineConfig->fragmentShaderModule);
 }
