@@ -40,9 +40,8 @@ typedef struct {
 RenderObject *createRenderObjectFromFile(ApplicationContext *context, const char *filename, CreateEntityInfo *info);
 void setupTextureFromImageData(ApplicationContext *context, ModelImageData *imageData, ImageMemory *imageMemory);
 
-void rotateRenderObject(RenderObject *obj, float x, float y, float z);
-void translateRenderObject(RenderObject *obj, float x, float y, float z);
-void positionRenderObject(RenderObject *obj, float x, float y, float z);
+void setRenderObjectPosition(RenderObject *obj, float x, float y, float z);
+void setRenderObjectRotation(RenderObject *obj, float x, float y, float z);
 
 void destroyRenderObject(ApplicationContext *context, RenderObject *obj);
 #endif //APP_RENDEROBJECT_H

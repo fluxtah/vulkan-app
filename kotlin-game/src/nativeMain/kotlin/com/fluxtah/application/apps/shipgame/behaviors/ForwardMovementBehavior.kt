@@ -2,6 +2,7 @@ package com.fluxtah.application.apps.shipgame.behaviors
 
 import com.fluxtah.application.api.*
 import com.fluxtah.application.api.math.Vector3
+import com.fluxtah.application.api.math.toRadians
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos
@@ -51,7 +52,7 @@ class ForwardMovementBehavior(
             forwardVelocity * fixedTimeStep
         )
 
-        entity.position(newPosition.x, newPosition.y, newPosition.z)
+        entity.setPosition(newPosition.x, newPosition.y, newPosition.z)
     }
 
     fun lerp(a: Float, b: Float, f: Float): Float {
@@ -64,7 +65,7 @@ class ForwardMovementBehavior(
 
     private fun calculateForwardMovement(yaw: Float, distance: Float): Vector3 {
         // Convert yaw to radians
-        val yawRadians = yaw * (PI / 180.0).toFloat()
+        val yawRadians = yaw.toRadians()
         val sinYaw = sin(yawRadians)
         val cosYaw = cos(yawRadians)
 

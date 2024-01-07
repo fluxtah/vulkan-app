@@ -50,25 +50,32 @@ class Entity(
             return _rotationZ
         }
 
-    fun position(x: Float? = null, y: Float? = null, z: Float? = null) {
+    fun setPosition(x: Float? = null, y: Float? = null, z: Float? = null) {
         _positionX = x ?: _positionX
         _positionY = y ?: _positionY
         _positionZ = z ?: _positionZ
-        c_positionEntity!!.invoke(handle, _positionX, _positionY, _positionZ)
+        c_setEntityPosition!!.invoke(handle, _positionX, _positionY, _positionZ)
+    }
+
+    fun setRotation(x: Float? = null, y: Float? = null, z: Float? = null) {
+        _rotationX = x ?: _rotationX
+        _rotationY = y ?: _rotationY
+        _rotationZ = z ?: _rotationZ
+        c_setEntityRotation!!.invoke(handle, _rotationX, _rotationY, _rotationZ)
     }
 
     fun rotate(x: Float = 0f, y: Float = 0f, z: Float = 0f) {
         _rotationX += x
         _rotationY += y
         _rotationZ += z
-        c_rotateEntity!!.invoke(handle, x, y, z)
+        c_setEntityRotation!!.invoke(handle, _rotationX, _rotationY, _rotationZ)
     }
 
     fun translate(x: Float = 0.0f, y: Float = 0.0f, z: Float = 0.0f) {
         _positionX += x
         _positionY += y
         _positionZ += z
-        c_translateEntity!!.invoke(handle, x, y, z)
+        c_setEntityPosition!!.invoke(handle, _positionX, _positionY, _positionZ)
     }
 }
 

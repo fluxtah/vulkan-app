@@ -65,7 +65,7 @@ class ThrustBehavior(private val isThrusting: () -> Boolean) : EntityBehavior {
         // Ensure the spaceship doesn't go below the ground
         state.positionY = state.positionY.coerceAtLeast(0.0f)
 
-        entity.position(y = state.positionY)
+        entity.setPosition(y = state.positionY)
     }
 
 //    override fun afterUpdate(scene: Scene, entity: Entity, time: Float, deltaTime: Float) {

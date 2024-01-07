@@ -99,22 +99,16 @@ void setupTextureFromImageData(ApplicationContext *context, ModelImageData *imag
     destroyBufferMemory(context, textureStagingBuffer);
 }
 
-void rotateRenderObject(RenderObject *obj, float x, float y, float z) {
-        obj->rotation[0] += x;
-        obj->rotation[1] += y;
-        obj->rotation[2] += z;
-}
-
-void translateRenderObject(RenderObject *obj, float x, float y, float z) {
-    obj->position[0] += x;
-    obj->position[1] += y;
-    obj->position[2] += z;
-}
-
-void positionRenderObject(RenderObject *obj, float x, float y, float z) {
+void setRenderObjectPosition(RenderObject *obj, float x, float y, float z) {
     obj->position[0] = x;
     obj->position[1] = y;
     obj->position[2] = z;
+}
+
+void setRenderObjectRotation(RenderObject *obj, float x, float y, float z) {
+    obj->rotation[0] = x;
+    obj->rotation[1] = y;
+    obj->rotation[2] = z;
 }
 
 void destroyRenderObject(ApplicationContext *context, RenderObject *obj) {

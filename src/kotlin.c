@@ -32,9 +32,8 @@ void bindKotlinApi() {
     // Entity
     ktSetCreateEntityFunc(createRenderObjectFromFile);
     ktSetDestroyEntityFunc(destroyRenderObject);
-    ktSetRotateEntityFunc(rotateRenderObject);
-    ktSetPositionEntityFunc(positionRenderObject);
-    ktSetTranslateEntityFunc(translateRenderObject);
+    ktSetPositionEntityFunc(setRenderObjectPosition);
+    ktSetEntityRotationFunc(setRenderObjectRotation);
 
     // Sound
     ktSetLoadSoundFunc(loadSound);

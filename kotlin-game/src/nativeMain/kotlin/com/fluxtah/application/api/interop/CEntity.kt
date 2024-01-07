@@ -3,7 +3,6 @@ package com.fluxtah.application.api.interop
 import com.fluxtah.application.api.activeScene
 import com.fluxtah.application.api.interop.model.CreateEntityInfo
 import com.fluxtah.application.api.interop.model.EntityArray
-import com.fluxtah.application.api.interop.model.LightArray
 import kotlinx.cinterop.*
 import kotlin.experimental.ExperimentalNativeApi
 
@@ -69,55 +68,36 @@ fun ktGetEntities(): CPointer<EntityArray> {
     return entityArray.ptr
 }
 
+@OptIn(ExperimentalForeignApi::class)
+typealias SetEntityPositionFunc = (CEntity, Float, Float, Float) -> Unit
 
 @OptIn(ExperimentalForeignApi::class)
-typealias RotateEntityFunc = (CEntity, Float, Float, Float) -> Unit
-
-@OptIn(ExperimentalForeignApi::class)
-var c_rotateEntity: RotateEntityFunc? = null
-
-@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
-@CName("ktSetRotateEntityFunc")
-fun ktSetRotateEntityFunc(callback: CPointer<CFunction<(CEntity, Float, Float, Float) -> Unit>>) {
-    c_rotateEntity = { entity, x, y, z ->
-        memScoped {
-            callback.reinterpret<CFunction<(CEntity, Float, Float, Float) -> Unit>>()(
-                entity, x, y, z
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalForeignApi::class)
-typealias TranslateEntityFunc = (CEntity, Float, Float, Float) -> Unit
-
-@OptIn(ExperimentalForeignApi::class)
-var c_translateEntity: TranslateEntityFunc? = null
-
-@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
-@CName("ktSetTranslateEntityFunc")
-fun ktSetTranslateEntityFunc(callback: CPointer<CFunction<(CEntity, Float, Float, Float) -> Unit>>) {
-    c_translateEntity = { entity, x, y, z ->
-        memScoped {
-            callback.reinterpret<CFunction<(CEntity, Float, Float, Float) -> Unit>>()(
-                entity, x, y, z
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalForeignApi::class)
-typealias PositionEntityFunc = (CEntity, Float, Float, Float) -> Unit
-
-@OptIn(ExperimentalForeignApi::class)
-var c_positionEntity: PositionEntityFunc? = null
+var c_setEntityPosition: SetEntityPositionFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktSetPositionEntityFunc")
 fun ktSetPositionEntityFunc(callback: CPointer<CFunction<(CEntity, Float, Float, Float) -> Unit>>) {
-    c_positionEntity = { entity, x, y, z ->
+    c_setEntityPosition = { entity, x, y, z ->
         memScoped {
             callback.reinterpret<CFunction<(CEntity, Float, Float, Float) -> Unit>>()(
+                entity, x, y, z
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+typealias SetEntityRotationFunc = (CEntity, Float, Float, Float) -> Unit
+
+@OptIn(ExperimentalForeignApi::class)
+var c_setEntityRotation: SetEntityRotationFunc? = null
+
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@CName("ktSetEntityRotationFunc")
+fun ktSetEntityRotationFunc(callback: CPointer<CFunction<SetEntityRotationFunc>>) {
+    c_setEntityRotation = { entity, x, y, z ->
+        memScoped {
+            callback.reinterpret<CFunction<SetEntityRotationFunc>>()(
                 entity, x, y, z
             )
         }
