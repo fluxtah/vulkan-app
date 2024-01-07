@@ -33,7 +33,7 @@
 static float lastFrameTime = 0.0f;
 static bool keys[1024];
 
-void buildBasicShaderPipeline(ApplicationContext *context, VkRenderPass renderPass, PipelineConfig *pipelineConfig);
+PipelineConfig *buildBasicShaderPipeline(ApplicationContext *context, VkRenderPass renderPass);
 void destroyShaderPipeline(ApplicationContext *context, PipelineConfig *pipelineConfig);
 
 int isKeyPressed(int key) {
@@ -89,8 +89,7 @@ int main() {
 
     VkRenderPass renderPass = createRenderPass(&context);
 
-    context.pipelineConfig = malloc(sizeof(PipelineConfig));
-    buildBasicShaderPipeline(&context, renderPass, context.pipelineConfig);
+    context.pipelineConfig = buildBasicShaderPipeline(&context, renderPass);
 
     context.swapChainFramebuffers = createSwapChainFramebuffers(&context, context.swapChainImageViews,
                                                                 context.swapChainImageCount, renderPass,
@@ -236,7 +235,9 @@ int main() {
     return 0;
 }
 
-void buildBasicShaderPipeline(ApplicationContext *context, VkRenderPass renderPass, PipelineConfig *pipelineConfig) {
+PipelineConfig *buildBasicShaderPipeline(ApplicationContext *context, VkRenderPass renderPass) {
+    PipelineConfig  *pipelineConfig = malloc(sizeof(PipelineConfig));
+
     //
     // Create a descriptor pool
     //
@@ -268,6 +269,8 @@ void buildBasicShaderPipeline(ApplicationContext *context, VkRenderPass renderPa
             renderPass, viewport,
             pipelineConfig->vertexShaderModule,
             pipelineConfig->fragmentShaderModule);
+
+    return pipelineConfig;
 }
 
 void destroyShaderPipeline(ApplicationContext *context, PipelineConfig *pipelineConfig) {
