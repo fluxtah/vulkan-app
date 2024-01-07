@@ -89,3 +89,19 @@ fun ktSetStopSoundFunc(callback: CPointer<CFunction<StopSoundFunc>>) {
         }
     }
 }
+
+@OptIn(ExperimentalForeignApi::class)
+typealias SetSoundPitchFunc = (CSound, Float) -> Unit
+
+@OptIn(ExperimentalForeignApi::class)
+var c_setSoundPitch: SetSoundPitchFunc? = null
+
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@CName("ktSetSoundPitchFunc")
+fun ktSetSoundPitchFunc(callback: CPointer<CFunction<SetSoundPitchFunc>>) {
+    c_setSoundPitch = { sound, pitch ->
+        memScoped {
+            callback.reinterpret<CFunction<SetSoundPitchFunc>>()(sound, pitch)
+        }
+    }
+}

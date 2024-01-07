@@ -67,7 +67,6 @@ Sound *loadSound(const char *filename, CreateSoundInfo *info) {
     if(info->loop == 1) {
         alSourcei(source, AL_LOOPING, AL_TRUE);
     }
-    //alSourcef(source, AL_PITCH, 1.5f);
 
     sound->buffer = buffer;
     sound->source = source;
@@ -98,4 +97,8 @@ int isSoundPlaying(Sound *sound) {
     }
 
     return -1;
+}
+
+void setSoundPitch(Sound *sound, float pitch) {
+    alSourcef(sound->source, AL_PITCH, pitch);
 }

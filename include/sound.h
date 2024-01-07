@@ -31,5 +31,6 @@ void destroySound(Sound *sound);
 void playSound(Sound *sound);
 int isSoundPlaying(Sound *sound);
 void stopSound(Sound *sound);
+void setSoundPitch(Sound *sound, float pitch);
 
 #endif //APP_SOUND_H

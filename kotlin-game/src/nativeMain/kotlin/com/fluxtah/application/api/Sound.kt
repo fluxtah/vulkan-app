@@ -33,6 +33,10 @@ class Sound(val handle: CSound) {
             stop()
         }
     }
+
+    fun setPitch(pitch: Float) {
+        c_setSoundPitch!!.invoke(handle, pitch)
+    }
 }
 
 @SceneDsl

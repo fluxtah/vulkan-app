@@ -42,4 +42,5 @@ void bindKotlinApi() {
     ktSetPlaySoundFunc(playSound);
     ktSetIsSoundPlayingFunc(isSoundPlaying);
     ktSetStopSoundFunc(stopSound);
+    ktSetSoundPitchFunc(setSoundPitch);
 }

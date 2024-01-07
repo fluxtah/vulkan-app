@@ -103,7 +103,7 @@ class SceneBuilder(val sceneId: String) {
         }
     }
 
-    fun sound(id: String, soundPath: String, builder: SoundBuilder.() -> Unit) {
+    fun sound(id: String, soundPath: String, builder: SoundBuilder.() -> Unit = {}) {
         if (sounds.containsKey(id)) {
             throw Exception("Entity with id $id already exists")
         }

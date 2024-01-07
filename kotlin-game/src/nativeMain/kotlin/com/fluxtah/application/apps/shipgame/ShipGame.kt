@@ -58,6 +58,10 @@ class ShipGame : Application {
             sound("up-thrust", "sounds/up-thrust.wav") {
                 loop(true)
             }
+            sound("engine", "sounds/engine.wav") {
+                loop(true)
+            }
+            sound("sonic-boom", "sounds/sonic-boom.wav")
 
             var chaseCam: ChaseCamera? = null
 
