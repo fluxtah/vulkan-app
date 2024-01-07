@@ -13,6 +13,16 @@
 #include "include/camera.h"
 #include "sound.h"
 
+typedef struct PipelineConfig {
+    VkShaderModule vertexShaderModule;
+    VkShaderModule fragmentShaderModule;
+    VkPipeline pipeline;
+    VkPipelineLayout pipelineLayout;
+    VkDescriptorSetLayout vertexShaderDescriptorSetLayout;
+    VkDescriptorSetLayout fragmentShaderDescriptorSetLayout;
+    VkDescriptorPool descriptorPool;
+} PipelineConfig;
+
 typedef struct ApplicationContext {
     //
     // Vulkan & GLFW
@@ -41,9 +51,7 @@ typedef struct ApplicationContext {
     uint32_t swapChainImageCount;
     VkFramebuffer *swapChainFramebuffers;
 
-    VkDescriptorSetLayout vertexShaderDescriptorSetLayout;
-    VkDescriptorSetLayout fragmentShaderDescriptorSetLayout;
-    VkDescriptorPool descriptorPool;
+    PipelineConfig *pipelineConfig;
 
     //
     // Audio

@@ -53,8 +53,8 @@ RenderObject *createRenderObjectFromFile(ApplicationContext *context, const char
     setupTextureFromImageData(context, obj->modelData->metallicRoughnessMapImageData, obj->metallicRoughnessMap);
 
     // Create a descriptor sets
-    allocateDescriptorSet(context->device, context->descriptorPool, context->vertexShaderDescriptorSetLayout, &obj->vertexDescriptorSet);
-    allocateDescriptorSet(context->device, context->descriptorPool, context->fragmentShaderDescriptorSetLayout, &obj->fragmentDescriptorSet);
+    allocateDescriptorSet(context->device, context->pipelineConfig->descriptorPool, context->pipelineConfig->vertexShaderDescriptorSetLayout, &obj->vertexDescriptorSet);
+    allocateDescriptorSet(context->device, context->pipelineConfig->descriptorPool, context->pipelineConfig->fragmentShaderDescriptorSetLayout, &obj->fragmentDescriptorSet);
 
     updateBasicShaderDescriptorSet(
             context->device,

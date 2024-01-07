@@ -33,13 +33,6 @@
 static float lastFrameTime = 0.0f;
 static bool keys[1024];
 
-typedef struct PipelineConfig {
-    VkShaderModule vertexShaderModule;
-    VkShaderModule fragmentShaderModule;
-    VkPipeline pipeline;
-    VkPipelineLayout pipelineLayout;
-} PipelineConfig;
-
 void buildBasicShaderPipeline(ApplicationContext *context, VkRenderPass renderPass, PipelineConfig *pipelineConfig);
 
 int isKeyPressed(int key) {
@@ -88,17 +81,6 @@ int main() {
 
     createSwapChainImageViews(&context);
 
-    //
-    // Create descriptor set layouts
-    //
-    context.vertexShaderDescriptorSetLayout = createVertexShaderDescriptorSetLayout(context.device);
-    context.fragmentShaderDescriptorSetLayout = createFragmentShaderDescriptorSetLayout(context.device);
-
-    //
-    // Create a descriptor pool
-    //
-    context.descriptorPool = createBasicShaderDescriptorPool(context.device);
-
     VkImage depthImage;
     VkDeviceMemory depthImageMemory;
     VkImageView depthImageView;
@@ -106,14 +88,14 @@ int main() {
 
     VkRenderPass renderPass = createRenderPass(&context);
 
-    PipelineConfig pipelineConfig = {0};
-    buildBasicShaderPipeline(&context, renderPass, &pipelineConfig);
+    context.pipelineConfig = malloc(sizeof(PipelineConfig));
+    buildBasicShaderPipeline(&context, renderPass, context.pipelineConfig);
 
     context.swapChainFramebuffers = createSwapChainFramebuffers(&context, context.swapChainImageViews,
                                                                 context.swapChainImageCount, renderPass,
                                                                 depthImageView);
 
-    if (pipelineConfig.pipeline == VK_NULL_HANDLE)
+    if (context.pipelineConfig->pipeline == VK_NULL_HANDLE)
         return -1;
 
     VkCommandBuffer *commandBuffers = allocateCommandBuffers(context.device, context.commandPool,
@@ -185,8 +167,8 @@ int main() {
                     renderPass,
                     context.swapChainFramebuffers[i],
                     context.swapChainExtent,
-                    pipelineConfig.pipeline,
-                    pipelineConfig.pipelineLayout,
+                    context.pipelineConfig->pipeline,
+                    context.pipelineConfig->pipelineLayout,
                     renderObjects,
                     numRenderObjects);
         }
@@ -220,20 +202,22 @@ int main() {
     vkDestroySemaphore(context.device, imageAvailableSemaphore, NULL);
     vkDestroyFence(context.device, inFlightFence, NULL);
 
-    vkDestroyDescriptorPool(context.device, context.descriptorPool, NULL);
-    vkDestroyDescriptorSetLayout(context.device, context.vertexShaderDescriptorSetLayout, NULL);
-    vkDestroyDescriptorSetLayout(context.device, context.fragmentShaderDescriptorSetLayout, NULL);
+    vkDestroyDescriptorPool(context.device, context.pipelineConfig->descriptorPool, NULL);
+    vkDestroyDescriptorSetLayout(context.device, context.pipelineConfig->vertexShaderDescriptorSetLayout, NULL);
+    vkDestroyDescriptorSetLayout(context.device, context.pipelineConfig->fragmentShaderDescriptorSetLayout, NULL);
 
     for (size_t i = 0; i < context.swapChainImageCount; i++) {
         vkDestroyFramebuffer(context.device, context.swapChainFramebuffers[i], NULL);
     }
     free(context.swapChainFramebuffers);
 
-    vkDestroyPipeline(context.device, pipelineConfig.pipeline, NULL);
-    vkDestroyPipelineLayout(context.device, pipelineConfig.pipelineLayout, NULL);
-    vkDestroyShaderModule(context.device, pipelineConfig.vertexShaderModule, NULL);
-    vkDestroyShaderModule(context.device, pipelineConfig.fragmentShaderModule, NULL);
+    vkDestroyPipeline(context.device, context.pipelineConfig->pipeline, NULL);
+    vkDestroyPipelineLayout(context.device, context.pipelineConfig->pipelineLayout, NULL);
+    vkDestroyShaderModule(context.device, context.pipelineConfig->vertexShaderModule, NULL);
+    vkDestroyShaderModule(context.device, context.pipelineConfig->fragmentShaderModule, NULL);
     vkDestroyRenderPass(context.device, renderPass, NULL);
+
+    free(context.pipelineConfig);
 
     vkDestroyImageView(context.device, depthImageView, NULL);
     vkDestroyImage(context.device, depthImage, NULL);
@@ -260,12 +244,24 @@ int main() {
 }
 
 void buildBasicShaderPipeline(ApplicationContext *context, VkRenderPass renderPass, PipelineConfig *pipelineConfig) {
+    //
+    // Create a descriptor pool
+    //
+    pipelineConfig->descriptorPool = createBasicShaderDescriptorPool(context->device);
+
+    //
+    // Create descriptor set layouts
+    //
+    pipelineConfig->vertexShaderDescriptorSetLayout = createVertexShaderDescriptorSetLayout(context->device);
+    pipelineConfig->fragmentShaderDescriptorSetLayout = createFragmentShaderDescriptorSetLayout(context->device);
+
+
     pipelineConfig->vertexShaderModule = createShaderModule(context->device, "shaders/basic.vert.spv");
     pipelineConfig->fragmentShaderModule = createShaderModule(context->device, "shaders/basic.frag.spv");
 
     pipelineConfig->pipelineLayout = createPipelineLayout(context->device,
-                                                          context->vertexShaderDescriptorSetLayout,
-                                                          context->fragmentShaderDescriptorSetLayout);
+                                                          pipelineConfig->vertexShaderDescriptorSetLayout,
+                                                          pipelineConfig->fragmentShaderDescriptorSetLayout);
     Viewport viewport = (Viewport) {
             0, 0,
             (float) context->swapChainExtent.width,
