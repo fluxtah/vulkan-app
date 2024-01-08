@@ -45,26 +45,26 @@ VkSwapchainKHR createSwapChain(ApplicationContext *context) {
     return swapChain;
 }
 
-void createSwapChainImageViews(ApplicationContext *context) {
+VkImageView* createSwapChainImageViews(ApplicationContext *context) {
     vkGetSwapchainImagesKHR(context->device, context->swapChain, &context->swapChainImageCount, NULL);
 
     VkImage *swapChainImages = malloc(sizeof(VkImage) * context->swapChainImageCount);
     if (!swapChainImages) {
         fprintf(stderr, "Failed to allocate memory for swap chain images\n");
-        return;
+        return NULL;
     }
 
     if (vkGetSwapchainImagesKHR(context->device, context->swapChain, &context->swapChainImageCount, swapChainImages) != VK_SUCCESS) {
         fprintf(stderr, "Failed to get swap chain images\n");
         free(swapChainImages);
-        return;
+        return NULL;
     }
 
-    context->swapChainImageViews = malloc( sizeof(VkImageView) * context->swapChainImageCount);
-    if (!context->swapChainImageViews) {
+    VkImageView *swapChainImageViews = malloc(sizeof(VkImageView) *  context->swapChainImageCount);
+    if (!swapChainImageViews) {
         fprintf(stderr, "Failed to allocate memory for image views\n");
         free(swapChainImages);
-        return;
+        return NULL;
     }
 
     for (uint32_t i = 0; i < context->swapChainImageCount; i++) {
@@ -83,12 +83,15 @@ void createSwapChainImageViews(ApplicationContext *context) {
         createInfo.subresourceRange.baseArrayLayer = 0;
         createInfo.subresourceRange.layerCount = 1;
 
-        if (vkCreateImageView(context->device, &createInfo, NULL, &((context->swapChainImageViews)[i])) != VK_SUCCESS) {
+        if (vkCreateImageView(context->device, &createInfo, NULL, &swapChainImageViews[i]) != VK_SUCCESS) {
             fprintf(stderr, "Failed to create image view for image %d\n", i);
-            // Handle partial cleanup if needed
+            free(swapChainImages);
+            free(swapChainImageViews);
+            return NULL;
         }
     }
 
     free(swapChainImages);
+    return swapChainImageViews;
 }
 

@@ -8,6 +8,6 @@
 #include "include/context.h"
 
 VkSwapchainKHR createSwapChain(ApplicationContext *context);
-void createSwapChainImageViews(ApplicationContext *context);
+VkImageView* createSwapChainImageViews(ApplicationContext *context);
 
 #endif // VULKAN_SWAPCHAIN_H

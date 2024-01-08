@@ -43,7 +43,7 @@ int main() {
     ktCreateApplication();
 
     ImageMemory *depthStencil = createDepthStencil(&context);
-
+    
     VkRenderPass renderPass = createRenderPass(&context);
 
     context.pipelineConfig = createBasicShaderPipelineConfig(&context, renderPass);

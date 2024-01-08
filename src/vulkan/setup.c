@@ -185,7 +185,9 @@ int setupApplication(ApplicationContext *context) {
     if (context->swapChain == VK_NULL_HANDLE)
         return -1;
 
-    createSwapChainImageViews(context);
+    context->swapChainImageViews = createSwapChainImageViews(context);
+    if (context->swapChainImageViews == VK_NULL_HANDLE)
+        return -1;
 
     return 0;
 }
