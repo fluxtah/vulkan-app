@@ -14,8 +14,8 @@ add_executable(Game
         include/modeldata.h
         src/modeldata.c
 
-        include/renderobject.h
-        src/renderobject.c
+        include/renderresources.h
+        src/renderresources.c
 
         include/ubo.h
         include/ubo_update.h

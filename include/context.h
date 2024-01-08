@@ -38,7 +38,7 @@ typedef struct VulkanDeviceContext {
 } VulkanDeviceContext;
 
 typedef struct VulkanSwapchainContext {
-    // TODO Screen dependent data properties
+    // TODO Screen dependent resources properties
     //  when the screen changes or device reset (gotta research this)
     //  may need to recreate these resources
     VkExtent2D swapChainExtent;

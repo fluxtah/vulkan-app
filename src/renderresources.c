@@ -1,33 +1,33 @@
-#include "include/renderobject.h"
+#include "include/renderresources.h"
 
-typedef struct RenderDataMap {
+typedef struct RenderResourcesMap {
     char *filename;
     int refs;
-    RenderData *data;
+    RenderResources *resources;
     UT_hash_handle hh;
-} RenderDataMap;
+} RenderResourcesMap;
 
-static RenderDataMap *renderDataMap;
+static RenderResourcesMap *renderResourcesMap;
 
-void addRenderData(RenderDataMap **hashmap, const char *filename, RenderData *renderObj) {
-    RenderDataMap *entry = NULL;
+void addRenderResources(RenderResourcesMap **hashmap, const char *filename, RenderResources *resources) {
+    RenderResourcesMap *entry = NULL;
     HASH_FIND_STR(*hashmap, filename, entry);
     if (entry == NULL) {
-        entry = (RenderDataMap *)malloc(sizeof(RenderDataMap));
+        entry = (RenderResourcesMap *)malloc(sizeof(RenderResourcesMap));
         entry->filename = strdup(filename); // Duplicate the filename
-        entry->data = renderObj;
+        entry->resources = resources;
         entry->refs = 1;
         HASH_ADD_KEYPTR(hh, *hashmap, entry->filename, strlen(entry->filename), entry);
     }
 }
 
-RenderDataMap *getRenderData(RenderDataMap *hashmap, const char *filename) {
-    RenderDataMap *entry = NULL;
+RenderResourcesMap *getRenderResources(RenderResourcesMap *hashmap, const char *filename) {
+    RenderResourcesMap *entry = NULL;
     HASH_FIND_STR(hashmap, filename, entry);
     return (entry != NULL) ? entry : NULL;
 }
 
-void deleteRenderData(RenderDataMap **hashmap, RenderDataMap *entry) {
+void deleteRenderResources(RenderResourcesMap **hashmap, RenderResourcesMap *entry) {
     HASH_DEL(*hashmap, entry);
     free(entry->filename);
     free(entry);
@@ -58,7 +58,7 @@ Entity *createEntity(ApplicationContext *context, const char *filename, CreateEn
                        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-    entity->renderData = createRenderDataFromFile(context, filename);
+    entity->renderResources = createRenderResourcesFromFile(context, filename);
 
     // Create descriptor sets
     allocateDescriptorSet(context->vulkanDeviceContext->device, context->pipelineConfig->descriptorPool,
@@ -72,26 +72,44 @@ Entity *createEntity(ApplicationContext *context, const char *filename, CreateEn
             entity->fragmentDescriptorSet,
             entity->transformUBO->buffer,
             entity->lightingUBO->buffer,
-            entity->renderData->colorMap->imageView,
-            entity->renderData->normalMap->imageView,
-            entity->renderData->metallicRoughnessMap->imageView,
+            entity->renderResources->colorMap->imageView,
+            entity->renderResources->normalMap->imageView,
+            entity->renderResources->metallicRoughnessMap->imageView,
             context->sampler
     );
 
     return entity;
 }
 
-RenderData *createRenderDataFromFile(ApplicationContext *context, const char *filename) {
-    RenderDataMap *existingData = getRenderData(renderDataMap, filename);
+/**
+ * Loads model data from a GLB file and creates render resources. This function utilizes a hash map to manage
+ * and share loaded resources. If called with a filename that has been previously
+ * loaded, it returns the existing mapped RenderResources object instead of reloading from
+ * the file, thus optimizing resource usage.
+ *
+ * Reference counting is employed to manage the lifecycle of the RenderResources. Each call
+ * to this function increments the reference count for the RenderResources associated with the
+ * given filename. When an Entity using this RenderResources is destroyed, it decrements the
+ * reference count. Once the reference count reaches zero (i.e., no more Entities are using
+ * the RenderResources), the RenderResources is deleted to free up resources.
+ *
+ * Note: Callers are responsible for decrementing the reference count by destroying
+ * the Entity when it is no longer needed.
+ *
+ * @param context  The application context containing Vulkan device and command pool.
+ * @param filename The path to the GLB file to load the render data from.
+ * @return A pointer to the RenderResources structure containing the loaded data.
+ */
+RenderResources *createRenderResourcesFromFile(ApplicationContext *context, const char *filename) {
+    RenderResourcesMap *existingData = getRenderResources(renderResourcesMap, filename);
 
-    // TODO Caller should be aware that we count refs!
     if(existingData != NULL) {
         existingData->refs++;
-        return existingData->data;
+        return existingData->resources;
     }
 
-    RenderData *obj = malloc(sizeof(RenderData));
-    addRenderData(&renderDataMap, filename, obj);
+    RenderResources *obj = malloc(sizeof(RenderResources));
+    addRenderResources(&renderResourcesMap, filename, obj);
 
     obj->filename = strdup(filename);
     obj->modelData = loadModelData(filename);
@@ -125,7 +143,7 @@ RenderData *createRenderDataFromFile(ApplicationContext *context, const char *fi
 }
 
 void setupTextureFromImageData(ApplicationContext *context, ModelImageData *imageData, ImageMemory *imageMemory) {
-    // Create a staging buffer for the image data
+    // Create a staging buffer for the image resources
     BufferMemory *textureStagingBuffer = (BufferMemory *) malloc(sizeof(BufferMemory));
     createStagingBufferMemory(context->vulkanDeviceContext, imageData->image_size, imageData->image_data,
                               textureStagingBuffer);
@@ -175,17 +193,18 @@ void destroyEntity(ApplicationContext *context, Entity *entity) {
     destroyBufferMemory(context->vulkanDeviceContext, entity->transformUBO);
     destroyBufferMemory(context->vulkanDeviceContext, entity->lightingUBO);
 
-    RenderDataMap *renderData = getRenderData(renderDataMap, entity->renderData->filename);
+    RenderResourcesMap *resources = getRenderResources(renderResourcesMap, entity->renderResources->filename);
 
-    if(renderData->refs == 1) {
-        destroyRenderData(context, entity->renderData);
+    if(resources->refs == 1) {
+        deleteRenderResources(&renderResourcesMap, resources);
+        destroyRenderResources(context, entity->renderResources);
     } else {
-        renderData->refs--;
+        resources->refs--;
     }
 }
 
-void destroyRenderData(ApplicationContext *context, RenderData *obj) {
-    // Destroy data buffers
+void destroyRenderResources(ApplicationContext *context, RenderResources *obj) {
+    // Destroy resources buffers
     destroyBufferMemory(context->vulkanDeviceContext, obj->indexBuffer);
     destroyBufferMemory(context->vulkanDeviceContext, obj->vertexBuffer);
 
@@ -194,7 +213,7 @@ void destroyRenderData(ApplicationContext *context, RenderData *obj) {
     destroyImageMemory(context->vulkanDeviceContext->device, obj->normalMap);
     destroyImageMemory(context->vulkanDeviceContext->device, obj->metallicRoughnessMap);
 
-    // Destroy model data
+    // Destroy model resources
     destroyModelData(obj->modelData);
 
     free(obj->filename);

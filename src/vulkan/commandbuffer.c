@@ -38,15 +38,15 @@ void recordCommandBuffer(
     for (size_t i = 0; i < ktEntities->size; i++) {
         Entity *obj = (Entity *) (ktEntities->entities[i]);
 
-        VkBuffer vertexBuffers[] = {obj->renderData->vertexBuffer->buffer};
+        VkBuffer vertexBuffers[] = {obj->renderResources->vertexBuffer->buffer};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-        vkCmdBindIndexBuffer(commandBuffer, obj->renderData->indexBuffer->buffer, 0, VK_INDEX_TYPE_UINT16);
+        vkCmdBindIndexBuffer(commandBuffer, obj->renderResources->indexBuffer->buffer, 0, VK_INDEX_TYPE_UINT16);
 
         VkDescriptorSet descriptorSets[] = { obj->vertexDescriptorSet, obj->fragmentDescriptorSet };
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 2, descriptorSets, 0, NULL);
 
-        vkCmdDrawIndexed(commandBuffer, obj->renderData->modelData->num_indices, 1, 0, 0, 0);
+        vkCmdDrawIndexed(commandBuffer, obj->renderResources->modelData->num_indices, 1, 0, 0, 0);
     }
     vkCmdEndRenderPass(commandBuffer);
 

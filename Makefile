@@ -67,8 +67,8 @@ CMAKE_BINARY_DIR = /Users/ian.warwick/Documents/sdev/game
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "No interactive CMake dialog available..."
-	/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
+	/opt/homebrew/Cellar/cmake/3.28.0/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -297,29 +297,29 @@ src/pipelineconfig.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelineconfig.c.s
 .PHONY : src/pipelineconfig.c.s
 
-src/renderobject.o: src/renderobject.c.o
-.PHONY : src/renderobject.o
+src/renderresources.o: src/renderresources.c.o
+.PHONY : src/renderresources.o
 
 # target to build an object file
-src/renderobject.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/renderobject.c.o
-.PHONY : src/renderobject.c.o
+src/renderresources.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/renderresources.c.o
+.PHONY : src/renderresources.c.o
 
-src/renderobject.i: src/renderobject.c.i
-.PHONY : src/renderobject.i
+src/renderresources.i: src/renderresources.c.i
+.PHONY : src/renderresources.i
 
 # target to preprocess a source file
-src/renderobject.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/renderobject.c.i
-.PHONY : src/renderobject.c.i
+src/renderresources.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/renderresources.c.i
+.PHONY : src/renderresources.c.i
 
-src/renderobject.s: src/renderobject.c.s
-.PHONY : src/renderobject.s
+src/renderresources.s: src/renderresources.c.s
+.PHONY : src/renderresources.s
 
 # target to generate assembly for a file
-src/renderobject.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/renderobject.c.s
-.PHONY : src/renderobject.c.s
+src/renderresources.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/renderresources.c.s
+.PHONY : src/renderresources.c.s
 
 src/sound.o: src/sound.c.o
 .PHONY : src/sound.o
@@ -855,9 +855,9 @@ help:
 	@echo "... src/pipelineconfig.o"
 	@echo "... src/pipelineconfig.i"
 	@echo "... src/pipelineconfig.s"
-	@echo "... src/renderobject.o"
-	@echo "... src/renderobject.i"
-	@echo "... src/renderobject.s"
+	@echo "... src/renderresources.o"
+	@echo "... src/renderresources.i"
+	@echo "... src/renderresources.s"
 	@echo "... src/sound.o"
 	@echo "... src/sound.i"
 	@echo "... src/sound.s"

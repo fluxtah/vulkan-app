@@ -7,14 +7,14 @@
 #include <stdio.h>
 #include <string.h>
 
-typedef struct {
+typedef struct ModelImageData {
     uint8_t* image_data;
     size_t image_size;
     int image_width;
     int image_height;
 } ModelImageData;
 
-typedef struct {
+typedef struct ModelData {
     Vertex* vertices;
     size_t num_vertices;
     uint16_t* indices;

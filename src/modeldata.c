@@ -45,7 +45,7 @@ void printData(cgltf_data *data, const char *filename) {
         printf("  Image %lu: Name: %s, URI: %s\n", i, image.name, image.uri);
     }
 
-    // Additional data (like materials, nodes, etc.) can be printed similarly
+    // Additional resources (like materials, nodes, etc.) can be printed similarly
     // exit(1);
 }
 
@@ -112,7 +112,7 @@ void readImageData(const cgltf_image *image, ModelImageData *imageData) {
         size_t bufferSize = image->buffer_view->size;
 
         int width, height, channels;
-        // Load image data with stbi_load_from_memory
+        // Load image resources with stbi_load_from_memory
         unsigned char *loadedImage = stbi_load_from_memory(bufferData, (int) bufferSize, &width, &height, &channels,
                                                            STBI_rgb_alpha);
         if (loadedImage) {
@@ -126,15 +126,15 @@ void readImageData(const cgltf_image *image, ModelImageData *imageData) {
             if (imageData->image_data != NULL) {
                 memcpy(imageData->image_data, loadedImage, imageData->image_size);
             } else {
-                printf("Failed to allocate image data memory for %s", image->name);
+                printf("Failed to allocate image resources memory for %s", image->name);
                 stbi_image_free(loadedImage);
                 exit(1);
             }
 
-            // Free the loaded image data
+            // Free the loaded image resources
             stbi_image_free(loadedImage);
         } else {
-            printf("Failed to load image data for %s", image->name);
+            printf("Failed to load image resources for %s", image->name);
             exit(1);
         }
     }
@@ -213,7 +213,7 @@ void createDefaultImageData(ModelImageData *modelData, const uint8_t *imageData)
     if (modelData->image_data != NULL) {
         memcpy(modelData->image_data, imageData, modelData->image_size);
     } else {
-        printf("Failed to allocate image data memory for 1x1 image");
+        printf("Failed to allocate image resources memory for 1x1 image");
         exit(1);
     }
 }

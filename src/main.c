@@ -10,7 +10,7 @@
 #include "libkotlin_game_api.h"
 #include "kotlin-game/cinterop/model.h"
 #include "include/ubo_update.h"
-#include "include/renderobject.h"
+#include "include/renderresources.h"
 #include "include/kotlin.h"
 
 #include <stdlib.h>

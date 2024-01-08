@@ -20,7 +20,7 @@ typedef struct {
     ImageMemory *colorMap;
     ImageMemory *normalMap;
     ImageMemory *metallicRoughnessMap;
-} RenderData;
+} RenderResources;
 
 typedef struct Entity {
     vec3 scale;
@@ -31,11 +31,11 @@ typedef struct Entity {
     VkDescriptorSet fragmentDescriptorSet;
     BufferMemory *transformUBO;
     BufferMemory *lightingUBO;
-    RenderData *renderData;
+    RenderResources *renderResources;
 } Entity;
 
 Entity *createEntity(ApplicationContext *context, const char *filename, CreateEntityInfo *info);
-RenderData *createRenderDataFromFile(ApplicationContext *context, const char *filename);
+RenderResources *createRenderResourcesFromFile(ApplicationContext *context, const char *filename);
 
 void setupTextureFromImageData(ApplicationContext *context, ModelImageData *imageData, ImageMemory *imageMemory);
 
@@ -44,6 +44,6 @@ void setEntityPosition(Entity *entity, float x, float y, float z);
 void setEntityRotation(Entity *entity, float x, float y, float z);
 
 void destroyEntity(ApplicationContext *context, Entity *entity);
-void destroyRenderData(ApplicationContext *context, RenderData *obj);
+void destroyRenderResources(ApplicationContext *context, RenderResources *obj);
 
 #endif //APP_RENDEROBJECT_H
