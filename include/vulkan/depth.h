@@ -7,10 +7,10 @@
 
 #include "image.h"
 #include "include/context.h"
+#include "include/imagememory.h"
 
 VkFormat findDepthFormat(VkPhysicalDevice physicalDevice);
 
-void createDepthResources(ApplicationContext *context, VkCommandPool commandPool, VkImage *depthImage,
-                          VkDeviceMemory *depthImageMemory, VkImageView *depthImageView);
+ImageMemory *createDepthStencil(ApplicationContext *context);
 
 #endif //VULKAN_DEPTH_H

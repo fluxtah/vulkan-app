@@ -42,10 +42,7 @@ int main() {
     // Create the Kotlin Application
     ktCreateApplication();
 
-    VkImage depthImage;
-    VkDeviceMemory depthImageMemory;
-    VkImageView depthImageView;
-    createDepthResources(&context, context.commandPool, &depthImage, &depthImageMemory, &depthImageView);
+    ImageMemory *depthStencil = createDepthStencil(&context);
 
     VkRenderPass renderPass = createRenderPass(&context);
 
@@ -55,7 +52,7 @@ int main() {
 
     context.swapChainFramebuffers = createSwapChainFramebuffers(&context, context.swapChainImageViews,
                                                                 context.swapChainImageCount, renderPass,
-                                                                depthImageView);
+                                                                depthStencil->imageView);
 
     VkCommandBuffer *commandBuffers = allocateCommandBuffers(context.device, context.commandPool,
                                                              context.swapChainImageCount);
@@ -170,9 +167,7 @@ int main() {
 
     vkDestroyRenderPass(context.device, renderPass, NULL);
 
-    vkDestroyImageView(context.device, depthImageView, NULL);
-    vkDestroyImage(context.device, depthImage, NULL);
-    vkFreeMemory(context.device, depthImageMemory, NULL);
+    destroyImageMemory(&context, depthStencil);
 
     destroyPipelineConfig(&context, context.pipelineConfig);
 

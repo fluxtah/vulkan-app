@@ -14,4 +14,6 @@ typedef struct {
     VkDeviceMemory memory;
     VkImageView imageView;
 } ImageMemory;
+
+void destroyImageMemory(ApplicationContext *context, ImageMemory *imageMemory);
 #endif //APP_IMAGEMEMORY_H

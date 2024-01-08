@@ -53,8 +53,10 @@ RenderObject *createRenderObjectFromFile(ApplicationContext *context, const char
     setupTextureFromImageData(context, obj->modelData->metallicRoughnessMapImageData, obj->metallicRoughnessMap);
 
     // Create descriptor sets
-    allocateDescriptorSet(context->device, context->pipelineConfig->descriptorPool, context->pipelineConfig->vertexShaderDescriptorSetLayout, &obj->vertexDescriptorSet);
-    allocateDescriptorSet(context->device, context->pipelineConfig->descriptorPool, context->pipelineConfig->fragmentShaderDescriptorSetLayout, &obj->fragmentDescriptorSet);
+    allocateDescriptorSet(context->device, context->pipelineConfig->descriptorPool,
+                          context->pipelineConfig->vertexShaderDescriptorSetLayout, &obj->vertexDescriptorSet);
+    allocateDescriptorSet(context->device, context->pipelineConfig->descriptorPool,
+                          context->pipelineConfig->fragmentShaderDescriptorSetLayout, &obj->fragmentDescriptorSet);
 
     updateBasicShaderDescriptorSet(
             context->device,
@@ -112,7 +114,7 @@ void setRenderObjectRotation(RenderObject *obj, float x, float y, float z) {
 }
 
 void destroyRenderObject(ApplicationContext *context, RenderObject *obj) {
-    // Destroy UBO's
+    // Destroy UBOs
     destroyBufferMemory(context, obj->transformUBO);
     destroyBufferMemory(context, obj->lightingUBO);
 
@@ -120,23 +122,10 @@ void destroyRenderObject(ApplicationContext *context, RenderObject *obj) {
     destroyBufferMemory(context, obj->indexBuffer);
     destroyBufferMemory(context, obj->vertexBuffer);
 
-    // Destroy color map
-    vkDestroyImageView(context->device, obj->colorMap->imageView, NULL);
-    vkDestroyImage(context->device, obj->colorMap->image, NULL);
-    vkFreeMemory(context->device, obj->colorMap->memory, NULL);
-    free(obj->colorMap);
-
-    // Destroy normal map
-    vkDestroyImageView(context->device, obj->normalMap->imageView, NULL);
-    vkDestroyImage(context->device, obj->normalMap->image, NULL);
-    vkFreeMemory(context->device, obj->normalMap->memory, NULL);
-    free(obj->normalMap);
-
-    // Destroy metallic roughness map
-    vkDestroyImageView(context->device, obj->metallicRoughnessMap->imageView, NULL);
-    vkDestroyImage(context->device, obj->metallicRoughnessMap->image, NULL);
-    vkFreeMemory(context->device, obj->metallicRoughnessMap->memory, NULL);
-    free(obj->metallicRoughnessMap);
+    // Destroy maps
+    destroyImageMemory(context, obj->colorMap);
+    destroyImageMemory(context, obj->normalMap);
+    destroyImageMemory(context, obj->metallicRoughnessMap);
 
     // Destroy model data
     destroyModelData(obj->modelData);
