@@ -17,14 +17,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int setupApplication(ApplicationContext *context);
+ApplicationContext *createApplication();
 void destroyApplication(ApplicationContext *context);
+
+VulkanDeviceContext *createVulkanDeviceContext();
+void destroyVulkanDeviceContext(VulkanDeviceContext *context);
+
+VulkanSwapchainContext *createVulkanSwapchainContext(VulkanDeviceContext *vulkanDeviceContext, VkCommandPool commandPool);
+void destroyVulkanSwapchainContext(VulkanDeviceContext *context, VulkanSwapchainContext *vulkanSwapchainContext);
 
 VkSurfaceKHR createVulkanSurface(VkInstance instance, GLFWwindow *window);
 
-VkSurfaceFormatKHR getBestSurfaceFormat(ApplicationContext *context);
+VkSurfaceFormatKHR getBestSurfaceFormat(VulkanDeviceContext *context);
 
-VkPresentModeKHR getBestPresentMode(ApplicationContext *context);
+VkPresentModeKHR getBestPresentMode(VulkanDeviceContext *context);
 
 VkDevice createLogicalDevice(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, uint32_t *graphicsQueueFamilyIndex,
                              uint32_t *presentQueueFamilyIndex);

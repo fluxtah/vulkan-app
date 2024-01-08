@@ -6,7 +6,7 @@
 #include "include/vulkan/pipeline.h"
 #include "include/vulkan/shaders.h"
 
-struct PipelineConfig *createBasicShaderPipelineConfig(struct ApplicationContext *context, struct VkRenderPass_T *renderPass);
-void destroyPipelineConfig(ApplicationContext *context, PipelineConfig *pipelineConfig);
+PipelineConfig *createBasicShaderPipelineConfig(VulkanDeviceContext *context, VkRenderPass renderPass, VkExtent2D swapChainExtent);
+void destroyPipelineConfig(VulkanDeviceContext *context, PipelineConfig *pipelineConfig);
 
 #endif //APP_PIPELINECONFIG_H

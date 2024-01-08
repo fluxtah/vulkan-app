@@ -1,4 +1,8 @@
 #include "include/vulkan/setup.h"
+#include "include/vulkan/framebuffer.h"
+#include "include/pipelineconfig.h"
+#include "include/vulkan/renderpass.h"
+#include "include/vulkan/commandbuffer.h"
 
 VkSurfaceKHR createVulkanSurface(VkInstance instance, GLFWwindow *window) {
     VkSurfaceKHR surface;
@@ -90,7 +94,7 @@ VkDevice createLogicalDevice(VkPhysicalDevice physicalDevice, VkSurfaceKHR surfa
     return device;
 }
 
-VkSurfaceFormatKHR getBestSurfaceFormat(ApplicationContext *context) {
+VkSurfaceFormatKHR getBestSurfaceFormat(VulkanDeviceContext *context) {
     uint32_t formatCount;
     vkGetPhysicalDeviceSurfaceFormatsKHR(context->physicalDevice, context->surface, &formatCount, NULL);
     VkSurfaceFormatKHR *formats = malloc(formatCount * sizeof(VkSurfaceFormatKHR));
@@ -111,7 +115,7 @@ VkSurfaceFormatKHR getBestSurfaceFormat(ApplicationContext *context) {
     return surfaceFormat;
 }
 
-VkPresentModeKHR getBestPresentMode(ApplicationContext *context) {
+VkPresentModeKHR getBestPresentMode(VulkanDeviceContext *context) {
     uint32_t presentModeCount;
     vkGetPhysicalDeviceSurfacePresentModesKHR(context->physicalDevice, context->surface, &presentModeCount, NULL);
     VkPresentModeKHR *presentModes = malloc(presentModeCount * sizeof(VkPresentModeKHR));
@@ -132,31 +136,32 @@ VkPresentModeKHR getBestPresentMode(ApplicationContext *context) {
     return presentMode;
 }
 
-int setupApplication(ApplicationContext *context) {
+VulkanDeviceContext *createVulkanDeviceContext() {
+    VulkanDeviceContext *context = malloc(sizeof(VulkanDeviceContext));
+
     context->window = initWindow();
     if (!context->window)
-        return -1;
+        return NULL;
 
-    /*
-     * SETUP VULKAN
-     */
     context->instance = createVulkanInstance();
     if (context->instance == VK_NULL_HANDLE)
-        return -1;
+        return NULL;
 
     context->surface = createVulkanSurface(context->instance, context->window);
     if (context->surface == VK_NULL_HANDLE)
-        return -1;
+        return NULL;
 
-    // Create physical device
     context->physicalDevice = pickPhysicalDevice(context->instance, context->surface);
     if (context->physicalDevice == VK_NULL_HANDLE)
-        return -1;
+        return NULL;
+
+    printGpuMemoryInfo(context->physicalDevice);
+    printDeviceLimits(context->physicalDevice);
 
     context->device = createLogicalDevice(context->physicalDevice, context->surface, &context->graphicsQueueFamilyIndex,
                                           &context->presentQueueFamilyIndex);
     if (context->device == VK_NULL_HANDLE)
-        return -1;
+        return NULL;
 
     printf("graphicsQueueFamilyIndex %d\n", context->graphicsQueueFamilyIndex);
     printf("presentQueueFamilyIndex %d\n", context->presentQueueFamilyIndex);
@@ -168,41 +173,112 @@ int setupApplication(ApplicationContext *context) {
     context->surfaceFormat = getBestSurfaceFormat(context);
     context->presentMode = getBestPresentMode(context);
 
-    context->commandPool = createCommandPool(context->device, context->graphicsQueueFamilyIndex);
-    if (context->commandPool == VK_NULL_HANDLE)
-        return -1;
-
-    createTextureSampler(context, &context->sampler);
-
-    context->audioContext = createAudioContext();
-
-    glfwSetKeyCallback(context->window, key_callback);
-
-    printGpuMemoryInfo(context->physicalDevice);
-    printDeviceLimits(context->physicalDevice);
-
-    context->swapChain = createSwapChain(context);
-    if (context->swapChain == VK_NULL_HANDLE)
-        return -1;
-
-    context->swapChainImageViews = createSwapChainImageViews(context);
-    if (context->swapChainImageViews == VK_NULL_HANDLE)
-        return -1;
-
-    return 0;
+    return context;
 }
 
-void destroyApplication(ApplicationContext *context) {
-    for (uint32_t i = 0; i < context->swapChainImageCount; i++) {
-        vkDestroyImageView(context->device, context->swapChainImageViews[i], NULL);
-    }
-    free(context->swapChainImageViews);
-    vkDestroySwapchainKHR(context->device, context->swapChain, NULL);
-    destroyAudioContext(context->audioContext);
-    vkDestroySampler(context->device, context->sampler, NULL);
-    vkDestroyCommandPool(context->device, context->commandPool, NULL);
+void destroyVulkanDeviceContext(VulkanDeviceContext *context) {
     vkDestroySurfaceKHR(context->instance, context->surface, NULL);
     vkDestroyDevice(context->device, NULL);
     vkDestroyInstance(context->instance, NULL);
     glfwDestroyWindow(context->window);
+    free(context);
+}
+
+VulkanSwapchainContext *
+createVulkanSwapchainContext(VulkanDeviceContext *vulkanDeviceContext, VkCommandPool commandPool) {
+    VulkanSwapchainContext *vulkanSwapchainContext = malloc(sizeof(VulkanSwapchainContext));
+
+    CreateSwapChainResult result = {0};
+    if (createSwapChain(vulkanDeviceContext, &result) != 0) {
+        printf("Unable to create swapchain");
+        return NULL;
+    }
+
+    vulkanSwapchainContext->swapChain = result.swapChain;
+    vulkanSwapchainContext->swapChainExtent = result.swapChainExtent;
+
+
+    vulkanSwapchainContext->swapChainImageViews = createSwapChainImageViews(
+            vulkanDeviceContext->device,
+            vulkanSwapchainContext
+    );
+
+    if (vulkanSwapchainContext->swapChainImageViews == VK_NULL_HANDLE) {
+        printf("Unable to create swapchain image views");
+        return NULL;
+    }
+
+    vulkanSwapchainContext->depthStencil = createDepthStencil(vulkanDeviceContext, commandPool,
+                                                              vulkanSwapchainContext->swapChainExtent);
+    vulkanSwapchainContext->renderPass = createRenderPass(vulkanDeviceContext);
+    vulkanSwapchainContext->swapChainFramebuffers = createSwapChainFramebuffers(vulkanDeviceContext->device,
+                                                                                vulkanSwapchainContext);
+
+    return vulkanSwapchainContext;
+}
+
+void destroyVulkanSwapchainContext(VulkanDeviceContext *context, VulkanSwapchainContext *vulkanSwapchainContext) {
+    for (size_t i = 0; i < vulkanSwapchainContext->swapChainImageCount; i++) {
+        vkDestroyFramebuffer(context->device, vulkanSwapchainContext->swapChainFramebuffers[i], NULL);
+    }
+    free(vulkanSwapchainContext->swapChainFramebuffers);
+
+    vkDestroyRenderPass(context->device, vulkanSwapchainContext->renderPass, NULL);
+
+    destroyImageMemory(context->device, vulkanSwapchainContext->depthStencil);
+
+    for (uint32_t i = 0; i < vulkanSwapchainContext->swapChainImageCount; i++) {
+        vkDestroyImageView(context->device, vulkanSwapchainContext->swapChainImageViews[i], NULL);
+    }
+    free(vulkanSwapchainContext->swapChainImageViews);
+    vkDestroySwapchainKHR(context->device, vulkanSwapchainContext->swapChain, NULL);
+    free(vulkanSwapchainContext);
+}
+
+ApplicationContext *createApplication() {
+    ApplicationContext *applicationContext = malloc(sizeof(ApplicationContext));
+
+    VulkanDeviceContext *vulkanDeviceContext = createVulkanDeviceContext();
+    applicationContext->vulkanDeviceContext = vulkanDeviceContext;
+
+    applicationContext->commandPool = createCommandPool(vulkanDeviceContext->device,
+                                                        vulkanDeviceContext->graphicsQueueFamilyIndex);
+
+    VulkanSwapchainContext *vulkanSwapchainContext = createVulkanSwapchainContext(vulkanDeviceContext,
+                                                                                  applicationContext->commandPool);
+    applicationContext->vulkanSwapchainContext = vulkanSwapchainContext;
+
+    if (applicationContext->commandPool == VK_NULL_HANDLE)
+        return NULL;
+
+    createTextureSampler(applicationContext->vulkanDeviceContext->device, &applicationContext->sampler);
+
+    applicationContext->audioContext = createAudioContext();
+
+    glfwSetKeyCallback(vulkanDeviceContext->window, key_callback);
+
+    applicationContext->pipelineConfig = createBasicShaderPipelineConfig(vulkanDeviceContext,
+                                                                         vulkanSwapchainContext->renderPass,
+                                                                         vulkanSwapchainContext->swapChainExtent);
+
+    applicationContext->commandBuffers = allocateCommandBuffers(vulkanDeviceContext->device,
+                                                                applicationContext->commandPool,
+                                                                vulkanSwapchainContext->swapChainImageCount);
+
+    if (applicationContext->commandBuffers == VK_NULL_HANDLE)
+        return NULL;
+
+    return applicationContext;
+}
+
+void destroyApplication(ApplicationContext *context) {
+    context->activeCamera = NULL;
+    destroyPipelineConfig(context->vulkanDeviceContext, context->pipelineConfig);
+    destroyAudioContext(context->audioContext);
+    vkDestroySampler(context->vulkanDeviceContext->device, context->sampler, NULL);
+    vkDestroyCommandPool(context->vulkanDeviceContext->device, context->commandPool, NULL);
+    destroyVulkanSwapchainContext(context->vulkanDeviceContext, context->vulkanSwapchainContext);
+    destroyVulkanDeviceContext(context->vulkanDeviceContext);
+
+    free(context);
 }

@@ -60,10 +60,10 @@ Sound *loadSound(const char *filename, CreateSoundInfo *info) {
 
     ALuint buffer;
     alGenBuffers(1, &buffer);
-    alBufferData(buffer, AL_FORMAT_STEREO16, sound->data, sound->bufferSize, sound->sampleRate);
+    alBufferData(buffer, AL_FORMAT_STEREO16, sound->data, (int)sound->bufferSize, (int)sound->sampleRate);
     ALuint source;
     alGenSources(1, &source);
-    alSourcei(source, AL_BUFFER, buffer);
+    alSourcei(source, AL_BUFFER, (int)buffer);
     if(info->loop == 1) {
         alSourcei(source, AL_LOOPING, AL_TRUE);
     }
@@ -102,7 +102,3 @@ int isSoundPlaying(Sound *sound) {
 void setSoundPitch(Sound *sound, float pitch) {
     alSourcef(sound->source, AL_PITCH, pitch);
 }
-
-//void setSoundPitch(Sound *sound, float pitch) {
-//    alSourcef(sound->source, AL_, pitch);
-//}

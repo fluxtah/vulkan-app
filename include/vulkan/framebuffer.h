@@ -6,6 +6,6 @@
 #include <stdlib.h>
 #include "include/context.h"
 
-VkFramebuffer *createSwapChainFramebuffers(ApplicationContext *context, VkImageView *swapChainImageViews, uint32_t imageCount,
-                                           VkRenderPass renderPass, VkImageView depthImageView);
+VkFramebuffer *createSwapChainFramebuffers(VkDevice device, VulkanSwapchainContext *vulkanSwapchainContext);
+
 #endif // VULKAN_FRAMEBUFFER_H

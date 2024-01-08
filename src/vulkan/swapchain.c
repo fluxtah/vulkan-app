@@ -1,14 +1,14 @@
 #include "include/vulkan/swapchain.h"
 
-VkSwapchainKHR createSwapChain(ApplicationContext *context) {
+int createSwapChain(VulkanDeviceContext *vulkanDeviceContext, CreateSwapChainResult *swapChainResult) {
     VkSurfaceCapabilitiesKHR capabilities;
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(context->physicalDevice, context->surface, &capabilities);
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vulkanDeviceContext->physicalDevice, vulkanDeviceContext->surface, &capabilities);
 
     // Set the swap extent
     VkExtent2D swapchainExtent = capabilities.currentExtent;
     if (swapchainExtent.width == UINT32_MAX) {
         int width, height;
-        glfwGetFramebufferSize(context->window, &width, &height);
+        glfwGetFramebufferSize(vulkanDeviceContext->window, &width, &height);
         swapchainExtent.width = (uint32_t) width;
         swapchainExtent.height = (uint32_t) height;
     }
@@ -20,33 +20,34 @@ VkSwapchainKHR createSwapChain(ApplicationContext *context) {
 
     VkSwapchainCreateInfoKHR createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-    createInfo.surface = context->surface;
+    createInfo.surface = vulkanDeviceContext->surface;
     createInfo.minImageCount = imageCount;
-    createInfo.imageFormat = context->surfaceFormat.format;
-    createInfo.imageColorSpace = context->surfaceFormat.colorSpace;
+    createInfo.imageFormat = vulkanDeviceContext->surfaceFormat.format;
+    createInfo.imageColorSpace = vulkanDeviceContext->surfaceFormat.colorSpace;
     createInfo.imageExtent = swapchainExtent;
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
     createInfo.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
     createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-    createInfo.presentMode = context->presentMode;
+    createInfo.presentMode = vulkanDeviceContext->presentMode;
     createInfo.clipped = VK_TRUE;
     createInfo.oldSwapchain = VK_NULL_HANDLE;
 
     VkSwapchainKHR swapChain;
-    VkResult result = vkCreateSwapchainKHR(context->device, &createInfo, NULL, &swapChain);
+    VkResult result = vkCreateSwapchainKHR(vulkanDeviceContext->device, &createInfo, NULL, &swapChain);
     if (result != VK_SUCCESS) {
         fprintf(stderr, "Failed to create swap chain%d\n", result);
-        return VK_NULL_HANDLE;
+        return -1;
     }
 
-    context->swapChainExtent = swapchainExtent;
+    swapChainResult->swapChain = swapChain;
+    swapChainResult->swapChainExtent = swapchainExtent;
 
-    return swapChain;
+    return 0;
 }
 
-VkImageView* createSwapChainImageViews(ApplicationContext *context) {
-    vkGetSwapchainImagesKHR(context->device, context->swapChain, &context->swapChainImageCount, NULL);
+VkImageView* createSwapChainImageViews(VkDevice device, VulkanSwapchainContext *context) {
+    vkGetSwapchainImagesKHR(device, context->swapChain, &context->swapChainImageCount, NULL);
 
     VkImage *swapChainImages = malloc(sizeof(VkImage) * context->swapChainImageCount);
     if (!swapChainImages) {
@@ -54,7 +55,7 @@ VkImageView* createSwapChainImageViews(ApplicationContext *context) {
         return NULL;
     }
 
-    if (vkGetSwapchainImagesKHR(context->device, context->swapChain, &context->swapChainImageCount, swapChainImages) != VK_SUCCESS) {
+    if (vkGetSwapchainImagesKHR(device, context->swapChain, &context->swapChainImageCount, swapChainImages) != VK_SUCCESS) {
         fprintf(stderr, "Failed to get swap chain images\n");
         free(swapChainImages);
         return NULL;
@@ -83,7 +84,7 @@ VkImageView* createSwapChainImageViews(ApplicationContext *context) {
         createInfo.subresourceRange.baseArrayLayer = 0;
         createInfo.subresourceRange.layerCount = 1;
 
-        if (vkCreateImageView(context->device, &createInfo, NULL, &swapChainImageViews[i]) != VK_SUCCESS) {
+        if (vkCreateImageView(device, &createInfo, NULL, &swapChainImageViews[i]) != VK_SUCCESS) {
             fprintf(stderr, "Failed to create image view for image %d\n", i);
             free(swapChainImages);
             free(swapChainImageViews);

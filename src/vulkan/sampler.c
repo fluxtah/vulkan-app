@@ -1,6 +1,6 @@
 #include "include/vulkan/sampler.h"
 
-void createTextureSampler(ApplicationContext *context, VkSampler *sampler) {
+void createTextureSampler(VkDevice device, VkSampler *sampler) {
     VkSamplerCreateInfo samplerInfo = {};
     samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
     samplerInfo.magFilter = VK_FILTER_LINEAR;
@@ -19,7 +19,7 @@ void createTextureSampler(ApplicationContext *context, VkSampler *sampler) {
     samplerInfo.minLod = 0.0f;
     samplerInfo.maxLod = VK_LOD_CLAMP_NONE;
 
-    if (vkCreateSampler(context->device, &samplerInfo, NULL, sampler) != VK_SUCCESS) {
+    if (vkCreateSampler(device, &samplerInfo, NULL, sampler) != VK_SUCCESS) {
         fprintf(stderr, "Failed to create texture sampler!\n");
         exit(1);
     }

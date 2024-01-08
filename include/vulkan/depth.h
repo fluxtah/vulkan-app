@@ -11,6 +11,6 @@
 
 VkFormat findDepthFormat(VkPhysicalDevice physicalDevice);
 
-ImageMemory *createDepthStencil(ApplicationContext *context);
+ImageMemory *createDepthStencil(VulkanDeviceContext *context, VkCommandPool commandPool, VkExtent2D swapChainExtent);
 
 #endif //VULKAN_DEPTH_H

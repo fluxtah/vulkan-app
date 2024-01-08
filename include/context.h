@@ -1,10 +1,7 @@
-//
-// Created by Ian Warwick on 24/12/2023.
-//
-
 #ifndef VULKAN_CONTEXT_H
 #define VULKAN_CONTEXT_H
 
+#include "imagememory.h"
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_beta.h>
 #include <GLFW/glfw3.h>
@@ -12,6 +9,8 @@
 #include <stdlib.h>
 #include "include/camera.h"
 #include "sound.h"
+
+typedef struct ImageMemory ImageMemory;
 
 typedef struct PipelineConfig {
     VkShaderModule vertexShaderModule;
@@ -23,10 +22,7 @@ typedef struct PipelineConfig {
     VkDescriptorPool descriptorPool;
 } PipelineConfig;
 
-typedef struct ApplicationContext {
-    //
-    // Vulkan & GLFW
-    //
+typedef struct VulkanDeviceContext {
     GLFWwindow *window;
     VkInstance instance;
     VkSurfaceKHR surface;
@@ -39,9 +35,9 @@ typedef struct ApplicationContext {
     VkFormat depthFormat;
     VkSurfaceFormatKHR surfaceFormat;
     VkPresentModeKHR presentMode;
-    VkCommandPool commandPool;
-    VkSampler sampler;
+} VulkanDeviceContext;
 
+typedef struct VulkanSwapchainContext {
     // TODO Screen dependent data properties
     //  when the screen changes or device reset (gotta research this)
     //  may need to recreate these resources
@@ -50,20 +46,19 @@ typedef struct ApplicationContext {
     VkImageView *swapChainImageViews;
     uint32_t swapChainImageCount;
     VkFramebuffer *swapChainFramebuffers;
+    ImageMemory *depthStencil;
+    VkRenderPass renderPass;
+} VulkanSwapchainContext;
 
+typedef struct ApplicationContext {
+    VulkanDeviceContext *vulkanDeviceContext;
+    VulkanSwapchainContext *vulkanSwapchainContext;
+    VkCommandPool commandPool;
+    VkSampler sampler;
+    VkCommandBuffer *commandBuffers;
     PipelineConfig *pipelineConfig;
-
-    //
-    // Audio
-    //
     AudioContext *audioContext;
-
-    //
-    // App Data
-    //
     Camera *activeCamera;
-
-    bool keys[1024];
 } ApplicationContext;
 
 #endif //VULKAN_CONTEXT_H

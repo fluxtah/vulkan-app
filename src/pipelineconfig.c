@@ -1,6 +1,6 @@
 #include "include/pipelineconfig.h"
 
-PipelineConfig *createBasicShaderPipelineConfig(ApplicationContext *context, VkRenderPass renderPass) {
+PipelineConfig *createBasicShaderPipelineConfig(VulkanDeviceContext *context, VkRenderPass renderPass, VkExtent2D swapChainExtent) {
     PipelineConfig  *pipelineConfig = malloc(sizeof(PipelineConfig));
 
     //
@@ -23,8 +23,8 @@ PipelineConfig *createBasicShaderPipelineConfig(ApplicationContext *context, VkR
                                                           pipelineConfig->fragmentShaderDescriptorSetLayout);
     Viewport viewport = (Viewport) {
             0, 0,
-            (float) context->swapChainExtent.width,
-            (float) context->swapChainExtent.height,
+            (float) swapChainExtent.width,
+            (float) swapChainExtent.height,
             0.0f,
             1.0f
     };
@@ -35,10 +35,13 @@ PipelineConfig *createBasicShaderPipelineConfig(ApplicationContext *context, VkR
             pipelineConfig->vertexShaderModule,
             pipelineConfig->fragmentShaderModule);
 
+    if (pipelineConfig->pipeline == VK_NULL_HANDLE)
+        return NULL;
+
     return pipelineConfig;
 }
 
-void destroyPipelineConfig(ApplicationContext *context, PipelineConfig *pipelineConfig) {
+void destroyPipelineConfig(VulkanDeviceContext *context, PipelineConfig *pipelineConfig) {
     vkDestroyDescriptorPool(context->device, pipelineConfig->descriptorPool, NULL);
     vkDestroyDescriptorSetLayout(context->device, pipelineConfig->vertexShaderDescriptorSetLayout, NULL);
     vkDestroyDescriptorSetLayout(context->device, pipelineConfig->fragmentShaderDescriptorSetLayout, NULL);
@@ -46,5 +49,5 @@ void destroyPipelineConfig(ApplicationContext *context, PipelineConfig *pipeline
     vkDestroyPipelineLayout(context->device, pipelineConfig->pipelineLayout, NULL);
     vkDestroyShaderModule(context->device, pipelineConfig->vertexShaderModule, NULL);
     vkDestroyShaderModule(context->device, pipelineConfig->fragmentShaderModule, NULL);
-    free(context->pipelineConfig);
+    free(pipelineConfig);
 }

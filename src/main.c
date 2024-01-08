@@ -3,13 +3,9 @@
 #define DR_WAV_IMPLEMENTATION
 
 #include "include/vulkan/setup.h"
-#include "include/vulkan/renderpass.h"
-#include "include/vulkan/framebuffer.h"
 #include "include/vulkan/commandbuffer.h"
-#include "include/vulkan/depth.h"
 #include "include/context.h"
 #include "include/vulkan/render.h"
-#include "include/pipelineconfig.h"
 
 #include "libkotlin_game_api.h"
 #include "kotlin-game/cinterop/model.h"
@@ -31,37 +27,18 @@ int main() {
     //
     bindKotlinApi();
 
-    ApplicationContext context;
-    ktSetVulkanContext(&context);
+    ApplicationContext *context = createApplication();
+    ktSetVulkanContext(context);
 
-    if (setupApplication(&context) == -1) {
+    if (context == NULL) {
         printf("Something went wrong with setting up the application");
         return -1;
     }
 
-    // Create the Kotlin Application
+    //
+    // Init Kotlin Application
+    //
     ktCreateApplication();
-
-    ImageMemory *depthStencil = createDepthStencil(&context);
-    
-    VkRenderPass renderPass = createRenderPass(&context);
-
-    context.pipelineConfig = createBasicShaderPipelineConfig(&context, renderPass);
-    if (context.pipelineConfig->pipeline == VK_NULL_HANDLE)
-        return -1;
-
-    context.swapChainFramebuffers = createSwapChainFramebuffers(&context, context.swapChainImageViews,
-                                                                context.swapChainImageCount, renderPass,
-                                                                depthStencil->imageView);
-
-    VkCommandBuffer *commandBuffers = allocateCommandBuffers(context.device, context.commandPool,
-                                                             context.swapChainImageCount);
-    if (commandBuffers == VK_NULL_HANDLE)
-        return -1;
-
-    //
-    // Init KT
-    //
     ktInitApplication();
 
     VkSemaphore imageAvailableSemaphore;
@@ -71,8 +48,8 @@ int main() {
     // Semaphore creation for image availability
     VkSemaphoreCreateInfo semaphoreInfo = {};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-    if (vkCreateSemaphore(context.device, &semaphoreInfo, NULL, &imageAvailableSemaphore) != VK_SUCCESS ||
-        vkCreateSemaphore(context.device, &semaphoreInfo, NULL, &renderFinishedSemaphore) != VK_SUCCESS) {
+    if (vkCreateSemaphore(context->vulkanDeviceContext->device, &semaphoreInfo, NULL, &imageAvailableSemaphore) != VK_SUCCESS ||
+        vkCreateSemaphore(context->vulkanDeviceContext->device, &semaphoreInfo, NULL, &renderFinishedSemaphore) != VK_SUCCESS) {
         fprintf(stderr, "Failed to create semaphores\n");
         return -1;
     }
@@ -81,30 +58,30 @@ int main() {
     VkFenceCreateInfo fenceInfo = {};
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-    if (vkCreateFence(context.device, &fenceInfo, NULL, &inFlightFence) != VK_SUCCESS) {
+    if (vkCreateFence(context->vulkanDeviceContext->device, &fenceInfo, NULL, &inFlightFence) != VK_SUCCESS) {
         fprintf(stderr, "Failed to create fence\n");
         return -1;
     }
+
+    VkSemaphore signalSemaphores[] = {renderFinishedSemaphore};
+    VkSemaphore waitSemaphores[] = {imageAvailableSemaphore};
 
     /*
      * MAIN LOOP
      */
 
-    while (!glfwWindowShouldClose(context.window)) {
+    while (!glfwWindowShouldClose(context->vulkanDeviceContext->window)) {
         float time = (float) glfwGetTime();
         float deltaTime = time - lastFrameTime;
         lastFrameTime = time;
 
         glfwPollEvents();
 
-        VkSemaphore signalSemaphores[] = {renderFinishedSemaphore};
-        VkSemaphore waitSemaphores[] = {imageAvailableSemaphore};
-
         ktUpdateApplication(time, deltaTime);
 
         //
         // Get the list of entities we want to render
-        //w
+        //
         EntityArray *ktEntities = (EntityArray *) ktGetEntities();
 
         int numRenderObjects = ktEntities->size;
@@ -118,14 +95,14 @@ int main() {
         free(ktEntities->entities);
         free(ktEntities);
 
-        for (size_t i = 0; i < context.swapChainImageCount; i++) {
+        for (size_t i = 0; i < context->vulkanSwapchainContext->swapChainImageCount; i++) {
             recordCommandBuffer(
-                    commandBuffers[i],
-                    renderPass,
-                    context.swapChainFramebuffers[i],
-                    context.swapChainExtent,
-                    context.pipelineConfig->pipeline,
-                    context.pipelineConfig->pipelineLayout,
+                    context->commandBuffers[i],
+                    context->vulkanSwapchainContext->renderPass,
+                    context->vulkanSwapchainContext->swapChainFramebuffers[i],
+                    context->vulkanSwapchainContext->swapChainExtent,
+                    context->pipelineConfig->pipeline,
+                    context->pipelineConfig->pipelineLayout,
                     renderObjects,
                     numRenderObjects);
         }
@@ -135,47 +112,34 @@ int main() {
         //
         for (size_t i = 0; i < numRenderObjects; i++) {
             RenderObject *obj = renderObjects[i];
-            updateTransformUBO(context.device, obj, context.activeCamera);
-            updateLightsUBO(context.device, obj, context.activeCamera);
+            updateTransformUBO(context->vulkanDeviceContext->device, obj, context->activeCamera);
+            updateLightsUBO(context->vulkanDeviceContext->device, obj, context->activeCamera);
         }
 
         uint32_t imageIndex;
-        vkAcquireNextImageKHR(context.device, context.swapChain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE,
+        vkAcquireNextImageKHR(context->vulkanDeviceContext->device, context->vulkanSwapchainContext->swapChain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE,
                               &imageIndex);
 
-        vkResetFences(context.device, 1, &inFlightFence);
+        vkResetFences(context->vulkanDeviceContext->device, 1, &inFlightFence);
 
-        renderSubmit(&context, waitSemaphores, signalSemaphores, inFlightFence, commandBuffers, imageIndex);
-        renderPresent(&context, context.swapChain, signalSemaphores, imageIndex);
+        renderSubmit(context->vulkanDeviceContext, waitSemaphores, signalSemaphores, inFlightFence, context->commandBuffers, imageIndex);
+        renderPresent(context->vulkanDeviceContext,  context->vulkanSwapchainContext->swapChain, signalSemaphores, imageIndex);
 
-        vkWaitForFences(context.device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
+        vkWaitForFences(context->vulkanDeviceContext->device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
     }
 
     /*
      * CLEAN UP
      */
-    vkWaitForFences(context.device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
-    vkResetFences(context.device, 1, &inFlightFence);
-    vkDestroySemaphore(context.device, renderFinishedSemaphore, NULL);
-    vkDestroySemaphore(context.device, imageAvailableSemaphore, NULL);
-    vkDestroyFence(context.device, inFlightFence, NULL);
-
-    for (size_t i = 0; i < context.swapChainImageCount; i++) {
-        vkDestroyFramebuffer(context.device, context.swapChainFramebuffers[i], NULL);
-    }
-    free(context.swapChainFramebuffers);
-
-    vkDestroyRenderPass(context.device, renderPass, NULL);
-
-    destroyImageMemory(&context, depthStencil);
-
-    destroyPipelineConfig(&context, context.pipelineConfig);
+    vkWaitForFences(context->vulkanDeviceContext->device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
+    vkResetFences(context->vulkanDeviceContext->device, 1, &inFlightFence);
+    vkDestroySemaphore(context->vulkanDeviceContext->device, renderFinishedSemaphore, NULL);
+    vkDestroySemaphore(context->vulkanDeviceContext->device, imageAvailableSemaphore, NULL);
+    vkDestroyFence(context->vulkanDeviceContext->device, inFlightFence, NULL);
 
     ktDestroyApplication();
 
-    context.activeCamera = NULL;
-
-    destroyApplication(&context);
+    destroyApplication(context);
 
     glfwTerminate();
 

@@ -1,6 +1,6 @@
 #include "include/vulkan/buffer.h"
 
-void createBufferMemory(ApplicationContext *context, BufferMemory *bufferMemory, VkDeviceSize size,
+void createBufferMemory(VulkanDeviceContext *context, BufferMemory *bufferMemory, VkDeviceSize size,
                         VkBufferUsageFlags usage, VkMemoryPropertyFlags properties) {
     VkBufferCreateInfo bufferInfo = {};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -29,13 +29,13 @@ void createBufferMemory(ApplicationContext *context, BufferMemory *bufferMemory,
     vkBindBufferMemory(context->device, bufferMemory->buffer, bufferMemory->memory, 0);
 }
 
-void destroyBufferMemory(ApplicationContext *context, BufferMemory *bufferMemory) {
+void destroyBufferMemory(VulkanDeviceContext *context, BufferMemory *bufferMemory) {
     vkDestroyBuffer(context->device, bufferMemory->buffer, NULL);
     vkFreeMemory(context->device, bufferMemory->memory, NULL);
 }
 
 void createStagedBufferMemory(
-        ApplicationContext *context,
+        VulkanDeviceContext *context,
         VkCommandPool commandPool,
         BufferMemory *bufferMemory,
         VkDeviceSize size,
@@ -54,7 +54,7 @@ void createStagedBufferMemory(
     destroyBufferMemory(context, &stagingBufferMemory);
 }
 
-BufferMemory createStagingBufferMemory(ApplicationContext *context, VkDeviceSize size, const void *data, BufferMemory *stagingBufferMemory) {
+BufferMemory createStagingBufferMemory(VulkanDeviceContext *context, VkDeviceSize size, const void *data, BufferMemory *stagingBufferMemory) {
     createBufferMemory(context, stagingBufferMemory, size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 

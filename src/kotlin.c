@@ -5,7 +5,8 @@ void setActiveCamera(ApplicationContext *context, Camera *camera) {
 
     // Default to extent
     if (camera->aspectRatio == 0.0f) {
-        camera->aspectRatio = (float) context->swapChainExtent.width / (float) context->swapChainExtent.height;
+        camera->aspectRatio = (float) context->vulkanSwapchainContext->swapChainExtent.width /
+                              (float) context->vulkanSwapchainContext->swapChainExtent.height;
         applyCameraChanges(camera);
     }
 }

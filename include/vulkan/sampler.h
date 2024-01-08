@@ -7,6 +7,6 @@
 #include <vulkan/vulkan.h>
 #include <stdlib.h>
 
-void createTextureSampler(ApplicationContext *context, VkSampler *sampler);
+void createTextureSampler(VkDevice device, VkSampler *sampler);
 
 #endif //VULKAN_SAMPLER_H

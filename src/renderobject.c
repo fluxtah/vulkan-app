@@ -16,20 +16,20 @@ RenderObject *createRenderObjectFromFile(ApplicationContext *context, const char
 
     // Dynamically allocate a BufferMemory
     obj->transformUBO = (BufferMemory *) malloc(sizeof(BufferMemory));
-    createBufferMemory(context, obj->transformUBO, sizeof(TransformUBO),
+    createBufferMemory(context->vulkanDeviceContext, obj->transformUBO, sizeof(TransformUBO),
                        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
     // Dynamically allocate a BufferMemory
     obj->lightingUBO = (BufferMemory *) malloc(sizeof(BufferMemory));
-    createBufferMemory(context, obj->lightingUBO, sizeof(LightingUBO),
+    createBufferMemory(context->vulkanDeviceContext, obj->lightingUBO, sizeof(LightingUBO),
                        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
 
     // Create vertex buffer with staging
     obj->vertexBuffer = (BufferMemory *) malloc(sizeof(BufferMemory));
-    createStagedBufferMemory(context, context->commandPool, obj->vertexBuffer,
+    createStagedBufferMemory(context->vulkanDeviceContext, context->commandPool, obj->vertexBuffer,
                              obj->modelData->num_vertices * sizeof(Vertex),
                              VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                              VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -37,7 +37,7 @@ RenderObject *createRenderObjectFromFile(ApplicationContext *context, const char
 
     // Create index buffer with staging
     obj->indexBuffer = (BufferMemory *) malloc(sizeof(BufferMemory));
-    createStagedBufferMemory(context, context->commandPool, obj->indexBuffer,
+    createStagedBufferMemory(context->vulkanDeviceContext, context->commandPool, obj->indexBuffer,
                              obj->modelData->num_indices * sizeof(unsigned int),
                              VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                              VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -53,13 +53,13 @@ RenderObject *createRenderObjectFromFile(ApplicationContext *context, const char
     setupTextureFromImageData(context, obj->modelData->metallicRoughnessMapImageData, obj->metallicRoughnessMap);
 
     // Create descriptor sets
-    allocateDescriptorSet(context->device, context->pipelineConfig->descriptorPool,
+    allocateDescriptorSet(context->vulkanDeviceContext->device, context->pipelineConfig->descriptorPool,
                           context->pipelineConfig->vertexShaderDescriptorSetLayout, &obj->vertexDescriptorSet);
-    allocateDescriptorSet(context->device, context->pipelineConfig->descriptorPool,
+    allocateDescriptorSet(context->vulkanDeviceContext->device, context->pipelineConfig->descriptorPool,
                           context->pipelineConfig->fragmentShaderDescriptorSetLayout, &obj->fragmentDescriptorSet);
 
     updateBasicShaderDescriptorSet(
-            context->device,
+            context->vulkanDeviceContext->device,
             obj->vertexDescriptorSet,
             obj->fragmentDescriptorSet,
             obj->transformUBO->buffer,
@@ -76,29 +76,35 @@ RenderObject *createRenderObjectFromFile(ApplicationContext *context, const char
 void setupTextureFromImageData(ApplicationContext *context, ModelImageData *imageData, ImageMemory *imageMemory) {
     // Create a staging buffer for the image data
     BufferMemory *textureStagingBuffer = (BufferMemory *) malloc(sizeof(BufferMemory));
-    createStagingBufferMemory(context, imageData->image_size, imageData->image_data, textureStagingBuffer);
+    createStagingBufferMemory(context->vulkanDeviceContext, imageData->image_size, imageData->image_data,
+                              textureStagingBuffer);
 
     // Create the Vulkan image for the texture
-    createImage(context->device, context->physicalDevice, imageData->image_width, imageData->image_height,
+    createImage(context->vulkanDeviceContext->device, context->vulkanDeviceContext->physicalDevice,
+                imageData->image_width, imageData->image_height,
                 VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL,
                 VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &imageMemory->image, &imageMemory->memory);
 
     // Transition the image layout and copy the buffer to the image
-    transitionTextureImageLayout(context->device, context->commandPool, context->graphicsQueue, imageMemory->image,
+    transitionTextureImageLayout(context->vulkanDeviceContext->device, context->commandPool,
+                                 context->vulkanDeviceContext->graphicsQueue, imageMemory->image,
                                  VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    copyBufferToImage(context->device, context->commandPool, context->graphicsQueue, textureStagingBuffer->buffer,
+    copyBufferToImage(context->vulkanDeviceContext->device, context->commandPool,
+                      context->vulkanDeviceContext->graphicsQueue, textureStagingBuffer->buffer,
                       imageMemory->image, imageData->image_width, imageData->image_height);
-    transitionTextureImageLayout(context->device, context->commandPool, context->graphicsQueue, imageMemory->image,
+    transitionTextureImageLayout(context->vulkanDeviceContext->device, context->commandPool,
+                                 context->vulkanDeviceContext->graphicsQueue, imageMemory->image,
                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                                  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     // Create the image view for the texture
-    imageMemory->imageView = createImageView(context->device, &imageMemory->image, VK_FORMAT_R8G8B8A8_UNORM,
+    imageMemory->imageView = createImageView(context->vulkanDeviceContext->device, &imageMemory->image,
+                                             VK_FORMAT_R8G8B8A8_UNORM,
                                              VK_IMAGE_ASPECT_COLOR_BIT);
 
     // Clean up the staging buffer
-    destroyBufferMemory(context, textureStagingBuffer);
+    destroyBufferMemory(context->vulkanDeviceContext, textureStagingBuffer);
 }
 
 void setRenderObjectPosition(RenderObject *obj, float x, float y, float z) {
@@ -115,17 +121,17 @@ void setRenderObjectRotation(RenderObject *obj, float x, float y, float z) {
 
 void destroyRenderObject(ApplicationContext *context, RenderObject *obj) {
     // Destroy UBOs
-    destroyBufferMemory(context, obj->transformUBO);
-    destroyBufferMemory(context, obj->lightingUBO);
+    destroyBufferMemory(context->vulkanDeviceContext, obj->transformUBO);
+    destroyBufferMemory(context->vulkanDeviceContext, obj->lightingUBO);
 
     // Destroy data buffers
-    destroyBufferMemory(context, obj->indexBuffer);
-    destroyBufferMemory(context, obj->vertexBuffer);
+    destroyBufferMemory(context->vulkanDeviceContext, obj->indexBuffer);
+    destroyBufferMemory(context->vulkanDeviceContext, obj->vertexBuffer);
 
     // Destroy maps
-    destroyImageMemory(context, obj->colorMap);
-    destroyImageMemory(context, obj->normalMap);
-    destroyImageMemory(context, obj->metallicRoughnessMap);
+    destroyImageMemory(context->vulkanDeviceContext->device, obj->colorMap);
+    destroyImageMemory(context->vulkanDeviceContext->device, obj->normalMap);
+    destroyImageMemory(context->vulkanDeviceContext->device, obj->metallicRoughnessMap);
 
     // Destroy model data
     destroyModelData(obj->modelData);

@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include "include/context.h"
 
-void renderSubmit(ApplicationContext *context, VkSemaphore *waitSemaphores, VkSemaphore *signalSemaphores,
+void renderSubmit(VulkanDeviceContext *context, VkSemaphore *waitSemaphores, VkSemaphore *signalSemaphores,
                   VkFence inFlightFence, VkCommandBuffer *commandBuffers, uint32_t imageIndex);
-void renderPresent(ApplicationContext *context, VkSwapchainKHR swapChain, VkSemaphore *signalSemaphores, uint32_t imageIndex);
+void renderPresent(VulkanDeviceContext *context, VkSwapchainKHR swapChain, VkSemaphore *signalSemaphores, uint32_t imageIndex);
 
 #endif //VULKAN_RENDER_H

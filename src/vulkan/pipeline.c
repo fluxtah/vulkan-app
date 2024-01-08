@@ -97,8 +97,8 @@ VkPipeline createPipeline(VkDevice device, VkPipelineLayout pipelineLayout, VkRe
     VkRect2D scissor = {
             .offset = {0, 0},         // Initialize the offset
             .extent = (VkExtent2D) {
-                    .width = viewport.width,
-                    .height = viewport.height
+                    .width = (uint32_t) viewport.width,
+                    .height = (uint32_t) viewport.height
             }
     };
 

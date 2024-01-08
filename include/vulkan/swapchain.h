@@ -7,7 +7,12 @@
 #include <stdio.h>
 #include "include/context.h"
 
-VkSwapchainKHR createSwapChain(ApplicationContext *context);
-VkImageView* createSwapChainImageViews(ApplicationContext *context);
+typedef struct CreateSwapChainResult {
+    VkSwapchainKHR swapChain;
+    VkExtent2D swapChainExtent;
+} CreateSwapChainResult;
+
+int createSwapChain(VulkanDeviceContext *vulkanDeviceContext, CreateSwapChainResult *swapChainResult);
+VkImageView* createSwapChainImageViews(VkDevice device, VulkanSwapchainContext *context);
 
 #endif // VULKAN_SWAPCHAIN_H
