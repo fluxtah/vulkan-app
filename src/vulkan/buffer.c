@@ -58,7 +58,7 @@ BufferMemory createStagingBufferMemory(VulkanDeviceContext *context, VkDeviceSiz
     createBufferMemory(context, stagingBufferMemory, size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-    // Map the staging buffer and copy data
+    // RenderDataMap the staging buffer and copy data
     void *stagingBufferData;
     vkMapMemory(context->device, (*stagingBufferMemory).memory, 0, size, 0, &stagingBufferData);
     memcpy(stagingBufferData, data, size);

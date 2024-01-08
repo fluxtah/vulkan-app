@@ -22,6 +22,8 @@
 static float lastFrameTime = 0.0f;
 
 int main() {
+
+
     //
     // Bind kotlin callbacks to C API functions
     //

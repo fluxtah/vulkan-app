@@ -26,11 +26,11 @@ void printData(cgltf_data *data, const char *filename) {
                 }
                 cgltf_texture *normalTexture = primitive.material->normal_texture.texture;
                 if (normalTexture != NULL) {
-                    printf("        Normal Map: %s\n", normalTexture->image->name);
+                    printf("        Normal RenderDataMap: %s\n", normalTexture->image->name);
                 }
                 cgltf_texture *metallicRoughnessTexture = primitive.material->pbr_metallic_roughness.metallic_roughness_texture.texture;
                 if (metallicRoughnessTexture != NULL) {
-                    printf("        Metallic/Roughness Map: %s\n", metallicRoughnessTexture->image->name);
+                    printf("        Metallic/Roughness RenderDataMap: %s\n", metallicRoughnessTexture->image->name);
                 }
             } else {
                 printf("        NOT SET\n");

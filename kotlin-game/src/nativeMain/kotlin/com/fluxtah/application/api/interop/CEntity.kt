@@ -41,9 +41,9 @@ var c_destroyEntity: DestroyEntityFunc? = null
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktSetDestroyEntityFunc")
 fun ktSetDestroyEntityFunc(callback: CPointer<CFunction<(CVulkanContext, CEntity) -> Unit>>) {
-    c_destroyEntity = { device, renderObject ->
+    c_destroyEntity = { device, renderData ->
         memScoped {
-            callback.reinterpret<CFunction<(CVulkanContext, CEntity) -> Unit>>()(device, renderObject)
+            callback.reinterpret<CFunction<(CVulkanContext, CEntity) -> Unit>>()(device, renderData)
         }
     }
 }

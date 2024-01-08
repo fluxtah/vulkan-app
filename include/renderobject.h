@@ -13,13 +13,14 @@
 #include <vulkan/vulkan.h>
 
 typedef struct {
+    char *filename;
     ModelData *modelData;
     BufferMemory *vertexBuffer;
     BufferMemory *indexBuffer;
     ImageMemory *colorMap;
     ImageMemory *normalMap;
     ImageMemory *metallicRoughnessMap;
-} RenderObject;
+} RenderData;
 
 typedef struct Entity {
     vec3 scale;
@@ -30,11 +31,11 @@ typedef struct Entity {
     VkDescriptorSet fragmentDescriptorSet;
     BufferMemory *transformUBO;
     BufferMemory *lightingUBO;
-    RenderObject *renderObject;
+    RenderData *renderData;
 } Entity;
 
 Entity *createEntity(ApplicationContext *context, const char *filename, CreateEntityInfo *info);
-RenderObject *createRenderObjectFromFile(ApplicationContext *context, const char *filename);
+RenderData *createRenderDataFromFile(ApplicationContext *context, const char *filename);
 
 void setupTextureFromImageData(ApplicationContext *context, ModelImageData *imageData, ImageMemory *imageMemory);
 
@@ -43,6 +44,6 @@ void setEntityPosition(Entity *entity, float x, float y, float z);
 void setEntityRotation(Entity *entity, float x, float y, float z);
 
 void destroyEntity(ApplicationContext *context, Entity *entity);
-void destroyRenderObject(ApplicationContext *context, RenderObject *obj);
+void destroyRenderData(ApplicationContext *context, RenderData *obj);
 
 #endif //APP_RENDEROBJECT_H

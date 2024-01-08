@@ -1,5 +1,38 @@
 #include "include/renderobject.h"
 
+typedef struct RenderDataMap {
+    char *filename;
+    int refs;
+    RenderData *data;
+    UT_hash_handle hh;
+} RenderDataMap;
+
+static RenderDataMap *renderDataMap;
+
+void addRenderData(RenderDataMap **hashmap, const char *filename, RenderData *renderObj) {
+    RenderDataMap *entry = NULL;
+    HASH_FIND_STR(*hashmap, filename, entry);
+    if (entry == NULL) {
+        entry = (RenderDataMap *)malloc(sizeof(RenderDataMap));
+        entry->filename = strdup(filename); // Duplicate the filename
+        entry->data = renderObj;
+        entry->refs = 1;
+        HASH_ADD_KEYPTR(hh, *hashmap, entry->filename, strlen(entry->filename), entry);
+    }
+}
+
+RenderDataMap *getRenderData(RenderDataMap *hashmap, const char *filename) {
+    RenderDataMap *entry = NULL;
+    HASH_FIND_STR(hashmap, filename, entry);
+    return (entry != NULL) ? entry : NULL;
+}
+
+void deleteRenderData(RenderDataMap **hashmap, RenderDataMap *entry) {
+    HASH_DEL(*hashmap, entry);
+    free(entry->filename);
+    free(entry);
+}
+
 Entity *createEntity(ApplicationContext *context, const char *filename, CreateEntityInfo *info) {
     Entity *entity = malloc(sizeof(Entity));
 
@@ -25,7 +58,7 @@ Entity *createEntity(ApplicationContext *context, const char *filename, CreateEn
                        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-    entity->renderObject = createRenderObjectFromFile(context, filename);
+    entity->renderData = createRenderDataFromFile(context, filename);
 
     // Create descriptor sets
     allocateDescriptorSet(context->vulkanDeviceContext->device, context->pipelineConfig->descriptorPool,
@@ -39,18 +72,28 @@ Entity *createEntity(ApplicationContext *context, const char *filename, CreateEn
             entity->fragmentDescriptorSet,
             entity->transformUBO->buffer,
             entity->lightingUBO->buffer,
-            entity->renderObject->colorMap->imageView,
-            entity->renderObject->normalMap->imageView,
-            entity->renderObject->metallicRoughnessMap->imageView,
+            entity->renderData->colorMap->imageView,
+            entity->renderData->normalMap->imageView,
+            entity->renderData->metallicRoughnessMap->imageView,
             context->sampler
     );
 
     return entity;
 }
 
-RenderObject *createRenderObjectFromFile(ApplicationContext *context, const char *filename) {
-    RenderObject *obj = malloc(sizeof(RenderObject));
+RenderData *createRenderDataFromFile(ApplicationContext *context, const char *filename) {
+    RenderDataMap *existingData = getRenderData(renderDataMap, filename);
 
+    // TODO Caller should be aware that we count refs!
+    if(existingData != NULL) {
+        existingData->refs++;
+        return existingData->data;
+    }
+
+    RenderData *obj = malloc(sizeof(RenderData));
+    addRenderData(&renderDataMap, filename, obj);
+
+    obj->filename = strdup(filename);
     obj->modelData = loadModelData(filename);
 
     // Create vertex buffer with staging
@@ -132,15 +175,16 @@ void destroyEntity(ApplicationContext *context, Entity *entity) {
     destroyBufferMemory(context->vulkanDeviceContext, entity->transformUBO);
     destroyBufferMemory(context->vulkanDeviceContext, entity->lightingUBO);
 
+    RenderDataMap *renderData = getRenderData(renderDataMap, entity->renderData->filename);
 
-    int refs = 1;
-    // TODO Store render objects in a hash map and increment/decrement reference count
-    if (refs == 1) {
-        destroyRenderObject(context, entity->renderObject);
+    if(renderData->refs == 1) {
+        destroyRenderData(context, entity->renderData);
+    } else {
+        renderData->refs--;
     }
 }
 
-void destroyRenderObject(ApplicationContext *context, RenderObject *obj) {
+void destroyRenderData(ApplicationContext *context, RenderData *obj) {
     // Destroy data buffers
     destroyBufferMemory(context->vulkanDeviceContext, obj->indexBuffer);
     destroyBufferMemory(context->vulkanDeviceContext, obj->vertexBuffer);
@@ -152,6 +196,8 @@ void destroyRenderObject(ApplicationContext *context, RenderObject *obj) {
 
     // Destroy model data
     destroyModelData(obj->modelData);
+
+    free(obj->filename);
 
     free(obj);
 }
