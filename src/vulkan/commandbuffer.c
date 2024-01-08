@@ -32,12 +32,11 @@ void recordCommandBuffer(
         VkExtent2D swapChainExtent,
         VkPipeline graphicsPipeline,
         VkPipelineLayout pipelineLayout,
-        RenderObject *renderObjects[],
-        int numRenderObjects) {
+        EntityArray *ktEntities) {
     beginCommandBufferRecording(commandBuffer, renderPass, framebuffer, &swapChainExtent, graphicsPipeline);
 
-    for (size_t i = 0; i < numRenderObjects; i++) {
-        RenderObject *obj = renderObjects[i];
+    for (size_t i = 0; i < ktEntities->size; i++) {
+        RenderObject *obj = (RenderObject *) (ktEntities->entities[i]);
 
         VkBuffer vertexBuffers[] = {obj->vertexBuffer->buffer};
         VkDeviceSize offsets[] = {0};

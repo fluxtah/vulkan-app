@@ -84,17 +84,6 @@ int main() {
         //
         EntityArray *ktEntities = (EntityArray *) ktGetEntities();
 
-        int numRenderObjects = ktEntities->size;
-        RenderObject *renderObjects[ktEntities->size];
-
-        for (int i = 0; i < ktEntities->size; i++) {
-            RenderObject *renderObject = (RenderObject *) (ktEntities->entities[i]);
-            renderObjects[i] = renderObject;
-        }
-
-        free(ktEntities->entities);
-        free(ktEntities);
-
         for (size_t i = 0; i < context->vulkanSwapchainContext->swapChainImageCount; i++) {
             recordCommandBuffer(
                     context->commandBuffers[i],
@@ -103,18 +92,20 @@ int main() {
                     context->vulkanSwapchainContext->swapChainExtent,
                     context->pipelineConfig->pipeline,
                     context->pipelineConfig->pipelineLayout,
-                    renderObjects,
-                    numRenderObjects);
+                    ktEntities);
         }
 
         //
         // Update UBOs
         //
-        for (size_t i = 0; i < numRenderObjects; i++) {
-            RenderObject *obj = renderObjects[i];
+        for (size_t i = 0; i < ktEntities->size; i++) {
+            RenderObject *obj = (RenderObject *) (ktEntities->entities[i]);
             updateTransformUBO(context->vulkanDeviceContext->device, obj, context->activeCamera);
             updateLightsUBO(context->vulkanDeviceContext->device, obj, context->activeCamera);
         }
+
+        free(ktEntities->entities);
+        free(ktEntities);
 
         uint32_t imageIndex;
         vkAcquireNextImageKHR(context->vulkanDeviceContext->device, context->vulkanSwapchainContext->swapChain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE,
