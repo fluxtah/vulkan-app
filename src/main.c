@@ -22,8 +22,6 @@
 static float lastFrameTime = 0.0f;
 
 int main() {
-
-
     //
     // Bind kotlin callbacks to C API functions
     //
@@ -71,7 +69,6 @@ int main() {
     /*
      * MAIN LOOP
      */
-
     while (!glfwWindowShouldClose(context->vulkanDeviceContext->window)) {
         float time = (float) glfwGetTime();
         float deltaTime = time - lastFrameTime;

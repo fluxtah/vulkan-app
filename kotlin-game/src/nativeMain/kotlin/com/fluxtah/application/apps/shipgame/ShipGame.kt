@@ -10,10 +10,13 @@ import kotlin.random.Random
 
 /*
 TODO
-1. Get sounds working
-2. Get guns working (firing projectiles)
-3. Have a reloading tile where ships fly over to reload guns
-4. Introduce enemies that can be shot down
+✓ Get sounds working
+✓ Get guns working (firing projectiles)
+* Get asteroids working
+   * Get asteroids to spawn randomly without overlapping
+* Get projectiles to destroy asteroids (collision detection)
+* Get ship to explode when it hits an asteroid
+* High Score
 */
 class ShipGame : Application {
     override fun initialize() {
@@ -31,7 +34,7 @@ class ShipGame : Application {
                 color(1.0f, 1.0f, 1.0f, 1.0f)
                 position(0.0f, 50.0f, 0.0f)
                 direction(-1.0f, -1.0f, 0.0f)
-                intensity(1.0f)
+                intensity(1.4f)
             }
 
             light("light2") {
@@ -70,9 +73,9 @@ class ShipGame : Application {
                 // Other properties and behaviors
             }
 
-            for (x in 0..10) {
+            for (x in 0..50) {
                 entity("asteroid$x", "models/sphere.glb") {
-                    position(Random.nextFloat() * 10, Random.nextFloat() * 10, Random.nextFloat() * 10)
+                    position(Random.nextFloat() * 30, 4.0f, Random.nextFloat() * 30)
                 }
             }
 
