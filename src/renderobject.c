@@ -1,31 +1,57 @@
 #include "include/renderobject.h"
 
-RenderObject *createRenderObjectFromFile(ApplicationContext *context, const char *filename, CreateEntityInfo *info) {
+Entity *createEntity(ApplicationContext *context, const char *filename, CreateEntityInfo *info) {
+    Entity *entity = malloc(sizeof(Entity));
+
+    entity->scale[0] = info->scaleX;
+    entity->scale[1] = info->scaleY;
+    entity->scale[2] = info->scaleZ;
+    entity->position[0] = info->positionX;
+    entity->position[1] = info->positionY;
+    entity->position[2] = info->positionZ;
+    entity->scale[0] = info->scaleX;
+    entity->scale[1] = info->scaleY;
+    entity->scale[2] = info->scaleZ;
+
+    // Dynamically allocate a BufferMemory
+    entity->transformUBO = (BufferMemory *) malloc(sizeof(BufferMemory));
+    createBufferMemory(context->vulkanDeviceContext, entity->transformUBO, sizeof(TransformUBO),
+                       VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+    // Dynamically allocate a BufferMemory
+    entity->lightingUBO = (BufferMemory *) malloc(sizeof(BufferMemory));
+    createBufferMemory(context->vulkanDeviceContext, entity->lightingUBO, sizeof(LightingUBO),
+                       VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+    entity->renderObject = createRenderObjectFromFile(context, filename);
+
+    // Create descriptor sets
+    allocateDescriptorSet(context->vulkanDeviceContext->device, context->pipelineConfig->descriptorPool,
+                          context->pipelineConfig->vertexShaderDescriptorSetLayout, &entity->vertexDescriptorSet);
+    allocateDescriptorSet(context->vulkanDeviceContext->device, context->pipelineConfig->descriptorPool,
+                          context->pipelineConfig->fragmentShaderDescriptorSetLayout, &entity->fragmentDescriptorSet);
+
+    updateBasicShaderDescriptorSet(
+            context->vulkanDeviceContext->device,
+            entity->vertexDescriptorSet,
+            entity->fragmentDescriptorSet,
+            entity->transformUBO->buffer,
+            entity->lightingUBO->buffer,
+            entity->renderObject->colorMap->imageView,
+            entity->renderObject->normalMap->imageView,
+            entity->renderObject->metallicRoughnessMap->imageView,
+            context->sampler
+    );
+
+    return entity;
+}
+
+RenderObject *createRenderObjectFromFile(ApplicationContext *context, const char *filename) {
     RenderObject *obj = malloc(sizeof(RenderObject));
-    obj->scale[0] = info->scaleX;
-    obj->scale[1] = info->scaleY;
-    obj->scale[2] = info->scaleZ;
-    obj->position[0] = info->positionX;
-    obj->position[1] = info->positionY;
-    obj->position[2] = info->positionZ;
-    obj->scale[0] = info->scaleX;
-    obj->scale[1] = info->scaleY;
-    obj->scale[2] = info->scaleZ;
 
     obj->modelData = loadModelData(filename);
-
-    // Dynamically allocate a BufferMemory
-    obj->transformUBO = (BufferMemory *) malloc(sizeof(BufferMemory));
-    createBufferMemory(context->vulkanDeviceContext, obj->transformUBO, sizeof(TransformUBO),
-                       VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-    // Dynamically allocate a BufferMemory
-    obj->lightingUBO = (BufferMemory *) malloc(sizeof(BufferMemory));
-    createBufferMemory(context->vulkanDeviceContext, obj->lightingUBO, sizeof(LightingUBO),
-                       VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
 
     // Create vertex buffer with staging
     obj->vertexBuffer = (BufferMemory *) malloc(sizeof(BufferMemory));
@@ -51,24 +77,6 @@ RenderObject *createRenderObjectFromFile(ApplicationContext *context, const char
     setupTextureFromImageData(context, obj->modelData->normalMapImageData, obj->normalMap);
     obj->metallicRoughnessMap = malloc(sizeof(ImageMemory));
     setupTextureFromImageData(context, obj->modelData->metallicRoughnessMapImageData, obj->metallicRoughnessMap);
-
-    // Create descriptor sets
-    allocateDescriptorSet(context->vulkanDeviceContext->device, context->pipelineConfig->descriptorPool,
-                          context->pipelineConfig->vertexShaderDescriptorSetLayout, &obj->vertexDescriptorSet);
-    allocateDescriptorSet(context->vulkanDeviceContext->device, context->pipelineConfig->descriptorPool,
-                          context->pipelineConfig->fragmentShaderDescriptorSetLayout, &obj->fragmentDescriptorSet);
-
-    updateBasicShaderDescriptorSet(
-            context->vulkanDeviceContext->device,
-            obj->vertexDescriptorSet,
-            obj->fragmentDescriptorSet,
-            obj->transformUBO->buffer,
-            obj->lightingUBO->buffer,
-            obj->colorMap->imageView,
-            obj->normalMap->imageView,
-            obj->metallicRoughnessMap->imageView,
-            context->sampler
-    );
 
     return obj;
 }
@@ -107,23 +115,32 @@ void setupTextureFromImageData(ApplicationContext *context, ModelImageData *imag
     destroyBufferMemory(context->vulkanDeviceContext, textureStagingBuffer);
 }
 
-void setRenderObjectPosition(RenderObject *obj, float x, float y, float z) {
+void setEntityPosition(Entity *obj, float x, float y, float z) {
     obj->position[0] = x;
     obj->position[1] = y;
     obj->position[2] = z;
 }
 
-void setRenderObjectRotation(RenderObject *obj, float x, float y, float z) {
+void setEntityRotation(Entity *obj, float x, float y, float z) {
     obj->rotation[0] = x;
     obj->rotation[1] = y;
     obj->rotation[2] = z;
 }
 
-void destroyRenderObject(ApplicationContext *context, RenderObject *obj) {
+void destroyEntity(ApplicationContext *context, Entity *entity) {
     // Destroy UBOs
-    destroyBufferMemory(context->vulkanDeviceContext, obj->transformUBO);
-    destroyBufferMemory(context->vulkanDeviceContext, obj->lightingUBO);
+    destroyBufferMemory(context->vulkanDeviceContext, entity->transformUBO);
+    destroyBufferMemory(context->vulkanDeviceContext, entity->lightingUBO);
 
+
+    int refs = 1;
+    // TODO Store render objects in a hash map and increment/decrement reference count
+    if (refs == 1) {
+        destroyRenderObject(context, entity->renderObject);
+    }
+}
+
+void destroyRenderObject(ApplicationContext *context, RenderObject *obj) {
     // Destroy data buffers
     destroyBufferMemory(context->vulkanDeviceContext, obj->indexBuffer);
     destroyBufferMemory(context->vulkanDeviceContext, obj->vertexBuffer);

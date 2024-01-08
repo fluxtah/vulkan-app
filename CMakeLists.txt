@@ -97,6 +97,7 @@ add_executable(Game
 
         include/imagememory.h
         src/imagememory.c
+        libs/uthash.h
 )
 
 include_directories(kotlin-game/build/bin/native/releaseShared)

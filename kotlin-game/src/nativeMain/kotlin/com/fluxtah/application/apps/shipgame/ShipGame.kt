@@ -6,6 +6,7 @@ import com.fluxtah.application.apps.shipgame.behaviors.ForwardMovementBehavior
 import com.fluxtah.application.apps.shipgame.behaviors.PlasmaBoltBehaviour
 import com.fluxtah.application.apps.shipgame.behaviors.ThrustBehavior
 import com.fluxtah.application.apps.shipgame.behaviors.YawBehavior
+import kotlin.random.Random
 
 /*
 TODO
@@ -63,7 +64,27 @@ class ShipGame : Application {
             entity("plasma-bolt", "models/plasma-bolt.glb") {
                 position(0.0f, 0.0f, 0.0f)
                 behaviour(PlasmaBoltBehaviour(fireButtonPressed = { isKeyPressed(Key.Space) }))
+//                onCollision { asteroidEntity ->
+//                    // Handle collision
+//                }
+                // Other properties and behaviors
             }
+
+            for (x in 0..10) {
+                entity("asteroid$x", "models/sphere.glb") {
+                    position(Random.nextFloat() * 10, Random.nextFloat() * 10, Random.nextFloat() * 10)
+                }
+            }
+
+//            for (x in 0..100) {
+//                entity("asteroid", "models/asteroid.glb", instancing = true) {
+//                    position(randomPosition())
+//                    rotation(randomRotation())
+//                    scale(randomScale())
+//                    // Shared behaviors or properties
+//                }
+//            }
+
             sound("up-thrust", "sounds/up-thrust.wav") {
                 loop(true)
             }

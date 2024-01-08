@@ -99,7 +99,7 @@ int main() {
         // Update UBOs
         //
         for (size_t i = 0; i < ktEntities->size; i++) {
-            RenderObject *obj = (RenderObject *) (ktEntities->entities[i]);
+            Entity *obj = (Entity *) ktEntities->entities[i];
             updateTransformUBO(context->vulkanDeviceContext->device, obj, context->activeCamera);
             updateLightsUBO(context->vulkanDeviceContext->device, obj, context->activeCamera);
         }

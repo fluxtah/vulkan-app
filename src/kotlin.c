@@ -52,10 +52,10 @@ void bindKotlinApi() {
     ktSetDestroyLightFunc(destroyLight);
 
     // Entity
-    ktSetCreateEntityFunc(createRenderObjectFromFile);
-    ktSetDestroyEntityFunc(destroyRenderObject);
-    ktSetPositionEntityFunc(setRenderObjectPosition);
-    ktSetEntityRotationFunc(setRenderObjectRotation);
+    ktSetCreateEntityFunc(createEntity);
+    ktSetDestroyEntityFunc(destroyEntity);
+    ktSetPositionEntityFunc(setEntityPosition);
+    ktSetEntityRotationFunc(setEntityRotation);
 
     // Sound
     ktSetLoadSoundFunc(loadSound);
