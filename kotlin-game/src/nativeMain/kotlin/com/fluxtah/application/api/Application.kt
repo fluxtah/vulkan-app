@@ -37,44 +37,39 @@ private var accumulatedTime = 0.0f
 @OptIn(kotlin.experimental.ExperimentalNativeApi::class)
 @CName("ktUpdateApplication")
 fun ktUpdateApplication(time: Float, deltaTime: Float) {
-    val activeSceneInfo = activeScene
     accumulatedTime += deltaTime
-    val scene = activeSceneInfo?.scene
+    val activeSceneInfo = activeScene
+    val scene = activeSceneInfo.scene
+    val entities = (scene as SceneImpl).entities
 
-    if (scene != null) {
-        activeSceneInfo.onSceneBeforeUpdate?.invoke(activeSceneInfo.scene, time, deltaTime)
-        scene.entities.values.forEach {
-            it.behaviors.forEach { behavior ->
-                behavior.beforeUpdate(scene, it.entity, time, deltaTime)
-            }
-            it.onSceneBeforeEntityUpdate?.invoke(scene, it.entity, time, deltaTime)
+    activeSceneInfo.onSceneBeforeUpdate?.invoke(activeSceneInfo.scene, time, deltaTime)
+    scene.entities.values.forEach {
+        it.behaviors.forEach { behavior ->
+            behavior.beforeUpdate(scene, it.entity, time, deltaTime)
         }
+        it.onSceneBeforeEntityUpdate?.invoke(scene, it.entity, time, deltaTime)
     }
 
     applicationInstance.beforeUpdate(time, deltaTime)
 
     while (accumulatedTime >= fixedTimeStep) {
-        if (scene != null) {
-            activeSceneInfo.onSceneUpdate?.invoke(activeSceneInfo.scene, time)
-            scene.entities.values.forEach {
-                it.behaviors.forEach { behavior ->
-                    behavior.update(scene, it.entity, time)
-                }
-                it.onSceneEntityUpdate?.invoke(scene, it.entity, time)
+        activeSceneInfo.onSceneUpdate?.invoke(activeSceneInfo.scene, time)
+        scene.entities.values.forEach {
+            it.behaviors.forEach { behavior ->
+                behavior.update(scene, it.entity, time)
             }
+            it.onSceneEntityUpdate?.invoke(scene, it.entity, time)
         }
         applicationInstance.update(time)
         accumulatedTime -= fixedTimeStep
     }
 
-    if (scene != null) {
-        activeSceneInfo.onSceneAfterUpdate?.invoke(activeSceneInfo.scene, time, deltaTime)
-        scene.entities.values.forEach {
-            it.behaviors.forEach { behavior ->
-                behavior.afterUpdate(scene, it.entity, time, deltaTime)
-            }
-            it.onSceneAfterEntityUpdate?.invoke(scene, it.entity, time, deltaTime)
+    activeSceneInfo.onSceneAfterUpdate?.invoke(activeSceneInfo.scene, time, deltaTime)
+    scene.entities.values.forEach {
+        it.behaviors.forEach { behavior ->
+            behavior.afterUpdate(scene, it.entity, time, deltaTime)
         }
+        it.onSceneAfterEntityUpdate?.invoke(scene, it.entity, time, deltaTime)
     }
 
     applicationInstance.afterUpdate(time, deltaTime)
@@ -84,11 +79,11 @@ fun ktUpdateApplication(time: Float, deltaTime: Float) {
 @CName("ktDestroyApplication")
 fun ktDestroyApplication() {
     // TODO: Destroy all scenes
-    activeScene?.scene?.destroy()
+    (activeScene.scene as SceneImpl).destroy()
 }
 
 @OptIn(ExperimentalForeignApi::class)
-private fun Scene.destroy() {
+private fun SceneImpl.destroy() {
     cameras.forEach { camera ->
         c_destroyCamera!!.invoke(camera.value.handle)
     }

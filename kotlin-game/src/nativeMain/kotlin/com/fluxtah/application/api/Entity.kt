@@ -99,6 +99,12 @@ class EntityBuilder(private val modelPath: String) {
 
     private val behaviors = mutableListOf<EntityBehavior>()
 
+    private var poolSize: Int = 0
+
+    fun pool(size: Int) {
+        poolSize = size
+    }
+
     fun position(x: Float = 0f, y: Float = 0f, z: Float = 0f) {
         positionX = x
         positionY = y

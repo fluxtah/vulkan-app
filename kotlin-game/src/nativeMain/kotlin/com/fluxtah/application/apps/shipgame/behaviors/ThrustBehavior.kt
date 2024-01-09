@@ -1,6 +1,7 @@
 package com.fluxtah.application.apps.shipgame.behaviors
 
 import com.fluxtah.application.api.*
+import com.fluxtah.application.apps.shipgame.Id
 
 class ThrustBehavior(private val isThrusting: () -> Boolean) : EntityBehavior {
     private val state = ThrustBehaviorState()
@@ -9,8 +10,8 @@ class ThrustBehavior(private val isThrusting: () -> Boolean) : EntityBehavior {
     private lateinit var sonicBoomSound: Sound
 
     override fun initialize(scene: Scene, entity: Entity) {
-        thrustSound = scene.sounds["up-thrust"]!!
-        sonicBoomSound = scene.sounds["sonic-boom"]!!
+        thrustSound = scene.soundById(Id.SOUND_UP_THRUST)!!
+        sonicBoomSound = scene.soundById(Id.SOUND_SONIC_BOOM)!!
     }
 
     override fun beforeUpdate(scene: Scene, entity: Entity, time: Float, deltaTime: Float) {

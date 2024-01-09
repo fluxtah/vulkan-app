@@ -3,6 +3,7 @@ package com.fluxtah.application.apps.shipgame.behaviors
 import com.fluxtah.application.api.*
 import com.fluxtah.application.api.math.Vector3
 import com.fluxtah.application.api.math.toRadians
+import com.fluxtah.application.apps.shipgame.Id
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
@@ -19,7 +20,7 @@ class PlasmaBoltBehaviour(val fireButtonPressed: () -> Boolean, val sourceEntity
     private lateinit var shipEntity: Entity
 
     override fun initialize(scene: Scene, entity: Entity) {
-        boltSound = scene.sounds["plasma-bolt"]!!
+        boltSound = scene.soundById(Id.SOUND_PLASMA_BOLT)!!
         shipEntity = sourceEntity(scene)
         entity.visible = false
     }

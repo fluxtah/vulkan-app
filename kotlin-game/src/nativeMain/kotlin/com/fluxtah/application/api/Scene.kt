@@ -3,16 +3,16 @@ package com.fluxtah.application.api
 import com.fluxtah.application.api.interop.c_setActiveCamera
 import kotlinx.cinterop.ExperimentalForeignApi
 
-var activeScene: SceneInfo? = null
+var activeScene: SceneInfo = SceneInfo(Scene.EMPTY())
 private val sceneBuilders = mutableMapOf<String, () -> SceneInfo>()
 private val scenes = mutableMapOf<String, SceneInfo>()
 
 data class SceneInfo(
     val scene: Scene,
-    val onSceneCreated: ((Scene) -> Unit)?,
-    val onSceneUpdate: OnSceneUpdate?,
-    val onSceneBeforeUpdate: OnSceneBeforeUpdate?,
-    val onSceneAfterUpdate: OnSceneAfterUpdate?
+    val onSceneCreated: ((Scene) -> Unit)? = null,
+    val onSceneUpdate: OnSceneUpdate? = null,
+    val onSceneBeforeUpdate: OnSceneBeforeUpdate? = null,
+    val onSceneAfterUpdate: OnSceneAfterUpdate? = null
 )
 
 data class EntityInfo(
@@ -23,24 +23,63 @@ data class EntityInfo(
     val behaviors: MutableList<EntityBehavior>
 )
 
+data class EntityPoolInfo(
+    val factory: () -> Entity,
+    val entities: MutableList<Entity>,
+    val size: Int,
+    val behaviors: MutableList<EntityBehavior>
+)
+
+
 @DslMarker
 annotation class SceneDsl
 
+interface Scene {
+    fun setActiveCamera(id: String)
+    fun activeCamera(): Camera?
+    fun cameraById(id: String): Camera?
+
+    fun entityById(id: String): Entity?
+
+    fun soundById(id: String): Sound?
+
+    class EMPTY : Scene {
+        override fun setActiveCamera(id: String) = Unit
+        override fun activeCamera(): Camera? = null
+        override fun cameraById(id: String): Camera? = null
+
+        override fun entityById(id: String): Entity? = null
+        override fun soundById(id: String): Sound? = null
+    }
+}
+
 @OptIn(ExperimentalForeignApi::class)
-class Scene {
+class SceneImpl : Scene {
     private var activeCamera: Camera? = null
     internal val cameras = mutableMapOf<String, Camera>()
     internal val lights = mutableMapOf<String, Light>()
     internal val entities = mutableMapOf<String, EntityInfo>()
     internal val sounds = mutableMapOf<String, Sound>()
 
-    fun setActiveCamera(id: String) {
+    override fun setActiveCamera(id: String) {
         activeCamera = cameras[id] ?: throw Exception("Camera with id $id does not exist")
         c_setActiveCamera!!.invoke(ApplicationContext.vulcanContext!!, activeCamera!!.handle)
     }
 
-    fun activeCamera(): Camera? {
+    override fun activeCamera(): Camera? {
         return activeCamera
+    }
+
+    override fun cameraById(id: String): Camera? {
+        return cameras[id]
+    }
+
+    override fun entityById(id: String): Entity? {
+        return entities[id]?.entity
+    }
+
+    override fun soundById(id: String): Sound? {
+        return sounds[id]
     }
 }
 
@@ -51,9 +90,9 @@ typealias OnSceneEntityUpdate = ((scene: Scene, entity: Entity, time: Float) -> 
 typealias OnSceneBeforeEntityUpdate = ((scene: Scene, entity: Entity, time: Float, deltaTime: Float) -> Unit)
 typealias OnSceneAfterEntityUpdate = ((scene: Scene, entity: Entity, time: Float, deltaTime: Float) -> Unit)
 
-fun Application.scene(): Scene {
-    return activeScene?.scene ?: throw Exception("No active scene")
-}
+//fun Application.scene(): Scene {
+//    return activeScene.scene
+//}
 
 fun Application.scene(id: String, block: SceneBuilder.() -> Unit) {
     sceneBuilders[id] = {
@@ -66,6 +105,7 @@ fun Application.scene(id: String, block: SceneBuilder.() -> Unit) {
 @SceneDsl
 class SceneBuilder(val sceneId: String) {
     private val entities = mutableMapOf<String, () -> EntityInfo>()
+    private val entityPools = mutableMapOf<String, () -> EntityInfo>()
     private val cameras = mutableMapOf<String, () -> Camera>()
     private val lights = mutableMapOf<String, () -> Light>()
     val sounds = mutableMapOf<String, () -> Sound>()
@@ -103,6 +143,16 @@ class SceneBuilder(val sceneId: String) {
         }
     }
 
+//    @OptIn(ExperimentalForeignApi::class)
+//    fun entityPool(id: String, modelPath: String, initialSize: Int, builder: EntityPoolBuilder.() -> Unit) {
+//        if (entityPools.containsKey(id)) {
+//            throw Exception("Entity pool with id $id already exists")
+//        }
+//        entityPools[id] = {
+//            EntityPoolBuilder(modelPath).apply(builder).build()
+//        }
+//    }
+
     fun sound(id: String, soundPath: String, builder: SoundBuilder.() -> Unit = {}) {
         if (sounds.containsKey(id)) {
             throw Exception("Entity with id $id already exists")
@@ -114,7 +164,7 @@ class SceneBuilder(val sceneId: String) {
 
     @OptIn(ExperimentalForeignApi::class)
     fun build(): SceneInfo {
-        val scene = Scene()
+        val scene = SceneImpl()
         cameras.forEach { (id, builder) ->
             scene.cameras[id] = builder.invoke()
         }
@@ -167,7 +217,7 @@ fun Application.setActiveScene(id: String) {
         sceneInfo.onSceneCreated?.invoke(sceneInfo.scene)
 
         // Initialize behaviours
-        sceneInfo.scene.entities.forEach {
+        (sceneInfo.scene as SceneImpl).entities.forEach {
             it.value.behaviors.forEach { behavior ->
                 behavior.initialize(sceneInfo.scene, it.value.entity)
             }

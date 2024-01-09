@@ -17,16 +17,16 @@ TODO
 */
 class ShipGame : Application {
     override fun initialize() {
-        scene("main") {
-            camera("camera1") {
+        scene(Id.SCENE_MAIN) {
+            camera(Id.CAMERA1) {
                 position(4.0f, 6.0f, -4.0f)
                 fieldOfView(90.0f)
             }
-            camera("camera2") {
+            camera(Id.CAMERA2) {
                 position(4.0f, 5.0f, -4.0f)
             }
 
-            light("light") {
+            light(Id.LIGHT1) {
                 type(LightType.Directional)
                 color(1.0f, 1.0f, 1.0f, 1.0f)
                 position(0.0f, 50.0f, 0.0f)
@@ -34,7 +34,7 @@ class ShipGame : Application {
                 intensity(1.4f)
             }
 
-            light("light2") {
+            light(Id.LIGHT2) {
                 type(LightType.Point)
                 color(1.0f, 1.0f, 1.0f, 1.0f)
                 position(0.0f, 1.5f, 0.0f)
@@ -42,12 +42,12 @@ class ShipGame : Application {
                 intensity(1.0f)
             }
 
-            entity("plane", "models/plane.glb") {
+            entity(Id.ENT_PLANE, "models/plane.glb") {
                 position(0.0f, -0.1f, 0.0f)
                 scale(10f, 10f, 10f)
             }
 
-            entity("ship", "models/ship.glb") {
+            entity(Id.ENT_SHIP, "models/ship.glb") {
                 position(0.0f, 0.0f, 0.0f)
                 behaviour(ThrustBehavior(isThrusting = { isKeyPressed(Key.Up) }))
                 behaviour(YawBehavior(
@@ -61,11 +61,11 @@ class ShipGame : Application {
                 )
             }
 
-            entity("plasma-bolt", "models/plasma-bolt.glb") {
+            entity(Id.ENT_PLASMA_BOLT, "models/plasma-bolt.glb") {
                 position(0.0f, 0.0f, 0.0f)
                 behaviour(
                     PlasmaBoltBehaviour(
-                        sourceEntity = { it.entities["ship"]!!.entity },
+                        sourceEntity = { it.entityById(Id.ENT_SHIP)!! },
                         fireButtonPressed = { isKeyPressed(Key.Space) })
                 )
 //                onCollision { asteroidEntity ->
@@ -75,7 +75,8 @@ class ShipGame : Application {
             }
 
             for (x in 0..50) {
-                entity("asteroid$x", "models/asteroid.glb") {
+                entity("${Id.ENT_ASTEROID}$x", "models/asteroid.glb") {
+
                     position(-50 + (Random.nextFloat() * 100), Random.nextFloat() * 2, -50 + (Random.nextFloat() * 100))
                     scale(
                         0.8f + (Random.nextFloat() * 1.6f),
@@ -101,33 +102,34 @@ class ShipGame : Application {
 //                }
 //            }
 
-            sound("up-thrust", "sounds/up-thrust.wav") {
+            sound(Id.SOUND_UP_THRUST, "sounds/up-thrust.wav") {
                 loop(true)
             }
-            sound("engine", "sounds/engine.wav") {
+            sound(Id.SOUND_ENGINE, "sounds/engine.wav") {
                 loop(true)
             }
-            sound("sonic-boom", "sounds/sonic-boom.wav")
-            sound("plasma-bolt", "sounds/plasma-bolt.wav")
+            sound(Id.SOUND_SONIC_BOOM, "sounds/sonic-boom.wav")
+            sound(Id.SOUND_PLASMA_BOLT, "sounds/plasma-bolt.wav")
+
             var chaseCam: ChaseCamera? = null
 
             onSceneCreated { scene ->
-                scene.setActiveCamera("camera1")
+                scene.setActiveCamera(Id.CAMERA1)
                 scene.activeCamera()?.lookAt(0f, 0f, 0f)
-                chaseCam = ChaseCamera(scene.activeCamera()!!, scene.entities["ship"]!!.entity)
+                chaseCam = ChaseCamera(scene.activeCamera()!!, scene.entityById(Id.ENT_SHIP)!!)
             }
 
-            onBeforeSceneUpdate { scene, _, deltaTime ->
+            onBeforeSceneUpdate { scene, _, _ ->
                 if (isKeyPressed(Key.Num1)) {
-                    scene.setActiveCamera("camera1")
+                    scene.setActiveCamera(Id.CAMERA1)
                 }
                 if (isKeyPressed(Key.Num2)) {
-                    scene.setActiveCamera("camera2")
+                    scene.setActiveCamera(Id.CAMERA2)
                 }
             }
 
             onSceneUpdate { scene, _ ->
-                if (scene.activeCamera() == scene.cameras["camera2"]) {
+                if (scene.activeCamera() == scene.cameraById(Id.CAMERA2)) {
                     handleCameraInput(scene, fixedTimeStep)
                 }
 
@@ -135,7 +137,7 @@ class ShipGame : Application {
             }
         }
 
-        setActiveScene("main")
+        setActiveScene(Id.SCENE_MAIN)
     }
 
     private fun handleCameraInput(scene: Scene, deltaTime: Float) {
@@ -174,4 +176,24 @@ class ShipGame : Application {
 
         camera.applyChanges()
     }
+}
+
+object Id {
+    const val SCENE_MAIN = "main"
+
+    const val CAMERA1 = "camera1"
+    const val CAMERA2 = "camera2"
+
+    const val LIGHT1 = "light1"
+    const val LIGHT2 = "light2"
+
+    const val ENT_PLANE = "plane"
+    const val ENT_SHIP = "ship"
+    const val ENT_PLASMA_BOLT = "plasma-bolt"
+    const val ENT_ASTEROID = "asteroid"
+
+    const val SOUND_UP_THRUST = "up-thrust"
+    const val SOUND_ENGINE = "engine"
+    const val SOUND_SONIC_BOOM = "sonic-boom"
+    const val SOUND_PLASMA_BOLT = "plasma-bolt"
 }

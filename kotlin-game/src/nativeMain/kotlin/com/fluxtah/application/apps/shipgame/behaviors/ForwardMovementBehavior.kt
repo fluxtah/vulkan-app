@@ -21,7 +21,7 @@ class ForwardMovementBehavior(
     private lateinit var engineSound: Sound
 
     override fun initialize(scene: Scene, entity: Entity) {
-        engineSound = scene.sounds["engine"]!!
+        engineSound = scene.soundById("engine")!!
         engineSound.playIfNotPlaying()
     }
 

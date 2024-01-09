@@ -1,5 +1,6 @@
 package com.fluxtah.application.api.interop
 
+import com.fluxtah.application.api.SceneImpl
 import com.fluxtah.application.api.activeScene
 import com.fluxtah.application.api.interop.model.CreateEntityInfo
 import com.fluxtah.application.api.interop.model.EntityArray
@@ -51,10 +52,7 @@ fun ktSetDestroyEntityFunc(callback: CPointer<CFunction<(CVulkanContext, CEntity
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktGetEntities")
 fun ktGetEntities(): CPointer<EntityArray> {
-    if (activeScene == null) {
-        throw RuntimeException("No active scene")
-    }
-    val entities = activeScene!!.scene.entities.values.filter { it.entity.visible }
+    val entities = (activeScene.scene as SceneImpl).entities.values.filter { it.entity.visible }
         .map { it.entity.handle } // Assuming handle is COpaquePointer
     val entityPointerArray = nativeHeap.allocArray<COpaquePointerVar>(entities.size)
 
