@@ -46,7 +46,7 @@ class ShipGame : Application {
             }
 
             entity("plane", "models/plane.glb") {
-                position(0.0f, 0.0f, 0.0f)
+                position(0.0f, -0.1f, 0.0f)
                 scale(10f, 10f, 10f)
             }
 
@@ -74,8 +74,28 @@ class ShipGame : Application {
             }
 
             for (x in 0..50) {
-                entity("asteroid$x", "models/sphere.glb") {
-                    position(Random.nextFloat() * 30, 4.0f, Random.nextFloat() * 30)
+                entity("asteroid$x", "models/asteroid.glb") {
+                    position(-50 + (Random.nextFloat() * 100), Random.nextFloat() * 2, -50 + (Random.nextFloat() * 100))
+                    scale(
+                        0.8f + (Random.nextFloat() * 1.6f),
+                        0.8f + (Random.nextFloat() * 1.6f),
+                        0.8f + (Random.nextFloat() * 1.6f)
+                    )
+                    behaviour(object : EntityBehavior {
+                        var randomSpeed: Float = 0.0f
+                        override fun initialize(scene: Scene, entity: Entity) {
+                            randomSpeed = Random.nextFloat() * 40
+                            entity.setRotation(0f, Random.nextFloat() * 360, 0f)
+                        }
+
+                        override fun update(scene: Scene, entity: Entity, time: Float) {
+                            entity.setRotation(
+                                entity.rotationX + (fixedTimeStep * randomSpeed),
+                                entity.rotationY + (fixedTimeStep * randomSpeed),
+                                entity.rotationZ + (fixedTimeStep * randomSpeed)
+                            )
+                        }
+                    })
                 }
             }
 
