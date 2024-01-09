@@ -8,7 +8,7 @@ import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class PlasmaBoltBehaviour(val fireButtonPressed: () -> Boolean) : EntityBehavior {
+class PlasmaBoltBehaviour(val fireButtonPressed: () -> Boolean, val sourceEntity: (Scene) -> Entity) : EntityBehavior {
     private var isBoltFiring = false
     private val boltSpeed = 40.0f // Speed of the plasma bolt
     private val maxDistance = 20f // Define the maximum travel distance
@@ -20,7 +20,7 @@ class PlasmaBoltBehaviour(val fireButtonPressed: () -> Boolean) : EntityBehavior
 
     override fun initialize(scene: Scene, entity: Entity) {
         boltSound = scene.sounds["plasma-bolt"]!!
-        shipEntity = scene.entities["ship"]!!.entity
+        shipEntity = sourceEntity(scene)
         entity.visible = false
     }
 
@@ -31,7 +31,7 @@ class PlasmaBoltBehaviour(val fireButtonPressed: () -> Boolean) : EntityBehavior
             initialPosition = Vector3(shipEntity.positionX, shipEntity.positionY, shipEntity.positionZ)
             firingDirection =
                 calculateDirectionFromRotation(shipEntity.rotationX, shipEntity.rotationY, shipEntity.rotationZ)
-            firePlasmaBolt(entity, initialPosition, firingDirection)
+            firePlasmaBolt(entity, initialPosition)
             boltSound.play()
         }
 
@@ -40,9 +40,8 @@ class PlasmaBoltBehaviour(val fireButtonPressed: () -> Boolean) : EntityBehavior
         }
     }
 
-    private fun firePlasmaBolt(entity: Entity, initialPosition: Vector3, firingDirection: Vector3) {
+    private fun firePlasmaBolt(entity: Entity, initialPosition: Vector3) {
         entity.setPosition(initialPosition.x, initialPosition.y, initialPosition.z)
-        // Assuming your engine can directly set the direction
         entity.setRotation(shipEntity.rotationX, shipEntity.rotationY, shipEntity.rotationZ)
     }
 
@@ -69,8 +68,6 @@ class PlasmaBoltBehaviour(val fireButtonPressed: () -> Boolean) : EntityBehavior
         val dirX = sin(radians)
         val dirZ = cos(radians)
 
-        // Assuming no pitch (rotationX) or roll (rotationZ) affects the direction
-        // If they do, the calculation needs to be adjusted accordingly
         return Vector3(dirX, 0.0f, dirZ)
     }
 

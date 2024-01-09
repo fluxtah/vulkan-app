@@ -2,10 +2,7 @@ package com.fluxtah.application.apps.shipgame
 
 import com.fluxtah.application.api.*
 import com.fluxtah.application.api.input.Key
-import com.fluxtah.application.apps.shipgame.behaviors.ForwardMovementBehavior
-import com.fluxtah.application.apps.shipgame.behaviors.PlasmaBoltBehaviour
-import com.fluxtah.application.apps.shipgame.behaviors.ThrustBehavior
-import com.fluxtah.application.apps.shipgame.behaviors.YawBehavior
+import com.fluxtah.application.apps.shipgame.behaviors.*
 import kotlin.random.Random
 
 /*
@@ -66,7 +63,11 @@ class ShipGame : Application {
 
             entity("plasma-bolt", "models/plasma-bolt.glb") {
                 position(0.0f, 0.0f, 0.0f)
-                behaviour(PlasmaBoltBehaviour(fireButtonPressed = { isKeyPressed(Key.Space) }))
+                behaviour(
+                    PlasmaBoltBehaviour(
+                        sourceEntity = { it.entities["ship"]!!.entity },
+                        fireButtonPressed = { isKeyPressed(Key.Space) })
+                )
 //                onCollision { asteroidEntity ->
 //                    // Handle collision
 //                }
@@ -81,21 +82,13 @@ class ShipGame : Application {
                         0.8f + (Random.nextFloat() * 1.6f),
                         0.8f + (Random.nextFloat() * 1.6f)
                     )
-                    behaviour(object : EntityBehavior {
-                        var randomSpeed: Float = 0.0f
-                        override fun initialize(scene: Scene, entity: Entity) {
-                            randomSpeed = Random.nextFloat() * 40
-                            entity.setRotation(0f, Random.nextFloat() * 360, 0f)
-                        }
-
-                        override fun update(scene: Scene, entity: Entity, time: Float) {
-                            entity.setRotation(
-                                entity.rotationX + (fixedTimeStep * randomSpeed),
-                                entity.rotationY + (fixedTimeStep * randomSpeed),
-                                entity.rotationZ + (fixedTimeStep * randomSpeed)
-                            )
-                        }
-                    })
+                    behaviour(
+                        RotateBehavior(
+                            speedX = Random.nextFloat() * 50,
+                            speedY = Random.nextFloat() * 50,
+                            speedZ = Random.nextFloat() * 50
+                        )
+                    )
                 }
             }
 
