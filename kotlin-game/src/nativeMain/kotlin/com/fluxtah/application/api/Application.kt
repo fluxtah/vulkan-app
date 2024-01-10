@@ -39,22 +39,21 @@ private var accumulatedTime = 0.0f
 fun ktUpdateApplication(time: Float, deltaTime: Float) {
     accumulatedTime += deltaTime
     val activeSceneInfo = activeScene
-    val scene = activeSceneInfo.scene
-    val entities = (scene as SceneImpl).entities
+    val scene = activeSceneInfo.scene as SceneImpl
+    val entities = scene.entities.map { it.value } + scene.entityPools.flatMap { it.value.entitiesInUse }
 
     activeSceneInfo.onSceneBeforeUpdate?.invoke(activeSceneInfo.scene, time, deltaTime)
-    scene.entities.values.forEach {
+    entities.forEach {
         it.behaviors.forEach { behavior ->
             behavior.beforeUpdate(scene, it.entity, time, deltaTime)
         }
         it.onSceneBeforeEntityUpdate?.invoke(scene, it.entity, time, deltaTime)
     }
-
     applicationInstance.beforeUpdate(time, deltaTime)
 
     while (accumulatedTime >= fixedTimeStep) {
         activeSceneInfo.onSceneUpdate?.invoke(activeSceneInfo.scene, time)
-        scene.entities.values.forEach {
+        entities.forEach {
             it.behaviors.forEach { behavior ->
                 behavior.update(scene, it.entity, time)
             }
@@ -65,7 +64,7 @@ fun ktUpdateApplication(time: Float, deltaTime: Float) {
     }
 
     activeSceneInfo.onSceneAfterUpdate?.invoke(activeSceneInfo.scene, time, deltaTime)
-    scene.entities.values.forEach {
+    entities.forEach {
         it.behaviors.forEach { behavior ->
             behavior.afterUpdate(scene, it.entity, time, deltaTime)
         }
@@ -96,6 +95,16 @@ private fun SceneImpl.destroy() {
         c_destroyEntity!!.invoke(ApplicationContext.vulcanContext!!, entityInfo.value.entity.handle)
     }
     entities.clear()
+    entityPools.forEach { entityPool ->
+        entityPool.value.entitiesInUse.forEach { entityInfo ->
+            c_destroyEntity!!.invoke(ApplicationContext.vulcanContext!!, entityInfo.entity.handle)
+        }
+        entityPool.value.entitiesInUse.clear()
+        entityPool.value.entitiesAvailable.forEach { entityInfo ->
+            c_destroyEntity!!.invoke(ApplicationContext.vulcanContext!!, entityInfo.entity.handle)
+        }
+        entityPool.value.entitiesAvailable.clear()
+    }
     sounds.forEach {
         c_destroySound!!.invoke(it.value.handle)
     }

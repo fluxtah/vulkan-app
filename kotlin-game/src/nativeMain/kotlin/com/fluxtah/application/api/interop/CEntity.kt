@@ -52,8 +52,10 @@ fun ktSetDestroyEntityFunc(callback: CPointer<CFunction<(CVulkanContext, CEntity
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktGetEntities")
 fun ktGetEntities(): CPointer<EntityArray> {
-    val entities = (activeScene.scene as SceneImpl).entities.values.filter { it.entity.visible }
-        .map { it.entity.handle } // Assuming handle is COpaquePointer
+    val scene = activeScene.scene as SceneImpl
+    val entities = scene.entities.values.filter { it.entity.visible }.map { it.entity.handle } +
+            scene.entityPools.flatMap { it.value.entitiesInUse.filter { it.entity.visible }.map { it.entity.handle } }
+
     val entityPointerArray = nativeHeap.allocArray<COpaquePointerVar>(entities.size)
 
     entities.forEachIndexed { index, light ->

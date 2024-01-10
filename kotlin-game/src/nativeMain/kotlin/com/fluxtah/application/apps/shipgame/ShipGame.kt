@@ -49,6 +49,7 @@ class ShipGame : Application {
 
             entity(Id.ENT_SHIP, "models/ship.glb") {
                 position(0.0f, 0.0f, 0.0f)
+                behaviour(FireWeaponBehaviour(fireButtonPressed = { isKeyPressed(Key.Space) }))
                 behaviour(ThrustBehavior(isThrusting = { isKeyPressed(Key.Up) }))
                 behaviour(YawBehavior(
                     yawLeft = { isKeyPressed(Key.A) },
@@ -61,18 +62,25 @@ class ShipGame : Application {
                 )
             }
 
-            entity(Id.ENT_PLASMA_BOLT, "models/plasma-bolt.glb") {
-                position(0.0f, 0.0f, 0.0f)
-                behaviour(
-                    PlasmaBoltBehaviour(
-                        sourceEntity = { it.entityById(Id.ENT_SHIP)!! },
-                        fireButtonPressed = { isKeyPressed(Key.Space) })
-                )
-//                onCollision { asteroidEntity ->
-//                    // Handle collision
-//                }
-                // Other properties and behaviors
+            entityPool(Id.ENT_PLASMA_BOLT, "models/plasma-bolt.glb", initialSize = 5) {
+                behaviour {
+                    PlasmaBoltBehaviour2()
+                }
             }
+
+
+//            entity(Id.ENT_PLASMA_BOLT, "models/plasma-bolt.glb") {
+//                position(0.0f, 0.0f, 0.0f)
+//                behaviour(
+//                    PlasmaBoltBehaviour(
+//                        sourceEntity = { it.entityById(Id.ENT_SHIP)!! },
+//                        fireButtonPressed = { isKeyPressed(Key.Space) })
+//                )
+////                onCollision { asteroidEntity ->
+////                    // Handle collision
+////                }
+//                // Other properties and behaviors
+//            }
 
             for (x in 0..50) {
                 entity("${Id.ENT_ASTEROID}$x", "models/asteroid.glb") {

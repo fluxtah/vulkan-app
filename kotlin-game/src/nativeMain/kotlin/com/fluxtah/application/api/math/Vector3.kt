@@ -1,17 +1,24 @@
 package com.fluxtah.application.api.math
 
+import kotlin.math.pow
+import kotlin.math.sqrt
+
 data class Vector3(var x: Float = 0f, var y: Float = 0f, var z: Float = 0f) {
     companion object {
         val zero = Vector3(0f, 0f, 0f)
 
         // Linear interpolation (lerp) function
-        fun lerp(a: Vector3, b: Vector3, t: Float): Vector3 {
-            return Vector3(
-                a.x + (b.x - a.x) * t,
-                a.y + (b.y - a.y) * t,
-                a.z + (b.z - a.z) * t
-            )
-        }
+        fun lerp(a: Vector3, b: Vector3, t: Float): Vector3 = Vector3(
+            a.x + (b.x - a.x) * t,
+            a.y + (b.y - a.y) * t,
+            a.z + (b.z - a.z) * t
+        )
+
+        fun distanceBetween(start: Vector3, end: Vector3): Float = sqrt(
+            (end.x - start.x).pow(2) +
+                    (end.y - start.y).pow(2) +
+                    (end.z - start.z).pow(2)
+        )
     }
 
     // Existing operator overloads
@@ -25,3 +32,9 @@ fun Vector3.lerp(target: Vector3, alpha: Float) {
     y = y * (1 - alpha) + target.y * alpha
     z = z * (1 - alpha) + target.z * alpha
 }
+
+fun Vector3.distanceTo(end: Vector3): Float = sqrt(
+    (end.x - x).pow(2) +
+            (end.y - y).pow(2) +
+            (end.z - z).pow(2)
+)
