@@ -50,41 +50,36 @@ class ShipGame : Application {
 
             entity(Id.ENT_SHIP, "models/ship.glb") {
                 position(0.0f, 0.0f, 0.0f)
-                behaviour(FirePlasmaCannonBehaviour(fireButtonPressed = { isKeyPressed(Key.Space) }))
-                behaviour(ThrustBehavior(isThrusting = { isKeyPressed(Key.Up) }))
-                behaviour(
+                behaviour { FirePlasmaCannonBehaviour(fireButtonPressed = { isKeyPressed(Key.Space) }) }
+                behaviour { ThrustBehavior(isThrusting = { isKeyPressed(Key.Up) }) }
+                behaviour {
                     YawBehavior(
                         yawLeft = { isKeyPressed(Key.A) },
                         yawRight = { isKeyPressed(Key.D) }
-                    ))
-                behaviour(
+                    )
+                }
+                behaviour {
                     ForwardMovementBehavior(
                         isMovingForward = { isKeyPressed(Key.W) },
                         isReversing = { isKeyPressed(Key.S) })
-                )
+                }
             }
 
-            entityPool(Id.ENT_PLASMA_BOLT, "models/plasma-bolt.glb", initialSize = 5) {
+            entityPool(Id.ENT_PLASMA_BOLT, "models/plasma-bolt.glb") {
+                initialSize(5)
                 behaviour {
                     PlasmaBoltBehaviour()
                 }
             }
 
-            for (x in 0..50) {
-                entity("${Id.ENT_ASTEROID}$x", "models/asteroid.glb") {
-
-                    position(-50 + (Random.nextFloat() * 100), Random.nextFloat() * 2, -50 + (Random.nextFloat() * 100))
-                    scale(
-                        0.8f + (Random.nextFloat() * 1.6f),
-                        0.8f + (Random.nextFloat() * 1.6f),
-                        0.8f + (Random.nextFloat() * 1.6f)
-                    )
-                    behaviour(
-                        RotateBehavior(
-                            speedX = Random.nextFloat() * 50,
-                            speedY = Random.nextFloat() * 50,
-                            speedZ = Random.nextFloat() * 50
-                        )
+            entityPool(Id.ENT_ASTEROID, "models/asteroid.glb") {
+                initialSize(50)
+                startActive()
+                behaviour {
+                    AsteroidBehavior(
+                        speedX = Random.nextFloat() * 50,
+                        speedY = Random.nextFloat() * 50,
+                        speedZ = Random.nextFloat() * 50
                     )
                 }
             }

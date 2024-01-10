@@ -43,6 +43,8 @@ void setEntityPosition(Entity *entity, float x, float y, float z);
 
 void setEntityRotation(Entity *entity, float x, float y, float z);
 
+void setEntityScale(Entity *obj, float x, float y, float z);
+
 void destroyEntity(ApplicationContext *context, Entity *entity);
 void destroyRenderResources(ApplicationContext *context, RenderResources *obj);
 

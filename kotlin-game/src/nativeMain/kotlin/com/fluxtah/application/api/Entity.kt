@@ -1,9 +1,6 @@
 package com.fluxtah.application.api
 
-import com.fluxtah.application.api.interop.CEntity
-import com.fluxtah.application.api.interop.c_createEntity
-import com.fluxtah.application.api.interop.c_setEntityPosition
-import com.fluxtah.application.api.interop.c_setEntityRotation
+import com.fluxtah.application.api.interop.*
 import com.fluxtah.application.api.interop.model.CreateEntityInfo
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.cValue
@@ -20,6 +17,9 @@ class Entity(
     initialRotationX: Float = 0.0f,
     initialRotationY: Float = 0.0f,
     initialRotationZ: Float = 0.0f,
+    initialScaleX: Float = 1.0f,
+    initialScaleY: Float = 1.0f,
+    initialScaleZ: Float = 1.0f,
 ) {
     var visible: Boolean = true
 
@@ -59,6 +59,24 @@ class Entity(
             return _rotationZ
         }
 
+    private var _scaleX: Float = initialRotationX
+    val scaleX: Float
+        get() {
+            return _scaleX
+        }
+
+    private var _scaleY: Float = initialRotationY
+    val scaleY: Float
+        get() {
+            return _scaleY
+        }
+
+    private var _scaleZ: Float = initialRotationZ
+    val scaleZ: Float
+        get() {
+            return _scaleZ
+        }
+
     fun setPosition(x: Float? = null, y: Float? = null, z: Float? = null) {
         _positionX = x ?: _positionX
         _positionY = y ?: _positionY
@@ -73,6 +91,14 @@ class Entity(
         c_setEntityRotation!!.invoke(handle, _rotationX, _rotationY, _rotationZ)
     }
 
+    fun setScale(x: Float? = null, y: Float? = null, z: Float? = null) {
+        _scaleX = x ?: _scaleX
+        _scaleY = y ?: _scaleY
+        _scaleZ = z ?: _scaleZ
+        c_setEntityScale!!.invoke(handle, _scaleX, _scaleY, _scaleZ)
+    }
+
+
     fun rotate(x: Float = 0f, y: Float = 0f, z: Float = 0f) {
         _rotationX += x
         _rotationY += y
@@ -85,10 +111,6 @@ class Entity(
         _positionY += y
         _positionZ += z
         c_setEntityPosition!!.invoke(handle, _positionX, _positionY, _positionZ)
-    }
-
-    fun <T : EntityBehavior> onBehaviour(block: (T) -> Unit = {}) {
-        TODO("Not yet implemented")
     }
 }
 
@@ -109,7 +131,7 @@ class EntityBuilder(private val id: String, private val modelPath: String) {
     private var onSceneBeforeEntityUpdate: OnSceneBeforeEntityUpdate? = null
     private var onSceneAfterEntityUpdate: OnSceneAfterEntityUpdate? = null
 
-    private val behaviors = mutableListOf<EntityBehavior>()
+    private val behaviors = mutableListOf<() -> EntityBehavior>()
 
     fun position(x: Float = 0f, y: Float = 0f, z: Float = 0f) {
         positionX = x
@@ -141,7 +163,7 @@ class EntityBuilder(private val id: String, private val modelPath: String) {
         onSceneAfterEntityUpdate = block
     }
 
-    fun behaviour(behavior: EntityBehavior) {
+    fun behaviour(behavior: () -> EntityBehavior) {
         behaviors.add(behavior)
     }
 
@@ -171,19 +193,25 @@ class EntityBuilder(private val id: String, private val modelPath: String) {
                 handle = cEntity,
                 initialPositionX = positionX,
                 initialPositionY = positionY,
-                initialPositionZ = positionZ
+                initialPositionZ = positionZ,
+                initialRotationX = rotationX,
+                initialRotationY = rotationY,
+                initialRotationZ = rotationZ,
+                initialScaleX = scaleX,
+                initialScaleY = scaleY,
+                initialScaleZ = scaleZ
             ),
             onSceneEntityUpdate = onSceneEntityUpdate,
             onSceneBeforeEntityUpdate = onSceneBeforeEntityUpdate,
             onSceneAfterEntityUpdate = onSceneAfterEntityUpdate,
-            behaviors = behaviors
+            behaviors = behaviors.map { it() }
         )
     }
 }
 
 @SceneDsl
 @OptIn(ExperimentalForeignApi::class)
-class EntityPoolBuilder(private val id: String, private val modelPath: String, private val initialSize: Int) {
+class EntityPoolBuilder(private val id: String, private val modelPath: String) {
     private var positionX: Float = 0.0f
     private var positionY: Float = 0.0f
     private var positionZ: Float = 0.0f
@@ -194,7 +222,18 @@ class EntityPoolBuilder(private val id: String, private val modelPath: String, p
     private var scaleY: Float = 1.0f
     private var scaleZ: Float = 1.0f
 
+    private var initialSize: Int = 10
+    private var startActive: Boolean = false
+
     private val behaviors = mutableListOf<() -> EntityBehavior>()
+
+    fun initialSize(size: Int) {
+        initialSize = size
+    }
+
+    fun startActive() {
+        startActive = true
+    }
 
     fun position(x: Float = 0f, y: Float = 0f, z: Float = 0f) {
         positionX = x
@@ -220,15 +259,16 @@ class EntityPoolBuilder(private val id: String, private val modelPath: String, p
 
     @OptIn(ExperimentalForeignApi::class)
     fun build(): EntityPoolInfo {
+        val initialEntities = mutableListOf<EntityInfo>().apply {
+            repeat(initialSize) {
+                add(createEntityInfo())
+            }
+        }
         return EntityPoolInfo(
             initialSize = initialSize,
             factory = { createEntityInfo() },
-            entitiesAvailable = mutableListOf<EntityInfo>().apply {
-                repeat(initialSize) {
-                    add(createEntityInfo())
-                }
-            },
-            entitiesInUse = mutableListOf()
+            entitiesAvailable = if (startActive) mutableListOf() else initialEntities,
+            entitiesInUse = if (startActive) initialEntities else mutableListOf()
         )
     }
 
@@ -255,9 +295,15 @@ class EntityPoolBuilder(private val id: String, private val modelPath: String, p
                 handle = cEntity,
                 initialPositionX = positionX,
                 initialPositionY = positionY,
-                initialPositionZ = positionZ
+                initialPositionZ = positionZ,
+                initialRotationX = rotationX,
+                initialRotationY = rotationY,
+                initialRotationZ = rotationZ,
+                initialScaleX = scaleX,
+                initialScaleY = scaleY,
+                initialScaleZ = scaleZ
             ),
-            behaviors = behaviors.map { it() }.toMutableList()
+            behaviors = behaviors.map { it() }
         )
     }
 }

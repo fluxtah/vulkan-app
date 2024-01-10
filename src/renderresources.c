@@ -188,6 +188,12 @@ void setEntityRotation(Entity *obj, float x, float y, float z) {
     obj->rotation[2] = z;
 }
 
+void setEntityScale(Entity *obj, float x, float y, float z) {
+    obj->scale[0] = x;
+    obj->scale[1] = y;
+    obj->scale[2] = z;
+}
+
 void destroyEntity(ApplicationContext *context, Entity *entity) {
     // Destroy UBOs
     destroyBufferMemory(context->vulkanDeviceContext, entity->transformUBO);

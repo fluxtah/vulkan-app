@@ -104,3 +104,21 @@ fun ktSetEntityRotationFunc(callback: CPointer<CFunction<SetEntityRotationFunc>>
         }
     }
 }
+
+@OptIn(ExperimentalForeignApi::class)
+typealias SetEntityScaleFunc = (CEntity, Float, Float, Float) -> Unit
+
+@OptIn(ExperimentalForeignApi::class)
+var c_setEntityScale: SetEntityScaleFunc? = null
+
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@CName("ktSetEntityScaleFunc")
+fun ktSetEntityScaleFunc(callback: CPointer<CFunction<SetEntityScaleFunc>>) {
+    c_setEntityScale = { entity, x, y, z ->
+        memScoped {
+            callback.reinterpret<CFunction<SetEntityScaleFunc>>()(
+                entity, x, y, z
+            )
+        }
+    }
+}

@@ -20,7 +20,7 @@ data class EntityInfo(
     val onSceneEntityUpdate: OnSceneEntityUpdate? = null,
     val onSceneBeforeEntityUpdate: OnSceneBeforeEntityUpdate? = null,
     val onSceneAfterEntityUpdate: OnSceneAfterEntityUpdate? = null,
-    val behaviors: MutableList<EntityBehavior>
+    val behaviors: List<EntityBehavior>
 )
 
 data class EntityPoolInfo(
@@ -173,12 +173,12 @@ class SceneBuilder(val sceneId: String) {
         }
     }
 
-    fun entityPool(id: String, modelPath: String, initialSize: Int, builder: EntityPoolBuilder.() -> Unit) {
+    fun entityPool(id: String, modelPath: String, builder: EntityPoolBuilder.() -> Unit) {
         if (entityPools.containsKey(id)) {
             throw Exception("Entity pool with id $id already exists")
         }
         entityPools[id] = {
-            EntityPoolBuilder(id, modelPath, initialSize).apply(builder).build()
+            EntityPoolBuilder(id, modelPath).apply(builder).build()
         }
     }
 
@@ -254,6 +254,15 @@ fun Application.setActiveScene(id: String) {
                 behavior.initialize(sceneInfo.scene, it.value.entity)
             }
             it.value.onSceneEntityUpdate
+        }
+
+        // Initialize entity pools with active entities
+        sceneInfo.scene.entityPools.forEach {
+            it.value.entitiesInUse.forEach { entityInfo ->
+                entityInfo.behaviors.forEach { behavior ->
+                    behavior.initialize(sceneInfo.scene, entityInfo.entity)
+                }
+            }
         }
 
         // Set as active scene
