@@ -11,13 +11,12 @@ import kotlin.math.sin
 class ForwardMovementBehavior(
     private val isMovingForward: () -> Boolean,
     private val isReversing: () -> Boolean,
+    private val acceleration: Float = 1.0f,
+    private val reversingFactor: Float = 2.0f,
+    private val maxForwardSpeed: Float = 5.0f,
+    private val maxReverseSpeed: Float = -1.0f,
 ) : EntityBehavior {
     private var forwardVelocity = 0.0f
-    private val acceleration = 1.0f // Adjust for desired acceleration
-    private val reversingFactor = 2.0f // Adjust for desired reverse speed
-    private val maxForwardSpeed = 5.0f // Adjust for max speed
-    private val maxReverseSpeed = -1.0f // Adjust for max reverse speed
-
     private lateinit var engineSound: Sound
 
     override fun initialize(scene: Scene, entity: Entity) {
@@ -32,10 +31,12 @@ class ForwardMovementBehavior(
                 // Increase forward velocity
                 (forwardVelocity + acceleration * fixedTimeStep).coerceAtMost(maxForwardSpeed)
             }
+
             isReversing() -> {
                 // Decrease forward velocity for reverse movement
                 (forwardVelocity - (acceleration * reversingFactor) * fixedTimeStep).coerceAtLeast(maxReverseSpeed)
             }
+
             else -> {
                 // Slow down to a halt if not moving forward or reversing
                 if (forwardVelocity > 0) {

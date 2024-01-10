@@ -9,6 +9,7 @@ import kotlin.random.Random
 TODO
 ✓ Get sounds working
 ✓ Get guns working (firing projectiles)
+* Check over entity pool code and make sure its working including support code like behaviors
 * Get asteroids working
    * Get asteroids to spawn randomly without overlapping
 * Get projectiles to destroy asteroids (collision detection)
@@ -49,12 +50,13 @@ class ShipGame : Application {
 
             entity(Id.ENT_SHIP, "models/ship.glb") {
                 position(0.0f, 0.0f, 0.0f)
-                behaviour(FireWeaponBehaviour(fireButtonPressed = { isKeyPressed(Key.Space) }))
+                behaviour(FirePlasmaCannonBehaviour(fireButtonPressed = { isKeyPressed(Key.Space) }))
                 behaviour(ThrustBehavior(isThrusting = { isKeyPressed(Key.Up) }))
-                behaviour(YawBehavior(
-                    yawLeft = { isKeyPressed(Key.A) },
-                    yawRight = { isKeyPressed(Key.D) }
-                ))
+                behaviour(
+                    YawBehavior(
+                        yawLeft = { isKeyPressed(Key.A) },
+                        yawRight = { isKeyPressed(Key.D) }
+                    ))
                 behaviour(
                     ForwardMovementBehavior(
                         isMovingForward = { isKeyPressed(Key.W) },
@@ -64,23 +66,9 @@ class ShipGame : Application {
 
             entityPool(Id.ENT_PLASMA_BOLT, "models/plasma-bolt.glb", initialSize = 5) {
                 behaviour {
-                    PlasmaBoltBehaviour2()
+                    PlasmaBoltBehaviour()
                 }
             }
-
-
-//            entity(Id.ENT_PLASMA_BOLT, "models/plasma-bolt.glb") {
-//                position(0.0f, 0.0f, 0.0f)
-//                behaviour(
-//                    PlasmaBoltBehaviour(
-//                        sourceEntity = { it.entityById(Id.ENT_SHIP)!! },
-//                        fireButtonPressed = { isKeyPressed(Key.Space) })
-//                )
-////                onCollision { asteroidEntity ->
-////                    // Handle collision
-////                }
-//                // Other properties and behaviors
-//            }
 
             for (x in 0..50) {
                 entity("${Id.ENT_ASTEROID}$x", "models/asteroid.glb") {
@@ -100,15 +88,6 @@ class ShipGame : Application {
                     )
                 }
             }
-
-//            for (x in 0..100) {
-//                entity("asteroid", "models/asteroid.glb", instancing = true) {
-//                    position(randomPosition())
-//                    rotation(randomRotation())
-//                    scale(randomScale())
-//                    // Shared behaviors or properties
-//                }
-//            }
 
             sound(Id.SOUND_UP_THRUST, "sounds/up-thrust.wav") {
                 loop(true)

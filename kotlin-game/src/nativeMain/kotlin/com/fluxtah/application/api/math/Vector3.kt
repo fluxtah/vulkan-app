@@ -1,6 +1,8 @@
 package com.fluxtah.application.api.math
 
+import kotlin.math.cos
 import kotlin.math.pow
+import kotlin.math.sin
 import kotlin.math.sqrt
 
 data class Vector3(var x: Float = 0f, var y: Float = 0f, var z: Float = 0f) {
@@ -19,6 +21,17 @@ data class Vector3(var x: Float = 0f, var y: Float = 0f, var z: Float = 0f) {
                     (end.y - start.y).pow(2) +
                     (end.z - start.z).pow(2)
         )
+
+        fun calculateDirectionFromYaw(rotationY: Float): Vector3 {
+            // Convert rotationY (yaw) to radians
+            val radians = rotationY.toRadians()
+
+            // Calculate direction vector using yaw
+            val dirX = sin(radians)
+            val dirZ = cos(radians)
+
+            return Vector3(dirX, 0.0f, dirZ)
+        }
     }
 
     // Existing operator overloads

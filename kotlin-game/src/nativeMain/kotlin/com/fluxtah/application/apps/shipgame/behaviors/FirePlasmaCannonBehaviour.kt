@@ -1,12 +1,11 @@
 package com.fluxtah.application.apps.shipgame.behaviors
 
 import com.fluxtah.application.api.*
+import com.fluxtah.application.api.math.Vector3
 import com.fluxtah.application.apps.shipgame.Id
 
-class FireWeaponBehaviour(val fireButtonPressed: () -> Boolean) : EntityBehavior {
+class FirePlasmaCannonBehaviour(private val fireDelay: Float = 0.3f, val fireButtonPressed: () -> Boolean) : EntityBehavior {
     private var lastFireTime = 0.0f
-    private val fireDelay = 0.3f
-
     private lateinit var boltSound: Sound
 
     override fun initialize(scene: Scene, entity: Entity) {
@@ -18,12 +17,16 @@ class FireWeaponBehaviour(val fireButtonPressed: () -> Boolean) : EntityBehavior
         if (fireButtonPressed() && canFireBolt) {
             lastFireTime = time
             scene.entityFromPool(Id.ENT_PLASMA_BOLT) { bolt, behaviors ->
-                boltSound.play()
                 bolt.setPosition(entity.positionX, entity.positionY, entity.positionZ)
                 bolt.setRotation(entity.rotationX, entity.rotationY, entity.rotationZ)
                 bolt.visible = true
-                behaviors.filterIsInstance<PlasmaBoltBehaviour2>().onEach {
-                    it.fireBoltFrom(entity)
+                boltSound.play()
+                behaviors.filterIsInstance<PlasmaBoltBehaviour>().onEach {
+                    it.initialPosition.x = entity.positionX
+                    it.initialPosition.y = entity.positionY
+                    it.initialPosition.z = entity.positionZ
+                    it.firingDirection = Vector3.calculateDirectionFromYaw(entity.rotationY)
+                    it.fireBolt()
                 }
             }
         }
