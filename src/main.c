@@ -85,7 +85,7 @@ int main() {
 
         for (size_t i = 0; i < context->vulkanSwapchainContext->swapChainImageCount; i++) {
             recordCommandBuffer(
-                    context->commandBuffers[i],
+                    context->pipelineConfig->commandBuffers[i],
                     context->vulkanSwapchainContext->renderPass,
                     context->vulkanSwapchainContext->swapChainFramebuffers[i],
                     context->vulkanSwapchainContext->swapChainExtent,
@@ -112,7 +112,7 @@ int main() {
 
         vkResetFences(context->vulkanDeviceContext->device, 1, &inFlightFence);
 
-        renderSubmit(context->vulkanDeviceContext, waitSemaphores, signalSemaphores, inFlightFence, context->commandBuffers, imageIndex);
+        renderSubmit(context->vulkanDeviceContext, waitSemaphores, signalSemaphores, inFlightFence, context->pipelineConfig->commandBuffers, imageIndex);
         renderPresent(context->vulkanDeviceContext,  context->vulkanSwapchainContext->swapChain, signalSemaphores, imageIndex);
 
         vkWaitForFences(context->vulkanDeviceContext->device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);

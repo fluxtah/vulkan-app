@@ -1,7 +1,8 @@
 #include "include/pipelineconfig.h"
 
 PipelineConfig *createBasicShaderPipelineConfig(
-        VulkanDeviceContext *context, VkRenderPass renderPass, VkExtent2D swapChainExtent) {
+        VulkanDeviceContext *context, VkCommandPool commandPool,
+        VkRenderPass renderPass, VkExtent2D swapChainExtent, uint32_t swapChainImageCount) {
     PipelineConfig *pipelineConfig = malloc(sizeof(PipelineConfig));
 
     //
@@ -75,8 +76,79 @@ PipelineConfig *createBasicShaderPipelineConfig(
         return NULL;
     }
 
+    pipelineConfig->commandBuffers = allocateCommandBuffers(context->device, commandPool, swapChainImageCount);
+    if (pipelineConfig->commandBuffers == VK_NULL_HANDLE) {
+        LOG_ERROR("Failed to allocate command buffers for basic shader pipeline");
+        destroyPipelineConfig(context, pipelineConfig);
+        return NULL;
+    }
+
     return pipelineConfig;
 }
+
+PipelineConfig *createDebugPipelineConfig(
+        VulkanDeviceContext *context, VkCommandPool commandPool,
+        VkRenderPass renderPass, VkExtent2D swapChainExtent, uint32_t swapChainImageCount) {
+    PipelineConfig *pipelineConfig = malloc(sizeof(PipelineConfig));
+
+    //
+    // For debug pipeline, we don't need a descriptor pool or layouts
+    //
+    pipelineConfig->descriptorPool = NULL;
+    pipelineConfig->vertexShaderDescriptorSetLayout = NULL;
+    pipelineConfig->fragmentShaderDescriptorSetLayout = NULL;
+
+    pipelineConfig->vertexShaderModule = createShaderModule(context->device, "shaders/debug.vert.spv");
+    if (pipelineConfig->vertexShaderModule == VK_NULL_HANDLE) {
+        LOG_ERROR("Failed to create vertex shader module for debug shader pipeline");
+        destroyPipelineConfig(context, pipelineConfig);
+        return NULL;
+    }
+
+    pipelineConfig->fragmentShaderModule = createShaderModule(context->device, "shaders/debug.frag.spv");
+    if (pipelineConfig->fragmentShaderModule == VK_NULL_HANDLE) {
+        LOG_ERROR("Failed to create fragment shader module for debug shader pipeline");
+        destroyPipelineConfig(context, pipelineConfig);
+        return NULL;
+    }
+
+    pipelineConfig->pipelineLayout = createDebugPipelineLayout(context->device);
+    if (pipelineConfig->pipelineLayout == VK_NULL_HANDLE) {
+        LOG_ERROR("Failed to create pipeline layout for debug shader pipeline");
+        destroyPipelineConfig(context, pipelineConfig);
+        return NULL;
+    }
+
+    Viewport viewport = (Viewport) {
+            0, 0,
+            (float) swapChainExtent.width,
+            (float) swapChainExtent.height,
+            0.0f,
+            1.0f
+    };
+
+    pipelineConfig->pipeline = createDebugPipeline(
+            context->device,
+            pipelineConfig->pipelineLayout,
+            renderPass, viewport,
+            pipelineConfig->vertexShaderModule,
+            pipelineConfig->fragmentShaderModule);
+
+    if (pipelineConfig->pipeline == VK_NULL_HANDLE) {
+        LOG_ERROR("Failed to create pipeline for debug shader pipeline");
+        destroyPipelineConfig(context, pipelineConfig);
+        return NULL;
+    }
+
+    pipelineConfig->commandBuffers = allocateCommandBuffers(context->device, commandPool, swapChainImageCount);
+    if (pipelineConfig->commandBuffers == VK_NULL_HANDLE) {
+        LOG_ERROR("Failed to allocate command buffers for basic shader pipeline");
+        destroyPipelineConfig(context, pipelineConfig);
+        return NULL;
+    }
+    return pipelineConfig;
+}
+
 
 void destroyPipelineConfig(VulkanDeviceContext *context, PipelineConfig *pipelineConfig) {
     if (pipelineConfig->descriptorPool != VK_NULL_HANDLE)

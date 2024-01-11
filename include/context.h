@@ -13,13 +13,14 @@
 typedef struct ImageMemory ImageMemory;
 
 typedef struct PipelineConfig {
-    VkShaderModule vertexShaderModule;
-    VkShaderModule fragmentShaderModule;
-    VkPipeline pipeline;
-    VkPipelineLayout pipelineLayout;
+    VkDescriptorPool descriptorPool;
     VkDescriptorSetLayout vertexShaderDescriptorSetLayout;
     VkDescriptorSetLayout fragmentShaderDescriptorSetLayout;
-    VkDescriptorPool descriptorPool;
+    VkShaderModule vertexShaderModule;
+    VkShaderModule fragmentShaderModule;
+    VkPipelineLayout pipelineLayout;
+    VkPipeline pipeline;
+    VkCommandBuffer *commandBuffers;
 } PipelineConfig;
 
 typedef struct VulkanDeviceContext {
@@ -55,8 +56,8 @@ typedef struct ApplicationContext {
     VulkanSwapchainContext *vulkanSwapchainContext;
     VkCommandPool commandPool;
     VkSampler sampler;
-    VkCommandBuffer *commandBuffers;
     PipelineConfig *pipelineConfig;
+    PipelineConfig *debugPipelineConfig;
     AudioContext *audioContext;
     Camera *activeCamera;
 } ApplicationContext;

@@ -1,7 +1,7 @@
 #ifndef VULKAN_SHADERS_H
 #define VULKAN_SHADERS_H
 
-#include "include/error.h"
+#include "include/debug.h"
 #include <vulkan/vulkan.h>
 #include <stdlib.h>
 #include <stdio.h>

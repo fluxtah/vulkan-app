@@ -1,4 +1,4 @@
-#include "include/error.h"
+#include "include/debug.h"
 
 void logErrorImpl(const char* message, const char* file, int line) {
     fprintf(stderr, "Error [%s:%d]: %s\n", file, line, message);

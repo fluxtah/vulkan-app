@@ -67,8 +67,8 @@ CMAKE_BINARY_DIR = /Users/ian.warwick/Documents/sdev/game
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "No interactive CMake dialog available..."
-	/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
+	/opt/homebrew/Cellar/cmake/3.28.0/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -153,29 +153,29 @@ src/camera.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/camera.c.s
 .PHONY : src/camera.c.s
 
-src/error.o: src/error.c.o
-.PHONY : src/error.o
+src/debug.o: src/debug.c.o
+.PHONY : src/debug.o
 
 # target to build an object file
-src/error.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/error.c.o
-.PHONY : src/error.c.o
+src/debug.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/debug.c.o
+.PHONY : src/debug.c.o
 
-src/error.i: src/error.c.i
-.PHONY : src/error.i
+src/debug.i: src/debug.c.i
+.PHONY : src/debug.i
 
 # target to preprocess a source file
-src/error.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/error.c.i
-.PHONY : src/error.c.i
+src/debug.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/debug.c.i
+.PHONY : src/debug.c.i
 
-src/error.s: src/error.c.s
-.PHONY : src/error.s
+src/debug.s: src/debug.c.s
+.PHONY : src/debug.s
 
 # target to generate assembly for a file
-src/error.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/error.c.s
-.PHONY : src/error.c.s
+src/debug.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/debug.c.s
+.PHONY : src/debug.c.s
 
 src/imagememory.o: src/imagememory.c.o
 .PHONY : src/imagememory.o
@@ -861,9 +861,9 @@ help:
 	@echo "... src/camera.o"
 	@echo "... src/camera.i"
 	@echo "... src/camera.s"
-	@echo "... src/error.o"
-	@echo "... src/error.i"
-	@echo "... src/error.s"
+	@echo "... src/debug.o"
+	@echo "... src/debug.i"
+	@echo "... src/debug.s"
 	@echo "... src/imagememory.o"
 	@echo "... src/imagememory.i"
 	@echo "... src/imagememory.s"

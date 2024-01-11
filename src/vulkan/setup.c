@@ -1,8 +1,4 @@
 #include "include/vulkan/setup.h"
-#include "include/vulkan/framebuffer.h"
-#include "include/pipelineconfig.h"
-#include "include/vulkan/renderpass.h"
-#include "include/vulkan/commandbuffer.h"
 
 VkSurfaceKHR createVulkanSurface(VkInstance instance, GLFWwindow *window) {
     VkSurfaceKHR surface;
@@ -184,8 +180,8 @@ void destroyVulkanDeviceContext(VulkanDeviceContext *context) {
     free(context);
 }
 
-VulkanSwapchainContext *
-createVulkanSwapchainContext(VulkanDeviceContext *vulkanDeviceContext, VkCommandPool commandPool) {
+VulkanSwapchainContext *createVulkanSwapchainContext(
+        VulkanDeviceContext *vulkanDeviceContext, VkCommandPool commandPool) {
     VulkanSwapchainContext *vulkanSwapchainContext = malloc(sizeof(VulkanSwapchainContext));
 
     CreateSwapChainResult result = {0};
@@ -241,44 +237,98 @@ ApplicationContext *createApplication() {
     VulkanDeviceContext *vulkanDeviceContext = createVulkanDeviceContext();
     applicationContext->vulkanDeviceContext = vulkanDeviceContext;
 
-    applicationContext->commandPool = createCommandPool(vulkanDeviceContext->device,
-                                                        vulkanDeviceContext->graphicsQueueFamilyIndex);
-
-    VulkanSwapchainContext *vulkanSwapchainContext = createVulkanSwapchainContext(vulkanDeviceContext,
-                                                                                  applicationContext->commandPool);
-    applicationContext->vulkanSwapchainContext = vulkanSwapchainContext;
+    applicationContext->commandPool = createCommandPool(
+            vulkanDeviceContext->device,
+            vulkanDeviceContext->graphicsQueueFamilyIndex
+    );
 
     if (applicationContext->commandPool == VK_NULL_HANDLE)
         return NULL;
 
+    VulkanSwapchainContext *vulkanSwapchainContext = createVulkanSwapchainContext(
+            vulkanDeviceContext,
+            applicationContext->commandPool
+    );
+    applicationContext->vulkanSwapchainContext = vulkanSwapchainContext;
     createTextureSampler(applicationContext->vulkanDeviceContext->device, &applicationContext->sampler);
 
     applicationContext->audioContext = createAudioContext();
 
     glfwSetKeyCallback(vulkanDeviceContext->window, key_callback);
 
-    applicationContext->pipelineConfig = createBasicShaderPipelineConfig(vulkanDeviceContext,
-                                                                         vulkanSwapchainContext->renderPass,
-                                                                         vulkanSwapchainContext->swapChainExtent);
-
-    applicationContext->commandBuffers = allocateCommandBuffers(vulkanDeviceContext->device,
-                                                                applicationContext->commandPool,
-                                                                vulkanSwapchainContext->swapChainImageCount);
-
-    if (applicationContext->commandBuffers == VK_NULL_HANDLE)
+    applicationContext->pipelineConfig = createBasicShaderPipelineConfig(
+            vulkanDeviceContext,
+            applicationContext->commandPool,
+            vulkanSwapchainContext->renderPass,
+            vulkanSwapchainContext->swapChainExtent,
+            vulkanSwapchainContext->swapChainImageCount
+    );
+    if (applicationContext->pipelineConfig == NULL) {
+        LOG_ERROR("Failed to create basic shader pipeline config");
+        destroyApplication(applicationContext);
         return NULL;
+    }
+
+#ifdef DEBUG
+    applicationContext->debugPipelineConfig = createDebugPipelineConfig(
+            vulkanDeviceContext,
+            applicationContext->commandPool,
+            vulkanSwapchainContext->renderPass,
+            vulkanSwapchainContext->swapChainExtent,
+            vulkanSwapchainContext->swapChainImageCount
+    );
+    if (applicationContext->debugPipelineConfig == NULL) {
+        LOG_ERROR("Failed to create debug shader pipeline config");
+        destroyApplication(applicationContext);
+        return NULL;
+    }
+#else
+    applicationContext->debugPipelineConfig = NULL;
+#endif
 
     return applicationContext;
 }
 
 void destroyApplication(ApplicationContext *context) {
     context->activeCamera = NULL;
-    destroyPipelineConfig(context->vulkanDeviceContext, context->pipelineConfig);
-    destroyAudioContext(context->audioContext);
-    vkDestroySampler(context->vulkanDeviceContext->device, context->sampler, NULL);
-    vkDestroyCommandPool(context->vulkanDeviceContext->device, context->commandPool, NULL);
-    destroyVulkanSwapchainContext(context->vulkanDeviceContext, context->vulkanSwapchainContext);
-    destroyVulkanDeviceContext(context->vulkanDeviceContext);
+
+    //
+    // NOTE: We associate command buffers to the pipeline configs, so we need to free them first, everything
+    // else associated with the pipeline config is freed in destroyPipelineConfig
+    //
+    if (context->pipelineConfig != NULL && context->vulkanSwapchainContext != NULL) {
+        if (context->pipelineConfig->commandBuffers != NULL && context->vulkanDeviceContext != NULL) {
+            vkFreeCommandBuffers(context->vulkanDeviceContext->device, context->commandPool,
+                                 context->vulkanSwapchainContext->swapChainImageCount,
+                                 context->pipelineConfig->commandBuffers);
+        }
+        destroyPipelineConfig(context->vulkanDeviceContext, context->pipelineConfig);
+    }
+
+    if (context->debugPipelineConfig != NULL && context->vulkanSwapchainContext != NULL) {
+        if (context->debugPipelineConfig->commandBuffers != NULL && context->vulkanDeviceContext != NULL) {
+            vkFreeCommandBuffers(context->vulkanDeviceContext->device, context->commandPool,
+                                 context->vulkanSwapchainContext->swapChainImageCount,
+                                 context->debugPipelineConfig->commandBuffers);
+        }
+        destroyPipelineConfig(context->vulkanDeviceContext, context->debugPipelineConfig);
+    }
+
+    if (context->audioContext != NULL) {
+        destroyAudioContext(context->audioContext);
+    }
+    if (context->sampler != NULL && context->vulkanDeviceContext != NULL) {
+        vkDestroySampler(context->vulkanDeviceContext->device, context->sampler, NULL);
+    }
+    if (context->commandPool != NULL && context->vulkanDeviceContext != NULL) {
+        vkDestroyCommandPool(context->vulkanDeviceContext->device, context->commandPool, NULL);
+    }
+    if (context->vulkanSwapchainContext != NULL) {
+        destroyVulkanSwapchainContext(context->vulkanDeviceContext, context->vulkanSwapchainContext);
+    }
+    if (context->vulkanDeviceContext != NULL) {
+        destroyVulkanDeviceContext(context->vulkanDeviceContext);
+    }
 
     free(context);
 }

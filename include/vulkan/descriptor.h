@@ -2,7 +2,7 @@
 #define VULKAN_DESCRIPTOR_H
 
 #include "include/ubo.h"
-#include "include/error.h"
+#include "include/debug.h"
 #include <vulkan/vulkan.h>
 #include <stdio.h>
 #include <stdlib.h>
