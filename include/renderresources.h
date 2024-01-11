@@ -13,6 +13,12 @@
 #include <vulkan/vulkan.h>
 
 typedef struct {
+    vec3 min; // Minimum corner of the AABB
+    vec3 max; // Maximum corner of the AABB
+    // Additional AABB properties if needed
+} AABB;
+
+typedef struct {
     char *filename;
     ModelData *modelData;
     BufferMemory *vertexBuffer;
@@ -20,12 +26,14 @@ typedef struct {
     ImageMemory *colorMap;
     ImageMemory *normalMap;
     ImageMemory *metallicRoughnessMap;
+    AABB aabb;
 } RenderResources;
 
 typedef struct Entity {
     vec3 scale;
     vec3 position;
     vec3 rotation;
+    AABB aabb;
 
     VkDescriptorSet vertexDescriptorSet;
     VkDescriptorSet fragmentDescriptorSet;

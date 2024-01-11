@@ -91,7 +91,60 @@ Entity *createEntity(ApplicationContext *context, const char *filename, CreateEn
             context->sampler
     );
 
+    entity->aabb = entity->renderResources->aabb;
+
     return entity;
+}
+
+AABB calculateAABB(const ModelData *modelData) {
+    if (modelData == NULL || modelData->num_vertices == 0) {
+        // Handle error: invalid model data
+        return (AABB) {.min = {0, 0, 0}, .max = {0, 0, 0}};
+    }
+
+    // Initialize min and max with the first vertex
+    float min[3] = {
+            modelData->vertices[0].position[0],
+            modelData->vertices[0].position[1],
+            modelData->vertices[0].position[2],
+    };
+    float max[3] = {
+            modelData->vertices[0].position[0],
+            modelData->vertices[0].position[1],
+            modelData->vertices[0].position[2],
+    };
+
+    for (size_t i = 1; i < modelData->num_vertices; ++i) {
+        float *pos = modelData->vertices[i].position;
+
+        // Update min and max coordinates
+        min[0] = (pos[0] < min[0]) ? pos[0] : min[0];
+        min[1] = (pos[1] < min[1]) ? pos[1] : min[1];
+        min[2] = (pos[2] < min[2]) ? pos[2] : min[2];
+
+        max[0] = (pos[0] > max[0]) ? pos[0] : max[0];
+        max[1] = (pos[1] > max[1]) ? pos[1] : max[1];
+        max[2] = (pos[2] > max[2]) ? pos[2] : max[2];
+    }
+
+    return (AABB) {
+            .min ={min[0], min[1], min[2]},
+            .max = {max[0], max[1], max[2]}
+    };
+}
+
+void updateEntityAABB(Entity *entity) {
+    // Assuming original AABB is stored in the entity
+    AABB originalAABB = entity->aabb;
+
+    // Scale the AABB
+    vec3 scaledMin, scaledMax;
+    glm_vec3_mul(originalAABB.min, entity->scale, scaledMin);
+    glm_vec3_mul(originalAABB.max, entity->scale, scaledMax);
+
+    // Translate the AABB
+    glm_vec3_add(scaledMin, entity->position, entity->aabb.min);
+    glm_vec3_add(scaledMax, entity->position, entity->aabb.max);
 }
 
 /**
@@ -152,6 +205,9 @@ RenderResources *createRenderResourcesFromFile(ApplicationContext *context, cons
     obj->metallicRoughnessMap = malloc(sizeof(ImageMemory));
     setupTextureFromImageData(context, obj->modelData->metallicRoughnessMapImageData, obj->metallicRoughnessMap);
 
+    // Calculate AABB
+    obj->aabb = calculateAABB(obj->modelData);
+
     return obj;
 }
 
@@ -193,6 +249,8 @@ void setEntityPosition(Entity *obj, float x, float y, float z) {
     obj->position[0] = x;
     obj->position[1] = y;
     obj->position[2] = z;
+
+    updateEntityAABB(obj);
 }
 
 void setEntityRotation(Entity *obj, float x, float y, float z) {
@@ -205,6 +263,8 @@ void setEntityScale(Entity *obj, float x, float y, float z) {
     obj->scale[0] = x;
     obj->scale[1] = y;
     obj->scale[2] = z;
+
+    updateEntityAABB(obj);
 }
 
 void destroyEntity(ApplicationContext *context, Entity *entity) {
