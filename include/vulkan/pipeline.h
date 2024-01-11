@@ -4,6 +4,7 @@
 #include <vulkan/vulkan.h>
 #include <stdio.h>
 #include "kotlin-game/cinterop/model.h"
+#include "include/error.h"
 
 typedef struct {
     float position[3];
@@ -12,12 +13,12 @@ typedef struct {
     float tangent[4];
 } Vertex;
 
-VkPipelineLayout createPipelineLayout(
+VkPipelineLayout createBasicPipelineLayout(
         VkDevice device,
         VkDescriptorSetLayout vertexDescriptorSetLayout,
         VkDescriptorSetLayout fragmentDescriptorSetLayout);
 
-VkPipeline createPipeline(
+VkPipeline createBasicPipeline(
         VkDevice device,
         VkPipelineLayout pipelineLayout,
         VkRenderPass renderPass,

@@ -3,7 +3,7 @@
 VkDescriptorPool createBasicShaderDescriptorPool(VkDevice device) {
     VkDescriptorPoolSize poolSizes[] = {
             {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,         500}, // TODO gonna need to get a real number here
-            {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 500} // diffuse and normal map
+            {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 500} // maps
     };
 
     VkDescriptorPoolCreateInfo poolInfo = {};
@@ -14,13 +14,13 @@ VkDescriptorPool createBasicShaderDescriptorPool(VkDevice device) {
 
     VkDescriptorPool descriptorPool;
     if (vkCreateDescriptorPool(device, &poolInfo, NULL, &descriptorPool) != VK_SUCCESS) {
-        fprintf(stderr, "Failed to create descriptor pool\n");
-        exit(-1);
+        LOG_ERROR("Failed to create descriptor pool");
+        return VK_NULL_HANDLE;
     }
     return descriptorPool;
 }
 
-VkDescriptorSetLayout createVertexShaderDescriptorSetLayout(VkDevice device) {
+VkDescriptorSetLayout createBasicVertexShaderDescriptorSetLayout(VkDevice device) {
     VkDescriptorSetLayoutBinding transformUboLayoutBinding = {};
     transformUboLayoutBinding.binding = 0;
     transformUboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -35,14 +35,14 @@ VkDescriptorSetLayout createVertexShaderDescriptorSetLayout(VkDevice device) {
 
     VkDescriptorSetLayout descriptorSetLayout;
     if (vkCreateDescriptorSetLayout(device, &layoutInfo, NULL, &descriptorSetLayout) != VK_SUCCESS) {
-        fprintf(stderr, "Failed to create vertex descriptor set layout\n");
-        exit(-1);
+        LOG_ERROR("Failed to create vertex descriptor set layout");
+        return VK_NULL_HANDLE;
     }
 
     return descriptorSetLayout;
 }
 
-VkDescriptorSetLayout createFragmentShaderDescriptorSetLayout(VkDevice device) {
+VkDescriptorSetLayout createBasicFragmentShaderDescriptorSetLayout(VkDevice device) {
     VkDescriptorSetLayoutBinding lightingUboLayoutBinding = {};
     lightingUboLayoutBinding.binding = 0;
     lightingUboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -85,14 +85,14 @@ VkDescriptorSetLayout createFragmentShaderDescriptorSetLayout(VkDevice device) {
 
     VkDescriptorSetLayout descriptorSetLayout;
     if (vkCreateDescriptorSetLayout(device, &layoutInfo, NULL, &descriptorSetLayout) != VK_SUCCESS) {
-        fprintf(stderr, "Failed to create fragment descriptor set layout\n");
-        exit(-1);
+        LOG_ERROR("Failed to create fragment descriptor set layout");
+        return VK_NULL_HANDLE;
     }
 
     return descriptorSetLayout;
 }
 
-void allocateDescriptorSet(
+VkResult allocateDescriptorSet(
         VkDevice device,
         VkDescriptorPool descriptorPool,
         VkDescriptorSetLayout layout,
@@ -104,10 +104,7 @@ void allocateDescriptorSet(
     allocInfo.descriptorSetCount = 1;
     allocInfo.pSetLayouts = &layout;
 
-    if (vkAllocateDescriptorSets(device, &allocInfo, descriptorSet) != VK_SUCCESS) {
-        fprintf(stderr, "Failed to allocate descriptor set\n");
-        exit(-1);
-    }
+    return vkAllocateDescriptorSets(device, &allocInfo, descriptorSet);
 }
 
 void updateBasicShaderDescriptorSet(

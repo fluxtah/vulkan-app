@@ -33,7 +33,7 @@ VkShaderModule createShaderModule(VkDevice device, const char *filePath) {
 
     VkShaderModule shaderModule;
     if (vkCreateShaderModule(device, &createInfo, NULL, &shaderModule) != VK_SUCCESS) {
-        fprintf(stderr, "Failed to create shader module\n");
+        LOG_ERROR("Failed to create shader module");
         free(buffer);
         return VK_NULL_HANDLE;
     }
@@ -42,8 +42,4 @@ VkShaderModule createShaderModule(VkDevice device, const char *filePath) {
     free(buffer);
 
     return shaderModule;
-}
-
-void destroyShaderModule(VkDevice device, VkShaderModule shaderModule) {
-    vkDestroyShaderModule(device, shaderModule, NULL);
 }

@@ -2,17 +2,18 @@
 #define VULKAN_DESCRIPTOR_H
 
 #include "include/ubo.h"
+#include "include/error.h"
 #include <vulkan/vulkan.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 VkDescriptorPool createBasicShaderDescriptorPool(VkDevice device);
 
-VkDescriptorSetLayout createVertexShaderDescriptorSetLayout(VkDevice device);
+VkDescriptorSetLayout createBasicVertexShaderDescriptorSetLayout(VkDevice device);
 
-VkDescriptorSetLayout createFragmentShaderDescriptorSetLayout(VkDevice device);
+VkDescriptorSetLayout createBasicFragmentShaderDescriptorSetLayout(VkDevice device);
 
-void allocateDescriptorSet(
+VkResult allocateDescriptorSet(
         VkDevice device,
         VkDescriptorPool descriptorPool,
         VkDescriptorSetLayout layout,

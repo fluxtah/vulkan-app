@@ -1,6 +1,27 @@
 #include "include/vulkan/pipeline.h"
 
-VkPipelineLayout createPipelineLayout(
+VkViewport viewportToVkViewport(Viewport *viewport) {
+    return (VkViewport) {
+            .x = (*viewport).x,
+            .y = (*viewport).y,
+            .width = (*viewport).width,
+            .height = (*viewport).height,
+            .minDepth = (*viewport).minDepth,
+            .maxDepth = (*viewport).maxDepth
+    };
+}
+
+VkRect2D viewportToScissor(Viewport *viewport) {
+    return (VkRect2D) {
+            .offset = {0, 0},         // Initialize the offset
+            .extent = (VkExtent2D) {
+                    .width = (uint32_t) (*viewport).width,
+                    .height = (uint32_t) (*viewport).height
+            }
+    };
+}
+
+VkPipelineLayout createBasicPipelineLayout(
         VkDevice device,
         VkDescriptorSetLayout vertexDescriptorSetLayout,
         VkDescriptorSetLayout fragmentDescriptorSetLayout) {
@@ -20,28 +41,40 @@ VkPipelineLayout createPipelineLayout(
 
     VkPipelineLayout pipelineLayout;
     if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, NULL, &pipelineLayout) != VK_SUCCESS) {
-        fprintf(stderr, "Failed to create pipeline layout\n");
+        LOG_ERROR("Failed to create basic pipeline layout");
         return VK_NULL_HANDLE;
     }
 
     return pipelineLayout;
 }
 
-VkPipeline createPipeline(VkDevice device, VkPipelineLayout pipelineLayout, VkRenderPass renderPass, Viewport viewport,
-                          VkShaderModule vertShaderModule, VkShaderModule fragShaderModule) {
+VkPipelineShaderStageCreateInfo *createBasicShaderStages(
+        VkShaderModule vertShaderModule, VkShaderModule fragShaderModule) {
+    VkPipelineShaderStageCreateInfo *shaderStages = malloc(sizeof(VkPipelineShaderStageCreateInfo) * 2);
+
     VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+    vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT; // Vertex shader
     vertShaderStageInfo.module = vertShaderModule;
     vertShaderStageInfo.pName = "main"; // Entry point in the shader
 
     VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
     fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT; // Fragment shader
     fragShaderStageInfo.module = fragShaderModule;
     fragShaderStageInfo.pName = "main"; // Entry point in the shader
 
-    VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
+    shaderStages[0] = vertShaderStageInfo;
+    shaderStages[1] = fragShaderStageInfo;
+
+    return shaderStages;
+}
+
+VkPipeline createBasicPipeline(
+        VkDevice device, VkPipelineLayout pipelineLayout, VkRenderPass renderPass, Viewport viewport,
+        VkShaderModule vertShaderModule, VkShaderModule fragShaderModule) {
+
+    VkPipelineShaderStageCreateInfo *shaderStages = createBasicShaderStages(vertShaderModule, fragShaderModule);
 
     VkVertexInputBindingDescription bindingDescription = {};
     bindingDescription.binding = 0; // Binding index
@@ -49,6 +82,7 @@ VkPipeline createPipeline(VkDevice device, VkPipelineLayout pipelineLayout, VkRe
     bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX; // Move to the next data entry after each vertex
 
     VkVertexInputAttributeDescription attributeDescriptions[4];
+
     // Position attribute
     attributeDescriptions[0].binding = 0;
     attributeDescriptions[0].location = 0; // location = 0 in the shader
@@ -85,22 +119,9 @@ VkPipeline createPipeline(VkDevice device, VkPipelineLayout pipelineLayout, VkRe
     inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     inputAssembly.primitiveRestartEnable = VK_FALSE;
 
-    VkViewport vkViewport = {
-            .x = viewport.x,
-            .y = viewport.y,
-            .width = viewport.width,
-            .height = viewport.height,
-            .minDepth = viewport.minDepth,
-            .maxDepth = viewport.maxDepth
-    };
+    VkViewport vkViewport = viewportToVkViewport(&viewport);
 
-    VkRect2D scissor = {
-            .offset = {0, 0},         // Initialize the offset
-            .extent = (VkExtent2D) {
-                    .width = (uint32_t) viewport.width,
-                    .height = (uint32_t) viewport.height
-            }
-    };
+    VkRect2D scissor = viewportToScissor(&viewport);
 
     VkPipelineViewportStateCreateInfo viewportState = {};
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -171,9 +192,11 @@ VkPipeline createPipeline(VkDevice device, VkPipelineLayout pipelineLayout, VkRe
 
     VkPipeline graphicsPipeline;
     if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, NULL, &graphicsPipeline) != VK_SUCCESS) {
-        fprintf(stderr, "Failed to create graphics pipeline\n");
+        fprintf(stderr, "Failed to create BASIC graphics pipeline\n");
         return NULL;
     }
+
+    free(shaderStages);
 
     return graphicsPipeline;
 }

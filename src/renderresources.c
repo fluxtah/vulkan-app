@@ -13,7 +13,7 @@ void addRenderResources(RenderResourcesMap **hashmap, const char *filename, Rend
     RenderResourcesMap *entry = NULL;
     HASH_FIND_STR(*hashmap, filename, entry);
     if (entry == NULL) {
-        entry = (RenderResourcesMap *)malloc(sizeof(RenderResourcesMap));
+        entry = (RenderResourcesMap *) malloc(sizeof(RenderResourcesMap));
         entry->filename = strdup(filename); // Duplicate the filename
         entry->resources = resources;
         entry->refs = 1;
@@ -61,10 +61,23 @@ Entity *createEntity(ApplicationContext *context, const char *filename, CreateEn
     entity->renderResources = createRenderResourcesFromFile(context, filename);
 
     // Create descriptor sets
-    allocateDescriptorSet(context->vulkanDeviceContext->device, context->pipelineConfig->descriptorPool,
-                          context->pipelineConfig->vertexShaderDescriptorSetLayout, &entity->vertexDescriptorSet);
-    allocateDescriptorSet(context->vulkanDeviceContext->device, context->pipelineConfig->descriptorPool,
-                          context->pipelineConfig->fragmentShaderDescriptorSetLayout, &entity->fragmentDescriptorSet);
+    if (allocateDescriptorSet(
+            context->vulkanDeviceContext->device,
+            context->pipelineConfig->descriptorPool,
+            context->pipelineConfig->vertexShaderDescriptorSetLayout,
+            &entity->vertexDescriptorSet) != VK_SUCCESS) {
+        LOG_ERROR("Failed to allocate vertex descriptor set");
+        return NULL;
+    }
+
+    if (allocateDescriptorSet(
+            context->vulkanDeviceContext->device,
+            context->pipelineConfig->descriptorPool,
+            context->pipelineConfig->fragmentShaderDescriptorSetLayout,
+            &entity->fragmentDescriptorSet)) {
+        LOG_ERROR("Failed to allocate fragment descriptor set");
+        return NULL;
+    }
 
     updateBasicShaderDescriptorSet(
             context->vulkanDeviceContext->device,
@@ -103,7 +116,7 @@ Entity *createEntity(ApplicationContext *context, const char *filename, CreateEn
 RenderResources *createRenderResourcesFromFile(ApplicationContext *context, const char *filename) {
     RenderResourcesMap *existingData = getRenderResources(renderResourcesMap, filename);
 
-    if(existingData != NULL) {
+    if (existingData != NULL) {
         existingData->refs++;
         return existingData->resources;
     }
@@ -201,7 +214,7 @@ void destroyEntity(ApplicationContext *context, Entity *entity) {
 
     RenderResourcesMap *resources = getRenderResources(renderResourcesMap, entity->renderResources->filename);
 
-    if(resources->refs == 1) {
+    if (resources->refs == 1) {
         deleteRenderResources(&renderResourcesMap, resources);
         destroyRenderResources(context, entity->renderResources);
     } else {
