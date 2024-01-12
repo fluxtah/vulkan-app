@@ -1,7 +1,7 @@
 #include "include/vulkan/render.h"
 
 void renderSubmit(VulkanDeviceContext *context, VkSemaphore *waitSemaphores, VkSemaphore *signalSemaphores,
-                  VkFence inFlightFence, VkCommandBuffer *commandBuffers, uint32_t imageIndex) {
+                  VkFence inFlightFence, VkCommandBuffer *commandBuffers, uint32_t commandBufferCount) {
     VkSubmitInfo submitInfo = {};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
@@ -10,8 +10,8 @@ void renderSubmit(VulkanDeviceContext *context, VkSemaphore *waitSemaphores, VkS
     submitInfo.pWaitSemaphores = waitSemaphores;
     submitInfo.pWaitDstStageMask = waitStages;
 
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &commandBuffers[imageIndex];
+    submitInfo.commandBufferCount = commandBufferCount;  // Updated to take commandBufferCount
+    submitInfo.pCommandBuffers = commandBuffers;         // Directly use the array of command buffers
 
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;

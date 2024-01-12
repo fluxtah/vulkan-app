@@ -1,4 +1,5 @@
 #include "include/vulkan/setup.h"
+#include "include/debug_cube.h"
 
 VkSurfaceKHR createVulkanSurface(VkInstance instance, GLFWwindow *window) {
     VkSurfaceKHR surface;
@@ -282,8 +283,20 @@ ApplicationContext *createApplication() {
         destroyApplication(applicationContext);
         return NULL;
     }
+
+    applicationContext->debugCubeBuffer = (BufferMemory *) malloc(sizeof(BufferMemory));
+    createStagedBufferMemory(
+            applicationContext->vulkanDeviceContext,
+            applicationContext->commandPool,
+            applicationContext->debugCubeBuffer,
+            24 * sizeof(DebugVertex),
+            VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            cubeVertices);
+
 #else
     applicationContext->debugPipelineConfig = NULL;
+    applicationContext->debugCubeBuffer = NULL;
 #endif
 
     return applicationContext;
@@ -306,12 +319,18 @@ void destroyApplication(ApplicationContext *context) {
     }
 
     if (context->debugPipelineConfig != NULL && context->vulkanSwapchainContext != NULL) {
+
+        if(context->debugCubeBuffer != NULL && context->vulkanDeviceContext != NULL) {
+            destroyBufferMemory(context->vulkanDeviceContext, context->debugCubeBuffer);
+        }
+
         if (context->debugPipelineConfig->commandBuffers != NULL && context->vulkanDeviceContext != NULL) {
             vkFreeCommandBuffers(context->vulkanDeviceContext->device, context->commandPool,
                                  context->vulkanSwapchainContext->swapChainImageCount,
                                  context->debugPipelineConfig->commandBuffers);
         }
         destroyPipelineConfig(context->vulkanDeviceContext, context->debugPipelineConfig);
+
     }
 
     if (context->audioContext != NULL) {

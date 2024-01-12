@@ -12,13 +12,13 @@
 #include <cglm/cglm.h>
 #include <vulkan/vulkan.h>
 
-typedef struct {
+typedef struct AABB {
     vec3 min; // Minimum corner of the AABB
     vec3 max; // Maximum corner of the AABB
     // Additional AABB properties if needed
 } AABB;
 
-typedef struct {
+typedef struct RenderResources {
     char *filename;
     ModelData *modelData;
     BufferMemory *vertexBuffer;
@@ -43,6 +43,7 @@ typedef struct Entity {
 } Entity;
 
 Entity *createEntity(ApplicationContext *context, const char *filename, CreateEntityInfo *info);
+
 RenderResources *createRenderResourcesFromFile(ApplicationContext *context, const char *filename);
 
 void setupTextureFromImageData(ApplicationContext *context, ModelImageData *imageData, ImageMemory *imageMemory);
@@ -54,6 +55,7 @@ void setEntityRotation(Entity *entity, float x, float y, float z);
 void setEntityScale(Entity *obj, float x, float y, float z);
 
 void destroyEntity(ApplicationContext *context, Entity *entity);
+
 void destroyRenderResources(ApplicationContext *context, RenderResources *obj);
 
 #endif //APP_RENDEROBJECT_H

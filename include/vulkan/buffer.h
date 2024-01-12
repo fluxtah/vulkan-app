@@ -3,17 +3,13 @@
 
 #include "include/context.h"
 #include "include/vulkan/memory.h"
+#include "buffer_memory.h"
 #include <vulkan/vulkan.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 typedef struct VulkanDeviceContext VulkanDeviceContext;
-
-typedef struct {
-    VkBuffer buffer;
-    VkDeviceMemory memory;
-} BufferMemory;
 
 void createBufferMemory(VulkanDeviceContext *context, BufferMemory *bufferMemory, VkDeviceSize size,
                         VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);

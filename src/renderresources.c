@@ -9,6 +9,20 @@ typedef struct RenderResourcesMap {
 
 static RenderResourcesMap *renderResourcesMap;
 
+void updateEntityAABB(Entity *entity) {
+    // Assuming original AABB is stored in the entity
+    AABB originalAABB = entity->renderResources->aabb;
+
+    // Scale the AABB
+    vec3 scaledMin, scaledMax;
+    glm_vec3_mul(originalAABB.min, entity->scale, scaledMin);
+    glm_vec3_mul(originalAABB.max, entity->scale, scaledMax);
+
+    // Translate the AABB
+    glm_vec3_add(scaledMin, entity->position, entity->aabb.min);
+    glm_vec3_add(scaledMax, entity->position, entity->aabb.max);
+}
+
 void addRenderResources(RenderResourcesMap **hashmap, const char *filename, RenderResources *resources) {
     RenderResourcesMap *entry = NULL;
     HASH_FIND_STR(*hashmap, filename, entry);
@@ -92,6 +106,7 @@ Entity *createEntity(ApplicationContext *context, const char *filename, CreateEn
     );
 
     entity->aabb = entity->renderResources->aabb;
+    updateEntityAABB(entity);
 
     return entity;
 }
@@ -131,20 +146,6 @@ AABB calculateAABB(const ModelData *modelData) {
             .min ={min[0], min[1], min[2]},
             .max = {max[0], max[1], max[2]}
     };
-}
-
-void updateEntityAABB(Entity *entity) {
-    // Assuming original AABB is stored in the entity
-    AABB originalAABB = entity->aabb;
-
-    // Scale the AABB
-    vec3 scaledMin, scaledMax;
-    glm_vec3_mul(originalAABB.min, entity->scale, scaledMin);
-    glm_vec3_mul(originalAABB.max, entity->scale, scaledMax);
-
-    // Translate the AABB
-    glm_vec3_add(scaledMin, entity->position, entity->aabb.min);
-    glm_vec3_add(scaledMax, entity->position, entity->aabb.max);
 }
 
 /**

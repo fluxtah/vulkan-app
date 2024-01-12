@@ -48,8 +48,10 @@ int main() {
     // Semaphore creation for image availability
     VkSemaphoreCreateInfo semaphoreInfo = {};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-    if (vkCreateSemaphore(context->vulkanDeviceContext->device, &semaphoreInfo, NULL, &imageAvailableSemaphore) != VK_SUCCESS ||
-        vkCreateSemaphore(context->vulkanDeviceContext->device, &semaphoreInfo, NULL, &renderFinishedSemaphore) != VK_SUCCESS) {
+    if (vkCreateSemaphore(context->vulkanDeviceContext->device, &semaphoreInfo, NULL, &imageAvailableSemaphore) !=
+        VK_SUCCESS ||
+        vkCreateSemaphore(context->vulkanDeviceContext->device, &semaphoreInfo, NULL, &renderFinishedSemaphore) !=
+        VK_SUCCESS) {
         fprintf(stderr, "Failed to create semaphores\n");
         return -1;
     }
@@ -92,6 +94,19 @@ int main() {
                     context->pipelineConfig->pipeline,
                     context->pipelineConfig->pipelineLayout,
                     ktEntities);
+
+#ifdef DEBUG
+            recordDebugCommandBuffer(
+                    context->debugPipelineConfig->commandBuffers[i],
+                    context->vulkanSwapchainContext->renderPass,
+                    context->vulkanSwapchainContext->swapChainFramebuffers[i],
+                    context->vulkanSwapchainContext->swapChainExtent,
+                    context->debugPipelineConfig->pipeline,
+                    context->debugPipelineConfig->pipelineLayout,
+                    ktEntities,
+                    context->debugCubeBuffer->buffer,
+                    context->activeCamera);
+#endif
         }
 
         //
@@ -107,13 +122,26 @@ int main() {
         free(ktEntities);
 
         uint32_t imageIndex;
-        vkAcquireNextImageKHR(context->vulkanDeviceContext->device, context->vulkanSwapchainContext->swapChain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE,
+        vkAcquireNextImageKHR(context->vulkanDeviceContext->device, context->vulkanSwapchainContext->swapChain,
+                              UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE,
                               &imageIndex);
 
         vkResetFences(context->vulkanDeviceContext->device, 1, &inFlightFence);
 
-        renderSubmit(context->vulkanDeviceContext, waitSemaphores, signalSemaphores, inFlightFence, context->pipelineConfig->commandBuffers, imageIndex);
-        renderPresent(context->vulkanDeviceContext,  context->vulkanSwapchainContext->swapChain, signalSemaphores, imageIndex);
+        VkCommandBuffer commandBuffersToSubmit[] = {
+                context->pipelineConfig->commandBuffers[imageIndex],
+#ifdef DEBUG
+                context->debugPipelineConfig->commandBuffers[imageIndex],
+#endif
+        };
+
+        uint32_t commandBufferCount = sizeof(commandBuffersToSubmit) / sizeof(commandBuffersToSubmit[0]);
+
+        renderSubmit(context->vulkanDeviceContext, waitSemaphores, signalSemaphores, inFlightFence,
+                     commandBuffersToSubmit, commandBufferCount);
+
+        renderPresent(context->vulkanDeviceContext, context->vulkanSwapchainContext->swapChain, signalSemaphores,
+                      imageIndex);
 
         vkWaitForFences(context->vulkanDeviceContext->device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
     }

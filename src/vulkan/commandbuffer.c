@@ -43,8 +43,9 @@ void recordCommandBuffer(
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
         vkCmdBindIndexBuffer(commandBuffer, obj->renderResources->indexBuffer->buffer, 0, VK_INDEX_TYPE_UINT16);
 
-        VkDescriptorSet descriptorSets[] = { obj->vertexDescriptorSet, obj->fragmentDescriptorSet };
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 2, descriptorSets, 0, NULL);
+        VkDescriptorSet descriptorSets[] = {obj->vertexDescriptorSet, obj->fragmentDescriptorSet};
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 2, descriptorSets, 0,
+                                NULL);
 
         vkCmdDrawIndexed(commandBuffer, obj->renderResources->modelData->num_indices, 1, 0, 0, 0);
     }
@@ -60,7 +61,7 @@ void beginCommandBufferRecording(VkCommandBuffer commandBuffer, VkRenderPass ren
                                  VkExtent2D *swapChainExtent, VkPipeline graphicsPipeline) {
     VkCommandBufferBeginInfo beginInfo = {};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    beginInfo.flags = 0;               // Optional
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;               // Optional
     beginInfo.pInheritanceInfo = NULL; // Optional for primary command buffers
 
     if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
@@ -86,3 +87,62 @@ void beginCommandBufferRecording(VkCommandBuffer commandBuffer, VkRenderPass ren
 
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 }
+
+void calculateAABBTransform(Entity *entity, mat4 transform) {
+    glm_mat4_identity(transform);
+
+    // Calculate the center of the AABB
+    vec3 center;
+    glm_vec3_add(entity->aabb.min, entity->aabb.max, center);
+    glm_vec3_scale(center, 0.5f, center);
+
+    // Calculate the scale needed to match the size of the AABB
+    vec3 scale;
+    glm_vec3_sub(entity->aabb.max, entity->aabb.min, scale);
+
+    // Apply transformations
+    glm_translate(transform, center); // Move to the center of the AABB
+    glm_scale(transform, scale); // Scale to match the AABB size
+}
+
+
+void recordDebugCommandBuffer(
+        VkCommandBuffer commandBuffer,
+        VkRenderPass renderPass,
+        VkFramebuffer framebuffer,
+        VkExtent2D swapChainExtent,
+        VkPipeline graphicsPipeline,
+        VkPipelineLayout pipelineLayout,
+        EntityArray *ktEntities,
+        VkBuffer unitCubeVertexBuffer,
+        Camera *camera) {
+    beginCommandBufferRecording(commandBuffer, renderPass, framebuffer, &swapChainExtent, graphicsPipeline);
+
+    for (size_t i = 0; i < ktEntities->size; ++i) {
+        Entity *entity = (Entity *) (ktEntities->entities[i]);
+        mat4 transform;
+        calculateAABBTransform(entity, transform);
+        PushConstants pushConstants = {0};
+        memcpy(pushConstants.view, camera->view, sizeof(mat4));
+        memcpy(pushConstants.proj, camera->proj, sizeof(mat4));
+        memcpy(pushConstants.model, transform, sizeof(mat4));
+
+        // Push the transform to the shader
+        vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstants),
+                           &pushConstants);
+
+        VkBuffer buffers[] = {unitCubeVertexBuffer};
+        VkDeviceSize offsets[] = {0};
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
+
+        // Assuming you have a predefined way to get the number of vertices for your unit cube
+        vkCmdDraw(commandBuffer, 24, 1, 0, 0);
+    }
+    vkCmdEndRenderPass(commandBuffer);
+
+    if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+        fprintf(stderr, "Failed to record command buffer\n");
+        exit(-1);
+    }
+}
+

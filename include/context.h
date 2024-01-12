@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include "include/camera.h"
 #include "sound.h"
+#include "include/vulkan/buffer_memory.h"
 
 typedef struct ImageMemory ImageMemory;
 
@@ -60,6 +61,7 @@ typedef struct ApplicationContext {
     PipelineConfig *debugPipelineConfig;
     AudioContext *audioContext;
     Camera *activeCamera;
+    BufferMemory* debugCubeBuffer;
 } ApplicationContext;
 
 #endif //VULKAN_CONTEXT_H
