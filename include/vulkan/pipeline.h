@@ -5,18 +5,7 @@
 #include <stdio.h>
 #include "kotlin-game/cinterop/model.h"
 #include "include/debug.h"
-
-typedef struct {
-    float position[3];
-    float normal[3];
-    float uv[2];
-    float tangent[4];
-} Vertex;
-
-typedef struct {
-    float position[3];
-} DebugVertex;
-
+#include "include/vertex.h"
 
 VkPipelineLayout createBasicPipelineLayout(
         VkDevice device,

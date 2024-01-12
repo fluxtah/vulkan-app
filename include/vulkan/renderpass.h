@@ -6,5 +6,6 @@
 #include <vulkan/vulkan.h>
 
 VkRenderPass createRenderPass(VulkanDeviceContext *context);
+VkRenderPass createDebugRenderPass(VulkanDeviceContext *context);
 
 #endif // VULKAN_RENDERPASS_H

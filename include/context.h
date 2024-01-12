@@ -22,6 +22,8 @@ typedef struct PipelineConfig {
     VkPipelineLayout pipelineLayout;
     VkPipeline pipeline;
     VkCommandBuffer *commandBuffers;
+    VkRenderPass renderPass;
+    VkFramebuffer *swapChainFramebuffers;
 } PipelineConfig;
 
 typedef struct VulkanDeviceContext {
@@ -47,9 +49,7 @@ typedef struct VulkanSwapchainContext {
     VkSwapchainKHR swapChain;
     VkImageView *swapChainImageViews;
     uint32_t swapChainImageCount;
-    VkFramebuffer *swapChainFramebuffers;
     ImageMemory *depthStencil;
-    VkRenderPass renderPass;
 } VulkanSwapchainContext;
 
 typedef struct ApplicationContext {

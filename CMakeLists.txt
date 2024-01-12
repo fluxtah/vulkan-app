@@ -104,6 +104,7 @@ add_executable(Game
         include/push_constants.h
         include/debug_cube.h
         include/vulkan/buffer_memory.h
+        include/vertex.h
 )
 
 include_directories(kotlin-game/build/bin/native/releaseShared)

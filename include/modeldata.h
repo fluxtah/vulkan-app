@@ -4,6 +4,7 @@
 #include "libs/stb_image.h"
 
 #include "include/vulkan/pipeline.h"
+#include "include/vertex.h"
 #include <stdio.h>
 #include <string.h>
 

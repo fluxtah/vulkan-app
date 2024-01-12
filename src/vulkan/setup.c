@@ -207,21 +207,11 @@ VulkanSwapchainContext *createVulkanSwapchainContext(
 
     vulkanSwapchainContext->depthStencil = createDepthStencil(vulkanDeviceContext, commandPool,
                                                               vulkanSwapchainContext->swapChainExtent);
-    vulkanSwapchainContext->renderPass = createRenderPass(vulkanDeviceContext);
-    vulkanSwapchainContext->swapChainFramebuffers = createSwapChainFramebuffers(vulkanDeviceContext->device,
-                                                                                vulkanSwapchainContext);
 
     return vulkanSwapchainContext;
 }
 
 void destroyVulkanSwapchainContext(VulkanDeviceContext *context, VulkanSwapchainContext *vulkanSwapchainContext) {
-    for (size_t i = 0; i < vulkanSwapchainContext->swapChainImageCount; i++) {
-        vkDestroyFramebuffer(context->device, vulkanSwapchainContext->swapChainFramebuffers[i], NULL);
-    }
-    free(vulkanSwapchainContext->swapChainFramebuffers);
-
-    vkDestroyRenderPass(context->device, vulkanSwapchainContext->renderPass, NULL);
-
     destroyImageMemory(context->device, vulkanSwapchainContext->depthStencil);
 
     for (uint32_t i = 0; i < vulkanSwapchainContext->swapChainImageCount; i++) {
@@ -260,9 +250,7 @@ ApplicationContext *createApplication() {
     applicationContext->pipelineConfig = createBasicShaderPipelineConfig(
             vulkanDeviceContext,
             applicationContext->commandPool,
-            vulkanSwapchainContext->renderPass,
-            vulkanSwapchainContext->swapChainExtent,
-            vulkanSwapchainContext->swapChainImageCount
+            vulkanSwapchainContext
     );
     if (applicationContext->pipelineConfig == NULL) {
         LOG_ERROR("Failed to create basic shader pipeline config");
@@ -274,9 +262,7 @@ ApplicationContext *createApplication() {
     applicationContext->debugPipelineConfig = createDebugPipelineConfig(
             vulkanDeviceContext,
             applicationContext->commandPool,
-            vulkanSwapchainContext->renderPass,
-            vulkanSwapchainContext->swapChainExtent,
-            vulkanSwapchainContext->swapChainImageCount
+            vulkanSwapchainContext
     );
     if (applicationContext->debugPipelineConfig == NULL) {
         LOG_ERROR("Failed to create debug shader pipeline config");
@@ -315,12 +301,12 @@ void destroyApplication(ApplicationContext *context) {
                                  context->vulkanSwapchainContext->swapChainImageCount,
                                  context->pipelineConfig->commandBuffers);
         }
-        destroyPipelineConfig(context->vulkanDeviceContext, context->pipelineConfig);
+        destroyPipelineConfig(context->vulkanDeviceContext, context->pipelineConfig, context->vulkanSwapchainContext->swapChainImageCount);
     }
 
     if (context->debugPipelineConfig != NULL && context->vulkanSwapchainContext != NULL) {
 
-        if(context->debugCubeBuffer != NULL && context->vulkanDeviceContext != NULL) {
+        if (context->debugCubeBuffer != NULL && context->vulkanDeviceContext != NULL) {
             destroyBufferMemory(context->vulkanDeviceContext, context->debugCubeBuffer);
         }
 
@@ -329,7 +315,7 @@ void destroyApplication(ApplicationContext *context) {
                                  context->vulkanSwapchainContext->swapChainImageCount,
                                  context->debugPipelineConfig->commandBuffers);
         }
-        destroyPipelineConfig(context->vulkanDeviceContext, context->debugPipelineConfig);
+        destroyPipelineConfig(context->vulkanDeviceContext, context->debugPipelineConfig, context->vulkanSwapchainContext->swapChainImageCount);
 
     }
 

@@ -88,8 +88,8 @@ int main() {
         for (size_t i = 0; i < context->vulkanSwapchainContext->swapChainImageCount; i++) {
             recordCommandBuffer(
                     context->pipelineConfig->commandBuffers[i],
-                    context->vulkanSwapchainContext->renderPass,
-                    context->vulkanSwapchainContext->swapChainFramebuffers[i],
+                    context->pipelineConfig->renderPass,
+                    context->pipelineConfig->swapChainFramebuffers[i],
                     context->vulkanSwapchainContext->swapChainExtent,
                     context->pipelineConfig->pipeline,
                     context->pipelineConfig->pipelineLayout,
@@ -98,8 +98,8 @@ int main() {
 #ifdef DEBUG
             recordDebugCommandBuffer(
                     context->debugPipelineConfig->commandBuffers[i],
-                    context->vulkanSwapchainContext->renderPass,
-                    context->vulkanSwapchainContext->swapChainFramebuffers[i],
+                    context->debugPipelineConfig->renderPass,
+                    context->debugPipelineConfig->swapChainFramebuffers[i],
                     context->vulkanSwapchainContext->swapChainExtent,
                     context->debugPipelineConfig->pipeline,
                     context->debugPipelineConfig->pipelineLayout,

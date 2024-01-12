@@ -1,6 +1,6 @@
 #include "include/vulkan/framebuffer.h"
 
-VkFramebuffer *createSwapChainFramebuffers(VkDevice device, VulkanSwapchainContext *vulkanSwapchainContext) {
+VkFramebuffer *createSwapChainFramebuffers(VkDevice device, VulkanSwapchainContext *vulkanSwapchainContext, VkRenderPass renderPass) {
     // Allocate memory for framebuffers
     VkFramebuffer *swapChainFramebuffers = malloc(sizeof(VkFramebuffer) * vulkanSwapchainContext->swapChainImageCount);
     if (swapChainFramebuffers == NULL) {
@@ -17,7 +17,7 @@ VkFramebuffer *createSwapChainFramebuffers(VkDevice device, VulkanSwapchainConte
 
         VkFramebufferCreateInfo framebufferInfo = {};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebufferInfo.renderPass = vulkanSwapchainContext->renderPass;
+        framebufferInfo.renderPass = renderPass;
         framebufferInfo.attachmentCount = 2; // Now using 2 attachments: color and depth
         framebufferInfo.pAttachments = attachments;
         framebufferInfo.width = vulkanSwapchainContext->swapChainExtent.width;
@@ -31,7 +31,7 @@ VkFramebuffer *createSwapChainFramebuffers(VkDevice device, VulkanSwapchainConte
                 vkDestroyFramebuffer(device, swapChainFramebuffers[j], NULL);
             }
             free(swapChainFramebuffers);
-            return NULL;
+            return VK_NULL_HANDLE;
         }
     }
 
