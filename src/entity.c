@@ -152,8 +152,8 @@ void updateEntityOBB(Entity* entity) {
     glm_mat4_copy(transformMatrix, entity->obb.transform);
 }
 
-void attachKotlinEntity(Entity *entity, void *kotlinEntity) {
-    entity->kotlinEntity = kotlinEntity;
+void attachKotlinEntityInfo(Entity *entity, void *kotlinEntityInfo) {
+     entity->kotlinEntityInfo = kotlinEntityInfo;
 }
 
 void destroyEntity(ApplicationContext *context, Entity *entity) {

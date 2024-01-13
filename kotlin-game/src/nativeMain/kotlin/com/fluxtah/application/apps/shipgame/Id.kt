@@ -14,8 +14,9 @@ object Id {
     const val ENT_PLASMA_BOLT = "plasma-bolt"
     const val ENT_ASTEROID = "asteroid"
 
-    const val SOUND_UP_THRUST = "up-thrust"
-    const val SOUND_ENGINE = "engine"
-    const val SOUND_SONIC_BOOM = "sonic-boom"
-    const val SOUND_PLASMA_BOLT = "plasma-bolt"
+    const val SOUND_UP_THRUST = "up-thrust-sound"
+    const val SOUND_ENGINE = "engine-sound"
+    const val SOUND_SONIC_BOOM = "sonic-boom-sound"
+    const val SOUND_PLASMA_BOLT = "plasma-bolt-sound"
+    const val SOUND_ASTEROID_EXPLODE = "asteroid-explode-sound"
 }

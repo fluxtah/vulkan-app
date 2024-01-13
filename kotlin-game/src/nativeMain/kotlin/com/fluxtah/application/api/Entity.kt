@@ -2,7 +2,9 @@ package com.fluxtah.application.api
 
 import com.fluxtah.application.api.interop.*
 import com.fluxtah.application.api.interop.model.CreateEntityInfo
+import com.fluxtah.application.apps.shipgame.Id
 import kotlinx.cinterop.*
+import kotlin.experimental.ExperimentalNativeApi
 
 @OptIn(ExperimentalForeignApi::class)
 class Entity(
@@ -17,9 +19,9 @@ class Entity(
     initialScaleX: Float = 1.0f,
     initialScaleY: Float = 1.0f,
     initialScaleZ: Float = 1.0f,
-) {
+    var inUse: Boolean = true,
     var visible: Boolean = true
-
+) {
     private var _positionX: Float = initialPositionX
     val positionX: Float
         get() {
@@ -209,6 +211,7 @@ class EntityBuilder(private val id: String, private val modelPath: String) {
                 initialScaleX = scaleX,
                 initialScaleY = scaleY,
                 initialScaleZ = scaleZ,
+                inUse = true
             ),
             onSceneEntityUpdate = onSceneEntityUpdate,
             onSceneBeforeEntityUpdate = onSceneBeforeEntityUpdate,
@@ -294,7 +297,7 @@ class EntityPoolBuilder(private val id: String, private val modelPath: String) {
             initialSize = initialSize,
             factory = { createEntityInfo() },
             entitiesAvailable = if (startActive) mutableListOf() else initialEntities,
-            entitiesInUse = if (startActive) initialEntities else mutableListOf()
+            entitiesInUse = if (startActive) initialEntities.onEach { it.entity.inUse = true } else mutableListOf()
         )
     }
 
@@ -328,7 +331,8 @@ class EntityPoolBuilder(private val id: String, private val modelPath: String) {
                 initialRotationZ = rotationZ,
                 initialScaleX = scaleX,
                 initialScaleY = scaleY,
-                initialScaleZ = scaleZ
+                initialScaleZ = scaleZ,
+                inUse = false
             ),
             behaviors = behaviors.map { it() },
             onCollision = onCollision
@@ -338,4 +342,29 @@ class EntityPoolBuilder(private val id: String, private val modelPath: String) {
             stableRef = ref
         }
     }
+}
+
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@CName("ktCollisionCallback")
+fun ktCollisionCallback(entityInfoPtr: COpaquePointer, entityInfosArrayPtr: CPointer<COpaquePointerVar>, size: Int) {
+    val entityInfo = entityInfoPtr.asStableRef<EntityInfo>().get()
+    val entityList = mutableListOf<Entity>()
+
+    if(entityInfo.entity.id == Id.ENT_PLASMA_BOLT) {
+        println("${entityInfo.entity.id} (${entityInfo.entity.inUse}) collided with with ${entityList.size} entities")
+    }
+
+    if(!entityInfo.entity.inUse) return
+
+    for (i in 0 until size) {
+        val ptr = entityInfosArrayPtr[i]
+        val info = ptr!!.asStableRef<EntityInfo>().get()
+        if(info.entity.inUse) {
+            entityList.add(info.entity)
+        }
+    }
+
+    if(entityList.isEmpty()) return
+
+    entityInfo.onCollision?.invoke(activeSceneInfo.scene, entityInfo.entity, entityList)
 }

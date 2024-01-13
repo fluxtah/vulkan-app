@@ -49,7 +49,7 @@ Sound *loadSound(const char *filename, CreateSoundInfo *info) {
         return NULL;
     }
 
-    drwav_read_pcm_frames_s16(&wav, wav.totalPCMFrameCount, pSampleData);
+    drwav_read_pcm_frames_s32(&wav, wav.totalPCMFrameCount, pSampleData);
 
     drwav_uninit(&wav);
 

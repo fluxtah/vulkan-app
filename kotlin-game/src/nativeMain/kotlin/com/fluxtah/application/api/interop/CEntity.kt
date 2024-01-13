@@ -1,7 +1,7 @@
 package com.fluxtah.application.api.interop
 
 import com.fluxtah.application.api.SceneImpl
-import com.fluxtah.application.api.activeScene
+import com.fluxtah.application.api.activeSceneInfo
 import com.fluxtah.application.api.interop.model.CreateEntityInfo
 import com.fluxtah.application.api.interop.model.EntityArray
 import kotlinx.cinterop.*
@@ -52,7 +52,7 @@ fun ktSetDestroyEntityFunc(callback: CPointer<CFunction<(CVulkanContext, CEntity
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktGetEntities")
 fun ktGetEntities(): CPointer<EntityArray> {
-    val scene = activeScene.scene as SceneImpl
+    val scene = activeSceneInfo.scene as SceneImpl
     val entities = scene.entities.values.filter { it.entity.visible }.map { it.entity.handle } +
             scene.entityPools.flatMap { it.value.entitiesInUse.filter { it.entity.visible }.map { it.entity.handle } }
 

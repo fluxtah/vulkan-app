@@ -48,7 +48,7 @@ class ShipGame : Application {
             }
 
             entity(Id.ENT_SHIP, "models/ship.glb") {
-                useOrientedBoundingBox()
+                // useOrientedBoundingBox()
                 position(0.0f, 0.0f, 0.0f)
                 behaviour { FirePlasmaCannonBehaviour(fireButtonPressed = { isKeyPressed(Key.Space) }) }
                 behaviour { ThrustBehavior(isThrusting = { isKeyPressed(Key.Up) }) }
@@ -66,18 +66,21 @@ class ShipGame : Application {
             }
 
             entityPool(Id.ENT_PLASMA_BOLT, "models/plasma-bolt.glb") {
-                useOrientedBoundingBox()
+                //useOrientedBoundingBox()
                 initialSize(5)
                 behaviour {
                     PlasmaBoltBehaviour()
                 }
                 onCollision { scene, entity, entities ->
-                    if (entity.visible) { // TODO track and use active state instead of visible
-                        entities.forEach { otherEntity ->
-                            if (otherEntity.id == Id.ENT_ASTEROID) {
-                                scene.entityToPool(entity)
-                                scene.entityToPool(otherEntity)
-                            }
+                    println("${entity.id} collided with ${entities.size} entities")
+                    entities.forEach { otherEntity ->
+                        if (otherEntity.id == Id.ENT_ASTEROID) {
+                            scene.entityToPool(entity)
+                            scene.entityToPool(otherEntity)
+                            scene.soundById(Id.SOUND_ASTEROID_EXPLODE)?.play()
+
+                            entity.visible = false
+                            otherEntity.visible = false
                         }
                     }
                 }
@@ -103,6 +106,7 @@ class ShipGame : Application {
             }
             sound(Id.SOUND_SONIC_BOOM, "sounds/sonic-boom.wav")
             sound(Id.SOUND_PLASMA_BOLT, "sounds/plasma-bolt.wav")
+            sound(Id.SOUND_ASTEROID_EXPLODE, "sounds/asteroid-explode.wav")
 
             var chaseCam: ChaseCamera? = null
 

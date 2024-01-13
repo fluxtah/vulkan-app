@@ -43,7 +43,7 @@ private var accumulatedTime = 0.0f
 @CName("ktUpdateApplication")
 fun ktUpdateApplication(time: Float, deltaTime: Float) {
     accumulatedTime += deltaTime
-    val activeSceneInfo = activeScene
+    val activeSceneInfo = activeSceneInfo
     val scene = activeSceneInfo.scene as SceneImpl
     val entities = scene.entities.map { it.value } + scene.entityPools.flatMap { it.value.entitiesInUse }
 
@@ -83,7 +83,7 @@ fun ktUpdateApplication(time: Float, deltaTime: Float) {
 @CName("ktDestroyApplication")
 fun ktDestroyApplication() {
     // TODO: Destroy all scenes
-    (activeScene.scene as SceneImpl).destroy()
+    (activeSceneInfo.scene as SceneImpl).destroy()
 }
 
 @OptIn(ExperimentalForeignApi::class)

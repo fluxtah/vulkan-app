@@ -1,11 +1,10 @@
 package com.fluxtah.application.api
 
-import com.fluxtah.application.api.interop.c_attachKotlinEntity
 import com.fluxtah.application.api.interop.c_setActiveCamera
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.StableRef
 
-var activeScene: SceneInfo = SceneInfo(Scene.EMPTY())
+var activeSceneInfo: SceneInfo = SceneInfo(Scene.EMPTY())
 private val sceneBuilders = mutableMapOf<String, () -> SceneInfo>()
 private val scenes = mutableMapOf<String, SceneInfo>()
 
@@ -97,6 +96,7 @@ class SceneImpl : Scene {
             block(entity.entity, entity.behaviors)
             entity.behaviors.forEach { behavior -> behavior.initialize(this, entity.entity) }
             pool.entitiesInUse.add(entity)
+            entity.entity.inUse = true
         }
         // TODO: Grow dynamically if specified
 //        else {
@@ -111,6 +111,7 @@ class SceneImpl : Scene {
         val entityInfo =
             pool.entitiesInUse.find { it.entity == entity } ?: throw Exception("Entity with ${entity.id} is not in use")
         pool.entitiesInUse.remove(entityInfo)
+        entity.inUse = false
         pool.entitiesAvailable.add(entityInfo)
     }
 
@@ -247,7 +248,7 @@ fun Application.setActiveScene(id: String) {
     val builder = sceneBuilders[id] ?: throw Exception("Scene with id $id does not exist")
     val existingScene = scenes[id]
     if (existingScene != null) {
-        activeScene = existingScene
+        activeSceneInfo = existingScene
     } else {
         // Create new scene
         val sceneInfo = builder.invoke()
@@ -274,7 +275,7 @@ fun Application.setActiveScene(id: String) {
 
         // Set as active scene
         scenes[id] = sceneInfo
-        activeScene = sceneInfo
+        activeSceneInfo = sceneInfo
     }
 }
 

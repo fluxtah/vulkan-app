@@ -20,6 +20,12 @@
 
 static float lastFrameTime = 0.0f;
 
+bool aabbCollision(AABB *a, AABB *b) {
+    return (a->min[0] <= b->max[0] && a->max[0] >= b->min[0]) &&
+           (a->min[1] <= b->max[1] && a->max[1] >= b->min[1]) &&
+           (a->min[2] <= b->max[2] && a->max[2] >= b->min[2]);
+}
+
 int main() {
     //
     // Bind kotlin callbacks to C API functions
@@ -84,6 +90,31 @@ int main() {
         // Get the list of entities we want to render
         //
         EntityArray *ktEntities = (EntityArray *) ktGetEntities();
+
+        //
+        // Collision detection
+        //
+        for (size_t i = 0; i < ktEntities->size; i++) {
+
+            Entity *sourceEntity = (Entity *) (ktEntities->entities[i]);
+            // make an array to hold the entities that collided with the source entity
+            // we have to dynamically allocate this array because we don't know how many entities will collide
+            // with the source entity
+            Entity **collisionTargetInfos = malloc(sizeof(void *) * ktEntities->size);
+            int collisionTargetInfosSize = 0;
+            for (size_t j = 0; j < ktEntities->size; j++) {
+                Entity *otherEntity = (Entity *) (ktEntities->entities[j]);
+
+                if (otherEntity == sourceEntity) continue;
+
+                if (aabbCollision(&sourceEntity->aabb, &otherEntity->aabb))
+                    collisionTargetInfos[collisionTargetInfosSize++] = otherEntity->kotlinEntityInfo;
+            }
+            if(collisionTargetInfosSize > 0) {
+                ktCollisionCallback(sourceEntity->kotlinEntityInfo, collisionTargetInfos, collisionTargetInfosSize);
+            }
+            free(collisionTargetInfos);
+        }
 
         for (size_t i = 0; i < context->vulkanSwapchainContext->swapChainImageCount; i++) {
             recordCommandBuffer(

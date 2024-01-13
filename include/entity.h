@@ -26,7 +26,7 @@ typedef struct Entity {
     BufferMemory *lightingUBO;
     RenderResources *renderResources;
 
-    void *kotlinEntity;
+    void *kotlinEntityInfo;
 } Entity;
 
 RenderResourcesMap *renderResourcesMap;
@@ -37,7 +37,7 @@ void setEntityRotation(Entity *entity, float x, float y, float z);
 void setEntityScale(Entity *obj, float x, float y, float z);
 void updateEntityAABB(Entity *entity);
 void updateEntityOBB(Entity* entity);
-void attachKotlinEntity(Entity *entity, void *kotlinEntity);
+void attachKotlinEntityInfo(Entity *entity, void *kotlinEntityInfo);
 void destroyEntity(ApplicationContext *context, Entity *entity);
 
 #endif //GAME_ENTITY_H
