@@ -6,15 +6,14 @@ import com.fluxtah.application.apps.shipgame.behaviors.*
 import kotlin.random.Random
 
 /*
-TODO
-✓ Get sounds working
-✓ Get guns working (firing projectiles)
-* Check over entity pool code and make sure its working including support code like behaviors
-* Get asteroids working
-   * Get asteroids to spawn randomly without overlapping
-* Get projectiles to destroy asteroids (collision detection)
-* Get ship to explode when it hits an asteroid
-* High Score
+TODO:
+ ✓ Get asteroids working
+    * Get asteroids to spawn randomly without overlapping
+ * Get projectiles to destroy asteroids (collision detection)
+    * Get OBB and AABB collision detection working
+ * Get ship to explode when it hits an asteroid
+ * High Score
+    * Get text rendering working, maybe vector text?
 */
 class ShipGame : Application {
     override fun initialize() {
@@ -49,6 +48,7 @@ class ShipGame : Application {
             }
 
             entity(Id.ENT_SHIP, "models/ship.glb") {
+                useOrientedBoundingBox()
                 position(0.0f, 0.0f, 0.0f)
                 behaviour { FirePlasmaCannonBehaviour(fireButtonPressed = { isKeyPressed(Key.Space) }) }
                 behaviour { ThrustBehavior(isThrusting = { isKeyPressed(Key.Up) }) }
@@ -66,6 +66,7 @@ class ShipGame : Application {
             }
 
             entityPool(Id.ENT_PLASMA_BOLT, "models/plasma-bolt.glb") {
+                useOrientedBoundingBox()
                 initialSize(5)
                 behaviour {
                     PlasmaBoltBehaviour()
@@ -108,6 +109,12 @@ class ShipGame : Application {
                 if (isKeyPressed(Key.Num2)) {
                     scene.setActiveCamera(Id.CAMERA2)
                 }
+                if(isKeyPressed(Key.F1)) {
+                    enableDebugBoundingVolumes(true)
+                }
+                if(isKeyPressed(Key.F2)) {
+                    enableDebugBoundingVolumes(false)
+                }
             }
 
             onSceneUpdate { scene, _ ->
@@ -121,61 +128,4 @@ class ShipGame : Application {
 
         setActiveScene(Id.SCENE_MAIN)
     }
-
-    private fun handleCameraInput(scene: Scene, deltaTime: Float) {
-        val camera = scene.activeCamera() ?: return
-        val baseSpeed = 3.0f
-        val cameraSpeed = baseSpeed * deltaTime
-        val rotationSpeed = 40.0f
-        val cameraRotationSpeed = rotationSpeed * deltaTime
-
-        if (isKeyPressed(Key.W)) {
-            camera.moveForward(cameraSpeed)
-        }
-        if (isKeyPressed(Key.S)) {
-            camera.moveBackward(cameraSpeed)
-        }
-
-        if (isKeyPressed(Key.A)) {
-            camera.moveLeft(cameraSpeed)
-        }
-        if (isKeyPressed(Key.D)) {
-            camera.moveRight(cameraSpeed)
-        }
-
-        if (isKeyPressed(Key.Up)) {
-            camera.pitch(cameraRotationSpeed)
-        }
-        if (isKeyPressed(Key.Down)) {
-            camera.pitch(-cameraRotationSpeed)
-        }
-        if (isKeyPressed(Key.Left)) {
-            camera.yaw(cameraRotationSpeed)
-        }
-        if (isKeyPressed(Key.Right)) {
-            camera.yaw(-cameraRotationSpeed)
-        }
-
-        camera.applyChanges()
-    }
-}
-
-object Id {
-    const val SCENE_MAIN = "main"
-
-    const val CAMERA1 = "camera1"
-    const val CAMERA2 = "camera2"
-
-    const val LIGHT1 = "light1"
-    const val LIGHT2 = "light2"
-
-    const val ENT_PLANE = "plane"
-    const val ENT_SHIP = "ship"
-    const val ENT_PLASMA_BOLT = "plasma-bolt"
-    const val ENT_ASTEROID = "asteroid"
-
-    const val SOUND_UP_THRUST = "up-thrust"
-    const val SOUND_ENGINE = "engine"
-    const val SOUND_SONIC_BOOM = "sonic-boom"
-    const val SOUND_PLASMA_BOLT = "plasma-bolt"
 }

@@ -6,7 +6,7 @@
 Entity *createEntity(ApplicationContext *context, const char *filename, CreateEntityInfo *info) {
     Entity *entity = malloc(sizeof(Entity));
 
-    entity->useOBB = true;
+    entity->useOBB = info->useOrientedBoundingBox;
     entity->scale[0] = info->scaleX;
     entity->scale[1] = info->scaleY;
     entity->scale[2] = info->scaleZ;

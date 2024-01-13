@@ -40,7 +40,7 @@ interface Scene {
 
     fun entityById(id: String): Entity?
     fun entityFromPool(id: String, block: (entity: Entity, behaviors: List<EntityBehavior>) -> Unit)
-    fun entityToPool(bolt: Entity)
+    fun entityToPool(entity: Entity)
 
     fun soundById(id: String): Sound?
 

@@ -2,6 +2,7 @@
 #define MODEL_H
 
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct Extent2D {
     uint32_t    width;
@@ -74,6 +75,7 @@ typedef struct CreateEntityInfo {
     float scaleX;
     float scaleY;
     float scaleZ;
+    bool useOrientedBoundingBox;
 } CreateEntityInfo;
 
 typedef struct LightArray {

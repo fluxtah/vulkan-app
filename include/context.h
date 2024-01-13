@@ -62,6 +62,7 @@ typedef struct ApplicationContext {
     AudioContext *audioContext;
     Camera *activeCamera;
     BufferMemory* debugCubeBuffer;
+    bool debugBoundingVolumes;
 } ApplicationContext;
 
 #endif //VULKAN_CONTEXT_H

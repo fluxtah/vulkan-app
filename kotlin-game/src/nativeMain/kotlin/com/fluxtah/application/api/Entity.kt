@@ -59,19 +59,19 @@ class Entity(
             return _rotationZ
         }
 
-    private var _scaleX: Float = initialRotationX
+    private var _scaleX: Float = initialScaleX
     val scaleX: Float
         get() {
             return _scaleX
         }
 
-    private var _scaleY: Float = initialRotationY
+    private var _scaleY: Float = initialScaleY
     val scaleY: Float
         get() {
             return _scaleY
         }
 
-    private var _scaleZ: Float = initialRotationZ
+    private var _scaleZ: Float = initialScaleZ
     val scaleZ: Float
         get() {
             return _scaleZ
@@ -127,6 +127,8 @@ class EntityBuilder(private val id: String, private val modelPath: String) {
     private var scaleY: Float = 1.0f
     private var scaleZ: Float = 1.0f
 
+    private var orientatedBoundingBox: Boolean = false
+
     private var onSceneEntityUpdate: OnSceneEntityUpdate? = null
     private var onSceneBeforeEntityUpdate: OnSceneBeforeEntityUpdate? = null
     private var onSceneAfterEntityUpdate: OnSceneAfterEntityUpdate? = null
@@ -149,6 +151,10 @@ class EntityBuilder(private val id: String, private val modelPath: String) {
         scaleX = x
         scaleY = y
         scaleZ = z
+    }
+
+    fun useOrientedBoundingBox() {
+        orientatedBoundingBox = true
     }
 
     fun onSceneUpdate(block: OnSceneEntityUpdate) {
@@ -181,6 +187,7 @@ class EntityBuilder(private val id: String, private val modelPath: String) {
             scaleX = this@EntityBuilder.scaleX
             scaleY = this@EntityBuilder.scaleY
             scaleZ = this@EntityBuilder.scaleX
+            useOrientedBoundingBox = this@EntityBuilder.orientatedBoundingBox
         }
 
         val cEntity = memScoped {
@@ -199,7 +206,7 @@ class EntityBuilder(private val id: String, private val modelPath: String) {
                 initialRotationZ = rotationZ,
                 initialScaleX = scaleX,
                 initialScaleY = scaleY,
-                initialScaleZ = scaleZ
+                initialScaleZ = scaleZ,
             ),
             onSceneEntityUpdate = onSceneEntityUpdate,
             onSceneBeforeEntityUpdate = onSceneBeforeEntityUpdate,
@@ -221,6 +228,8 @@ class EntityPoolBuilder(private val id: String, private val modelPath: String) {
     private var scaleX: Float = 1.0f
     private var scaleY: Float = 1.0f
     private var scaleZ: Float = 1.0f
+
+    private var orientatedBoundingBox: Boolean = false
 
     private var initialSize: Int = 10
     private var startActive: Boolean = false
@@ -253,6 +262,10 @@ class EntityPoolBuilder(private val id: String, private val modelPath: String) {
         scaleZ = z
     }
 
+    fun useOrientedBoundingBox() {
+        orientatedBoundingBox = true
+    }
+
     fun behaviour(behavior: () -> EntityBehavior) {
         behaviors.add(behavior)
     }
@@ -283,6 +296,7 @@ class EntityPoolBuilder(private val id: String, private val modelPath: String) {
             scaleX = this@EntityPoolBuilder.scaleX
             scaleY = this@EntityPoolBuilder.scaleY
             scaleZ = this@EntityPoolBuilder.scaleX
+            useOrientedBoundingBox = this@EntityPoolBuilder.orientatedBoundingBox
         }
 
         val cEntity = memScoped {

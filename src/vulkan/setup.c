@@ -301,7 +301,8 @@ void destroyApplication(ApplicationContext *context) {
                                  context->vulkanSwapchainContext->swapChainImageCount,
                                  context->pipelineConfig->commandBuffers);
         }
-        destroyPipelineConfig(context->vulkanDeviceContext, context->pipelineConfig, context->vulkanSwapchainContext->swapChainImageCount);
+        destroyPipelineConfig(context->vulkanDeviceContext, context->pipelineConfig,
+                              context->vulkanSwapchainContext->swapChainImageCount);
     }
 
     if (context->debugPipelineConfig != NULL && context->vulkanSwapchainContext != NULL) {
@@ -315,7 +316,8 @@ void destroyApplication(ApplicationContext *context) {
                                  context->vulkanSwapchainContext->swapChainImageCount,
                                  context->debugPipelineConfig->commandBuffers);
         }
-        destroyPipelineConfig(context->vulkanDeviceContext, context->debugPipelineConfig, context->vulkanSwapchainContext->swapChainImageCount);
+        destroyPipelineConfig(context->vulkanDeviceContext, context->debugPipelineConfig,
+                              context->vulkanSwapchainContext->swapChainImageCount);
 
     }
 
@@ -336,4 +338,8 @@ void destroyApplication(ApplicationContext *context) {
     }
 
     free(context);
+}
+
+void enableDebugBoundingVolumes(ApplicationContext *context, bool enable) {
+    context->debugBoundingVolumes = enable;
 }

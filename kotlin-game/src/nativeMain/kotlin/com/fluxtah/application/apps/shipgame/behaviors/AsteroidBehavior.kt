@@ -15,11 +15,11 @@ class AsteroidBehavior(
 
     override fun initialize(scene: Scene, entity: Entity) {
         entity.setPosition(-50 + (Random.nextFloat() * 100), Random.nextFloat() * 2, -50 + (Random.nextFloat() * 100))
-        entity.setScale(
-            x = 0.8f + (Random.nextFloat() * 1.6f),
-            y = 0.8f + (Random.nextFloat() * 1.6f),
-            z = 0.8f + (Random.nextFloat() * 1.6f)
-        )
+//        entity.setScale(
+//            x = 0.8f + (Random.nextFloat() * 1.6f),
+//            y = 0.8f + (Random.nextFloat() * 1.6f),
+//            z = 0.8f + (Random.nextFloat() * 1.6f)
+//        )
     }
 
     override fun update(scene: Scene, entity: Entity, time: Float) {

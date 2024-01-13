@@ -28,3 +28,19 @@ fun ktSetActiveCameraFunc(callback: CPointer<CFunction<(CVulkanContext, CCamera)
         }
     }
 }
+
+@OptIn(ExperimentalForeignApi::class)
+typealias SetEnableDebugBoundingVolumesFunc = (CVulkanContext, Boolean) -> Unit
+
+@OptIn(ExperimentalForeignApi::class)
+var c_setEnableDebugBoundingVolumes: SetEnableDebugBoundingVolumesFunc? = null
+
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@CName("ktSetEnableDebugBoundingVolumesFunc")
+fun ktSetEnableDebugBoundingVolumesFunc(callback: CPointer<CFunction<(CVulkanContext, Boolean) -> Unit>>) {
+    c_setEnableDebugBoundingVolumes = { context, enable ->
+        memScoped {
+            callback.reinterpret<CFunction<(CVulkanContext, Boolean) -> Unit>>()(context, enable)
+        }
+    }
+}

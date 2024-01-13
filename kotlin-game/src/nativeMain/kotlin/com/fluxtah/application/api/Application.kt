@@ -17,6 +17,11 @@ fun isKeyPressed(key: Key): Boolean {
     return c_isKeyPressed?.invoke(key.value) == 1
 }
 
+@OptIn(ExperimentalForeignApi::class)
+fun enableDebugBoundingVolumes(enable: Boolean) {
+    c_setEnableDebugBoundingVolumes?.invoke(ApplicationContext.vulcanContext!!, enable)
+}
+
 private lateinit var applicationInstance: Application
 
 @OptIn(kotlin.experimental.ExperimentalNativeApi::class)

@@ -10,7 +10,6 @@
 #include "libkotlin_game_api.h"
 #include "kotlin-game/cinterop/model.h"
 #include "include/ubo_update.h"
-#include "include/renderresources.h"
 #include "include/kotlin.h"
 
 #include <stdlib.h>
@@ -96,16 +95,18 @@ int main() {
                     ktEntities);
 
 #ifdef DEBUG
-            recordDebugCommandBuffer(
-                    context->debugPipelineConfig->commandBuffers[i],
-                    context->debugPipelineConfig->renderPass,
-                    context->debugPipelineConfig->swapChainFramebuffers[i],
-                    context->vulkanSwapchainContext->swapChainExtent,
-                    context->debugPipelineConfig->pipeline,
-                    context->debugPipelineConfig->pipelineLayout,
-                    ktEntities,
-                    context->debugCubeBuffer->buffer,
-                    context->activeCamera);
+            if (context->debugBoundingVolumes) {
+                recordDebugCommandBuffer(
+                        context->debugPipelineConfig->commandBuffers[i],
+                        context->debugPipelineConfig->renderPass,
+                        context->debugPipelineConfig->swapChainFramebuffers[i],
+                        context->vulkanSwapchainContext->swapChainExtent,
+                        context->debugPipelineConfig->pipeline,
+                        context->debugPipelineConfig->pipelineLayout,
+                        ktEntities,
+                        context->debugCubeBuffer->buffer,
+                        context->activeCamera);
+            }
 #endif
         }
 
@@ -128,14 +129,18 @@ int main() {
 
         vkResetFences(context->vulkanDeviceContext->device, 1, &inFlightFence);
 
-        VkCommandBuffer commandBuffersToSubmit[] = {
-                context->pipelineConfig->commandBuffers[imageIndex],
-#ifdef DEBUG
-                context->debugPipelineConfig->commandBuffers[imageIndex],
-#endif
-        };
+        VkCommandBuffer commandBuffersToSubmit[2]; // Maximum of 2 command buffers
+        uint32_t commandBufferCount = 0;
 
-        uint32_t commandBufferCount = sizeof(commandBuffersToSubmit) / sizeof(commandBuffersToSubmit[0]);
+        // Always add the primary command buffer
+        commandBuffersToSubmit[commandBufferCount++] = context->pipelineConfig->commandBuffers[imageIndex];
+
+#ifdef DEBUG
+        // Add the debug pipeline's command buffer in debug mode
+        if (context->debugBoundingVolumes) {
+            commandBuffersToSubmit[commandBufferCount++] = context->debugPipelineConfig->commandBuffers[imageIndex];
+        }
+#endif
 
         renderSubmit(context->vulkanDeviceContext, waitSemaphores, signalSemaphores, inFlightFence,
                      commandBuffersToSubmit, commandBufferCount);

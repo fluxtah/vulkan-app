@@ -22,6 +22,7 @@
 
 ApplicationContext *createApplication();
 void destroyApplication(ApplicationContext *context);
+void enableDebugBoundingVolumes(ApplicationContext *context, bool enable);
 
 VulkanDeviceContext *createVulkanDeviceContext();
 void destroyVulkanDeviceContext(VulkanDeviceContext *context);

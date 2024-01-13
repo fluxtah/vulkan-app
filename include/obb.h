@@ -1,6 +1,3 @@
-//
-// Created by Ian Warwick on 12/01/2024.
-//
 #ifndef GAME_OBB_H
 #define GAME_OBB_H
 

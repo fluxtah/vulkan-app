@@ -1,4 +1,5 @@
 #include "include/kotlin.h"
+#include "include/vulkan/setup.h"
 
 void setActiveCamera(ApplicationContext *context, Camera *camera) {
     context->activeCamera = camera;
@@ -30,6 +31,8 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 }
 
 void bindKotlinApi() {
+    // Application
+    ktSetEnableDebugBoundingVolumesFunc(enableDebugBoundingVolumes);
     // Input
     ktSetIsKeyPressedFunc(isKeyPressed);
 
