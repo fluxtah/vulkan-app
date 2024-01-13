@@ -1,7 +1,9 @@
 package com.fluxtah.application.api
 
+import com.fluxtah.application.api.interop.c_attachKotlinEntity
 import com.fluxtah.application.api.interop.c_setActiveCamera
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.StableRef
 
 var activeScene: SceneInfo = SceneInfo(Scene.EMPTY())
 private val sceneBuilders = mutableMapOf<String, () -> SceneInfo>()
@@ -15,19 +17,23 @@ data class SceneInfo(
     val onSceneAfterUpdate: OnSceneAfterUpdate? = null
 )
 
+@OptIn(ExperimentalForeignApi::class)
 data class EntityInfo(
     val entity: Entity,
     val onSceneEntityUpdate: OnSceneEntityUpdate? = null,
     val onSceneBeforeEntityUpdate: OnSceneBeforeEntityUpdate? = null,
     val onSceneAfterEntityUpdate: OnSceneAfterEntityUpdate? = null,
-    val behaviors: List<EntityBehavior>
+    val behaviors: List<EntityBehavior>,
+    val onCollision: OnCollision? = null,
+    var stableRef: StableRef<EntityInfo>? = null
 )
 
 data class EntityPoolInfo(
     val initialSize: Int,
     val factory: () -> EntityInfo,
     val entitiesAvailable: MutableList<EntityInfo>,
-    val entitiesInUse: MutableList<EntityInfo>
+    val entitiesInUse: MutableList<EntityInfo>,
+    val onCollision: OnCollision? = null
 )
 
 @DslMarker
@@ -119,6 +125,7 @@ typealias OnSceneAfterUpdate = ((scene: Scene, time: Float, deltaTime: Float) ->
 typealias OnSceneEntityUpdate = ((scene: Scene, entity: Entity, time: Float) -> Unit)
 typealias OnSceneBeforeEntityUpdate = ((scene: Scene, entity: Entity, time: Float, deltaTime: Float) -> Unit)
 typealias OnSceneAfterEntityUpdate = ((scene: Scene, entity: Entity, time: Float, deltaTime: Float) -> Unit)
+typealias OnCollision = ((scene: Scene, entity: Entity, entities: List<Entity>) -> Unit)
 
 //fun Application.scene(): Scene {
 //    return activeScene.scene

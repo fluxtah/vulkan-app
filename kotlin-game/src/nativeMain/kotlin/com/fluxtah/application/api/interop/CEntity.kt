@@ -122,3 +122,21 @@ fun ktSetEntityScaleFunc(callback: CPointer<CFunction<EntityScaleFunc>>) {
         }
     }
 }
+
+@OptIn(ExperimentalForeignApi::class)
+typealias AttachKotlinEntityFunc = (CEntity, COpaquePointer) -> Unit
+
+@OptIn(ExperimentalForeignApi::class)
+var c_attachKotlinEntity: AttachKotlinEntityFunc? = null
+
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@CName("ktSetAttachKotlinEntityFunc")
+fun ktSetAttachKotlinEntityFunc(callback: CPointer<CFunction<AttachKotlinEntityFunc>>) {
+    c_attachKotlinEntity = { entity, kotlinEntityPtr ->
+        memScoped {
+            callback.reinterpret<CFunction<AttachKotlinEntityFunc>>()(
+                entity, kotlinEntityPtr
+            )
+        }
+    }
+}

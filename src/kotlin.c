@@ -33,6 +33,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 void bindKotlinApi() {
     // Application
     ktSetEnableDebugBoundingVolumesFunc(enableDebugBoundingVolumes);
+
     // Input
     ktSetIsKeyPressedFunc(isKeyPressed);
 
@@ -60,6 +61,7 @@ void bindKotlinApi() {
     ktSetPositionEntityFunc(setEntityPosition);
     ktSetEntityRotationFunc(setEntityRotation);
     ktSetEntityScaleFunc(setEntityScale);
+    ktSetAttachKotlinEntityFunc(attachKotlinEntity);
 
     // Sound
     ktSetLoadSoundFunc(loadSound);

@@ -98,15 +98,18 @@ private fun SceneImpl.destroy() {
     lights.clear()
     entities.forEach { entityInfo ->
         c_destroyEntity!!.invoke(ApplicationContext.vulcanContext!!, entityInfo.value.entity.handle)
+        entityInfo.value.stableRef!!.dispose()
     }
     entities.clear()
     entityPools.forEach { entityPool ->
         entityPool.value.entitiesInUse.forEach { entityInfo ->
             c_destroyEntity!!.invoke(ApplicationContext.vulcanContext!!, entityInfo.entity.handle)
+            entityInfo.stableRef!!.dispose()
         }
         entityPool.value.entitiesInUse.clear()
         entityPool.value.entitiesAvailable.forEach { entityInfo ->
             c_destroyEntity!!.invoke(ApplicationContext.vulcanContext!!, entityInfo.entity.handle)
+            entityInfo.stableRef!!.dispose()
         }
         entityPool.value.entitiesAvailable.clear()
     }

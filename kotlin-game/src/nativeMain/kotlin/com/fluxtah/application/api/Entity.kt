@@ -2,10 +2,7 @@ package com.fluxtah.application.api
 
 import com.fluxtah.application.api.interop.*
 import com.fluxtah.application.api.interop.model.CreateEntityInfo
-import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.cValue
-import kotlinx.cinterop.cstr
-import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.*
 
 @OptIn(ExperimentalForeignApi::class)
 class Entity(
@@ -132,6 +129,7 @@ class EntityBuilder(private val id: String, private val modelPath: String) {
     private var onSceneEntityUpdate: OnSceneEntityUpdate? = null
     private var onSceneBeforeEntityUpdate: OnSceneBeforeEntityUpdate? = null
     private var onSceneAfterEntityUpdate: OnSceneAfterEntityUpdate? = null
+    private var onCollision: OnCollision? = null
 
     private val behaviors = mutableListOf<() -> EntityBehavior>()
 
@@ -167,6 +165,10 @@ class EntityBuilder(private val id: String, private val modelPath: String) {
 
     fun onSceneAfterUpdate(block: OnSceneAfterEntityUpdate) {
         onSceneAfterEntityUpdate = block
+    }
+
+    fun onCollision(block: OnCollision) {
+        onCollision = block
     }
 
     fun behaviour(behavior: () -> EntityBehavior) {
@@ -211,8 +213,13 @@ class EntityBuilder(private val id: String, private val modelPath: String) {
             onSceneEntityUpdate = onSceneEntityUpdate,
             onSceneBeforeEntityUpdate = onSceneBeforeEntityUpdate,
             onSceneAfterEntityUpdate = onSceneAfterEntityUpdate,
-            behaviors = behaviors.map { it() }
-        )
+            behaviors = behaviors.map { it() },
+            onCollision = onCollision
+        ).apply {
+            val ref = StableRef.create(this)
+            c_attachKotlinEntity!!.invoke(cEntity, ref.asCPointer())
+            stableRef = ref
+        }
     }
 }
 
@@ -230,6 +237,8 @@ class EntityPoolBuilder(private val id: String, private val modelPath: String) {
     private var scaleZ: Float = 1.0f
 
     private var orientatedBoundingBox: Boolean = false
+
+    private var onCollision: OnCollision? = null
 
     private var initialSize: Int = 10
     private var startActive: Boolean = false
@@ -264,6 +273,10 @@ class EntityPoolBuilder(private val id: String, private val modelPath: String) {
 
     fun useOrientedBoundingBox() {
         orientatedBoundingBox = true
+    }
+
+    fun onCollision(block: OnCollision) {
+        onCollision = block
     }
 
     fun behaviour(behavior: () -> EntityBehavior) {
@@ -317,7 +330,12 @@ class EntityPoolBuilder(private val id: String, private val modelPath: String) {
                 initialScaleY = scaleY,
                 initialScaleZ = scaleZ
             ),
-            behaviors = behaviors.map { it() }
-        )
+            behaviors = behaviors.map { it() },
+            onCollision = onCollision
+        ).apply {
+            val ref = StableRef.create(this)
+            c_attachKotlinEntity!!.invoke(cEntity, ref.asCPointer())
+            stableRef = ref
+        }
     }
 }

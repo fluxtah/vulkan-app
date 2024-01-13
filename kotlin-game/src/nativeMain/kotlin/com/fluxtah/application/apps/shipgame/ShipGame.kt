@@ -71,6 +71,16 @@ class ShipGame : Application {
                 behaviour {
                     PlasmaBoltBehaviour()
                 }
+                onCollision { scene, entity, entities ->
+                    if (entity.visible) { // TODO track and use active state instead of visible
+                        entities.forEach { otherEntity ->
+                            if (otherEntity.id == Id.ENT_ASTEROID) {
+                                scene.entityToPool(entity)
+                                scene.entityToPool(otherEntity)
+                            }
+                        }
+                    }
+                }
             }
 
             entityPool(Id.ENT_ASTEROID, "models/asteroid.glb") {
@@ -109,10 +119,10 @@ class ShipGame : Application {
                 if (isKeyPressed(Key.Num2)) {
                     scene.setActiveCamera(Id.CAMERA2)
                 }
-                if(isKeyPressed(Key.F1)) {
+                if (isKeyPressed(Key.F1)) {
                     enableDebugBoundingVolumes(true)
                 }
-                if(isKeyPressed(Key.F2)) {
+                if (isKeyPressed(Key.F2)) {
                     enableDebugBoundingVolumes(false)
                 }
             }

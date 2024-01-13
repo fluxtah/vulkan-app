@@ -26,6 +26,8 @@ int main() {
     //
     bindKotlinApi();
 
+    ktCreateApplication();
+
     ApplicationContext *context = createApplication();
     ktSetVulkanContext(context);
 
@@ -37,7 +39,6 @@ int main() {
     //
     // Init Kotlin Application
     //
-    ktCreateApplication();
     ktInitApplication();
 
     VkSemaphore imageAvailableSemaphore;

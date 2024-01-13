@@ -34,7 +34,6 @@ data class Vector3(var x: Float = 0f, var y: Float = 0f, var z: Float = 0f) {
         }
     }
 
-    // Existing operator overloads
     operator fun minus(other: Vector3) = Vector3(x - other.x, y - other.y, z - other.z)
     operator fun plus(other: Vector3) = Vector3(x + other.x, y + other.y, z + other.z)
     operator fun times(value: Float) = Vector3(x * value, y * value, z * value)
@@ -51,3 +50,11 @@ fun Vector3.distanceTo(end: Vector3): Float = sqrt(
             (end.y - y).pow(2) +
             (end.z - z).pow(2)
 )
+
+fun Vector3.negate() {
+    x = -x
+    y = -y
+    z = -z
+}
+
+fun Vector3.length(): Float = sqrt(x * x + y * y + z * z)

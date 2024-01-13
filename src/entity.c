@@ -152,7 +152,9 @@ void updateEntityOBB(Entity* entity) {
     glm_mat4_copy(transformMatrix, entity->obb.transform);
 }
 
-
+void attachKotlinEntity(Entity *entity, void *kotlinEntity) {
+    entity->kotlinEntity = kotlinEntity;
+}
 
 void destroyEntity(ApplicationContext *context, Entity *entity) {
     // Destroy UBOs
