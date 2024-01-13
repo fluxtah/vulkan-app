@@ -35,10 +35,14 @@ void updateLightsUBO(VkDevice device, Entity *entity, Camera *camera) {
 void updateTransformUBO(VkDevice device, Entity *entity, Camera *camera) {
     TransformUBO transformUBO = {0};
     glm_mat4_identity(transformUBO.model);
+
+    // Apply rotation and translation first
     glm_translate(transformUBO.model, entity->position);
     glm_rotate(transformUBO.model, glm_rad(entity->rotation[0]), (vec3) {1.0f, 0.0f, 0.0f}); // X rotation
     glm_rotate(transformUBO.model, glm_rad(entity->rotation[1]), (vec3) {0.0f, 1.0f, 0.0f}); // Y rotation
     glm_rotate(transformUBO.model, glm_rad(entity->rotation[2]), (vec3) {0.0f, 0.0f, 1.0f}); // Z rotation
+
+    // Then apply non-uniform scaling
     glm_scale(transformUBO.model, entity->scale);
 
     memcpy(transformUBO.view, camera->view, sizeof(mat4));
@@ -49,3 +53,4 @@ void updateTransformUBO(VkDevice device, Entity *entity, Camera *camera) {
     memcpy(transformData, &transformUBO, sizeof(TransformUBO));
     vkUnmapMemory(device, entity->transformUBO->memory);
 }
+

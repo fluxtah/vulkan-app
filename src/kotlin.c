@@ -57,6 +57,7 @@ void bindKotlinApi() {
     ktSetPositionEntityFunc(setEntityPosition);
     ktSetEntityRotationFunc(setEntityRotation);
     ktSetEntityScaleFunc(setEntityScale);
+
     // Sound
     ktSetLoadSoundFunc(loadSound);
     ktSetDestroySoundFunc(destroySound);

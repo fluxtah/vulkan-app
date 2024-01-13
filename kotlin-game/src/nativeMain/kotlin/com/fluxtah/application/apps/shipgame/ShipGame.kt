@@ -21,7 +21,7 @@ class ShipGame : Application {
         scene(Id.SCENE_MAIN) {
             camera(Id.CAMERA1) {
                 position(4.0f, 6.0f, -4.0f)
-                fieldOfView(90.0f)
+                fieldOfView(60.0f)
             }
             camera(Id.CAMERA2) {
                 position(4.0f, 5.0f, -4.0f)

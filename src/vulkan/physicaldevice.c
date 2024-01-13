@@ -164,4 +164,6 @@ void printDeviceLimits(VkPhysicalDevice device) {
            deviceProperties.limits.maxDescriptorSetStorageBuffersDynamic);
     printf("Max Sampled Images per Descriptor Set: %u\n", deviceProperties.limits.maxDescriptorSetSampledImages);
     printf("Max Storage Images per Descriptor Set: %u\n", deviceProperties.limits.maxDescriptorSetStorageImages);
+    uint32_t maxPushConstantsSize = deviceProperties.limits.maxPushConstantsSize;
+    printf("Maximum push constants size: %u bytes\n", maxPushConstantsSize);
 }

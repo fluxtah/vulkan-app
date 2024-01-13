@@ -1,28 +1,5 @@
 #include "include/renderresources.h"
 
-typedef struct RenderResourcesMap {
-    char *filename;
-    int refs;
-    RenderResources *resources;
-    UT_hash_handle hh;
-} RenderResourcesMap;
-
-static RenderResourcesMap *renderResourcesMap;
-
-void updateEntityAABB(Entity *entity) {
-    // Assuming original AABB is stored in the entity
-    AABB originalAABB = entity->renderResources->aabb;
-
-    // Scale the AABB
-    vec3 scaledMin, scaledMax;
-    glm_vec3_mul(originalAABB.min, entity->scale, scaledMin);
-    glm_vec3_mul(originalAABB.max, entity->scale, scaledMax);
-
-    // Translate the AABB
-    glm_vec3_add(scaledMin, entity->position, entity->aabb.min);
-    glm_vec3_add(scaledMax, entity->position, entity->aabb.max);
-}
-
 void addRenderResources(RenderResourcesMap **hashmap, const char *filename, RenderResources *resources) {
     RenderResourcesMap *entry = NULL;
     HASH_FIND_STR(*hashmap, filename, entry);
@@ -45,70 +22,6 @@ void deleteRenderResources(RenderResourcesMap **hashmap, RenderResourcesMap *ent
     HASH_DEL(*hashmap, entry);
     free(entry->filename);
     free(entry);
-}
-
-Entity *createEntity(ApplicationContext *context, const char *filename, CreateEntityInfo *info) {
-    Entity *entity = malloc(sizeof(Entity));
-
-    entity->scale[0] = info->scaleX;
-    entity->scale[1] = info->scaleY;
-    entity->scale[2] = info->scaleZ;
-    entity->position[0] = info->positionX;
-    entity->position[1] = info->positionY;
-    entity->position[2] = info->positionZ;
-    entity->scale[0] = info->scaleX;
-    entity->scale[1] = info->scaleY;
-    entity->scale[2] = info->scaleZ;
-
-    // Dynamically allocate a BufferMemory
-    entity->transformUBO = (BufferMemory *) malloc(sizeof(BufferMemory));
-    createBufferMemory(context->vulkanDeviceContext, entity->transformUBO, sizeof(TransformUBO),
-                       VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-    // Dynamically allocate a BufferMemory
-    entity->lightingUBO = (BufferMemory *) malloc(sizeof(BufferMemory));
-    createBufferMemory(context->vulkanDeviceContext, entity->lightingUBO, sizeof(LightingUBO),
-                       VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-    entity->renderResources = createRenderResourcesFromFile(context, filename);
-
-    // Create descriptor sets
-    if (allocateDescriptorSet(
-            context->vulkanDeviceContext->device,
-            context->pipelineConfig->descriptorPool,
-            context->pipelineConfig->vertexShaderDescriptorSetLayout,
-            &entity->vertexDescriptorSet) != VK_SUCCESS) {
-        LOG_ERROR("Failed to allocate vertex descriptor set");
-        return NULL;
-    }
-
-    if (allocateDescriptorSet(
-            context->vulkanDeviceContext->device,
-            context->pipelineConfig->descriptorPool,
-            context->pipelineConfig->fragmentShaderDescriptorSetLayout,
-            &entity->fragmentDescriptorSet)) {
-        LOG_ERROR("Failed to allocate fragment descriptor set");
-        return NULL;
-    }
-
-    updateBasicShaderDescriptorSet(
-            context->vulkanDeviceContext->device,
-            entity->vertexDescriptorSet,
-            entity->fragmentDescriptorSet,
-            entity->transformUBO->buffer,
-            entity->lightingUBO->buffer,
-            entity->renderResources->colorMap->imageView,
-            entity->renderResources->normalMap->imageView,
-            entity->renderResources->metallicRoughnessMap->imageView,
-            context->sampler
-    );
-
-    entity->aabb = entity->renderResources->aabb;
-    updateEntityAABB(entity);
-
-    return entity;
 }
 
 AABB calculateAABB(const ModelData *modelData) {
@@ -244,43 +157,6 @@ void setupTextureFromImageData(ApplicationContext *context, ModelImageData *imag
 
     // Clean up the staging buffer
     destroyBufferMemory(context->vulkanDeviceContext, textureStagingBuffer);
-}
-
-void setEntityPosition(Entity *obj, float x, float y, float z) {
-    obj->position[0] = x;
-    obj->position[1] = y;
-    obj->position[2] = z;
-
-    updateEntityAABB(obj);
-}
-
-void setEntityRotation(Entity *obj, float x, float y, float z) {
-    obj->rotation[0] = x;
-    obj->rotation[1] = y;
-    obj->rotation[2] = z;
-}
-
-void setEntityScale(Entity *obj, float x, float y, float z) {
-    obj->scale[0] = x;
-    obj->scale[1] = y;
-    obj->scale[2] = z;
-
-    updateEntityAABB(obj);
-}
-
-void destroyEntity(ApplicationContext *context, Entity *entity) {
-    // Destroy UBOs
-    destroyBufferMemory(context->vulkanDeviceContext, entity->transformUBO);
-    destroyBufferMemory(context->vulkanDeviceContext, entity->lightingUBO);
-
-    RenderResourcesMap *resources = getRenderResources(renderResourcesMap, entity->renderResources->filename);
-
-    if (resources->refs == 1) {
-        deleteRenderResources(&renderResourcesMap, resources);
-        destroyRenderResources(context, entity->renderResources);
-    } else {
-        resources->refs--;
-    }
 }
 
 void destroyRenderResources(ApplicationContext *context, RenderResources *obj) {

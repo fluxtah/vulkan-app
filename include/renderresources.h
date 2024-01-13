@@ -9,14 +9,9 @@
 #include "include/vulkan/descriptor.h"
 #include "include/vulkan/image.h"
 #include "libs/uthash.h"
+#include "aabb.h"
 #include <cglm/cglm.h>
 #include <vulkan/vulkan.h>
-
-typedef struct AABB {
-    vec3 min; // Minimum corner of the AABB
-    vec3 max; // Maximum corner of the AABB
-    // Additional AABB properties if needed
-} AABB;
 
 typedef struct RenderResources {
     char *filename;
@@ -29,33 +24,22 @@ typedef struct RenderResources {
     AABB aabb;
 } RenderResources;
 
-typedef struct Entity {
-    vec3 scale;
-    vec3 position;
-    vec3 rotation;
-    AABB aabb;
+typedef struct RenderResourcesMap {
+    char *filename;
+    int refs;
+    RenderResources *resources;
+    UT_hash_handle hh;
+} RenderResourcesMap;
 
-    VkDescriptorSet vertexDescriptorSet;
-    VkDescriptorSet fragmentDescriptorSet;
-    BufferMemory *transformUBO;
-    BufferMemory *lightingUBO;
-    RenderResources *renderResources;
-} Entity;
-
-Entity *createEntity(ApplicationContext *context, const char *filename, CreateEntityInfo *info);
+extern RenderResourcesMap *renderResourcesMap;
 
 RenderResources *createRenderResourcesFromFile(ApplicationContext *context, const char *filename);
 
 void setupTextureFromImageData(ApplicationContext *context, ModelImageData *imageData, ImageMemory *imageMemory);
 
-void setEntityPosition(Entity *entity, float x, float y, float z);
-
-void setEntityRotation(Entity *entity, float x, float y, float z);
-
-void setEntityScale(Entity *obj, float x, float y, float z);
-
-void destroyEntity(ApplicationContext *context, Entity *entity);
-
 void destroyRenderResources(ApplicationContext *context, RenderResources *obj);
+
+RenderResourcesMap *getRenderResources(RenderResourcesMap *hashmap, const char *filename);
+void deleteRenderResources(RenderResourcesMap **hashmap, RenderResourcesMap *entry);
 
 #endif //APP_RENDEROBJECT_H

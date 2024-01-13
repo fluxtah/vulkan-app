@@ -1,7 +1,7 @@
 #ifndef VULKAN_COMMANDBUFFER_H
 #define VULKAN_COMMANDBUFFER_H
 
-#include "include/renderresources.h"
+#include "include/entity.h"
 #include "include/push_constants.h"
 #include <vulkan/vulkan.h>
 #include <stdio.h>

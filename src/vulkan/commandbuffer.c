@@ -105,6 +105,15 @@ void calculateAABBTransform(Entity *entity, mat4 transform) {
     glm_scale(transform, scale); // Scale to match the AABB size
 }
 
+void calculateOBBTransform(Entity *entity, mat4 transform) {
+    // Start with the OBB's transformation matrix
+    memcpy(transform, entity->obb.transform, sizeof(mat4));
+
+    // Scale the unit cube to match the full dimensions of the AABB
+    vec3 fullExtents;
+    glm_vec3_scale(entity->obb.extents, 2.0f, fullExtents); // Scale the extents by 2
+    glm_scale(transform, fullExtents);
+}
 
 void recordDebugCommandBuffer(
         VkCommandBuffer commandBuffer,
@@ -121,7 +130,12 @@ void recordDebugCommandBuffer(
     for (size_t i = 0; i < ktEntities->size; ++i) {
         Entity *entity = (Entity *) (ktEntities->entities[i]);
         mat4 transform;
-        calculateAABBTransform(entity, transform);
+
+        if (entity->useOBB)
+            calculateOBBTransform(entity, transform);
+        else
+            calculateAABBTransform(entity, transform);
+
         PushConstants pushConstants = {0};
         memcpy(pushConstants.view, camera->view, sizeof(mat4));
         memcpy(pushConstants.proj, camera->proj, sizeof(mat4));

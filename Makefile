@@ -177,6 +177,30 @@ src/debug.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/debug.c.s
 .PHONY : src/debug.c.s
 
+src/entity.o: src/entity.c.o
+.PHONY : src/entity.o
+
+# target to build an object file
+src/entity.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/entity.c.o
+.PHONY : src/entity.c.o
+
+src/entity.i: src/entity.c.i
+.PHONY : src/entity.i
+
+# target to preprocess a source file
+src/entity.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/entity.c.i
+.PHONY : src/entity.c.i
+
+src/entity.s: src/entity.c.s
+.PHONY : src/entity.s
+
+# target to generate assembly for a file
+src/entity.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/entity.c.s
+.PHONY : src/entity.c.s
+
 src/imagememory.o: src/imagememory.c.o
 .PHONY : src/imagememory.o
 
@@ -864,6 +888,9 @@ help:
 	@echo "... src/debug.o"
 	@echo "... src/debug.i"
 	@echo "... src/debug.s"
+	@echo "... src/entity.o"
+	@echo "... src/entity.i"
+	@echo "... src/entity.s"
 	@echo "... src/imagememory.o"
 	@echo "... src/imagememory.i"
 	@echo "... src/imagememory.s"

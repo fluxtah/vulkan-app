@@ -105,6 +105,10 @@ add_executable(Game
         include/debug_cube.h
         include/vulkan/buffer_memory.h
         include/vertex.h
+        include/aabb.h
+        include/entity.h
+        src/entity.c
+        include/obb.h
 )
 
 include_directories(kotlin-game/build/bin/native/releaseShared)

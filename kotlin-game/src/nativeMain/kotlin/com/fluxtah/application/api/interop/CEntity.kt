@@ -70,10 +70,10 @@ fun ktGetEntities(): CPointer<EntityArray> {
 }
 
 @OptIn(ExperimentalForeignApi::class)
-typealias SetEntityPositionFunc = (CEntity, Float, Float, Float) -> Unit
+typealias EntityPositionFunc = (CEntity, Float, Float, Float) -> Unit
 
 @OptIn(ExperimentalForeignApi::class)
-var c_setEntityPosition: SetEntityPositionFunc? = null
+var c_setEntityPosition: EntityPositionFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktSetPositionEntityFunc")
@@ -88,17 +88,17 @@ fun ktSetPositionEntityFunc(callback: CPointer<CFunction<(CEntity, Float, Float,
 }
 
 @OptIn(ExperimentalForeignApi::class)
-typealias SetEntityRotationFunc = (CEntity, Float, Float, Float) -> Unit
+typealias EntityRotationFunc = (CEntity, Float, Float, Float) -> Unit
 
 @OptIn(ExperimentalForeignApi::class)
-var c_setEntityRotation: SetEntityRotationFunc? = null
+var c_setEntityRotation: EntityRotationFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktSetEntityRotationFunc")
-fun ktSetEntityRotationFunc(callback: CPointer<CFunction<SetEntityRotationFunc>>) {
+fun ktSetEntityRotationFunc(callback: CPointer<CFunction<EntityRotationFunc>>) {
     c_setEntityRotation = { entity, x, y, z ->
         memScoped {
-            callback.reinterpret<CFunction<SetEntityRotationFunc>>()(
+            callback.reinterpret<CFunction<EntityRotationFunc>>()(
                 entity, x, y, z
             )
         }
@@ -106,17 +106,17 @@ fun ktSetEntityRotationFunc(callback: CPointer<CFunction<SetEntityRotationFunc>>
 }
 
 @OptIn(ExperimentalForeignApi::class)
-typealias SetEntityScaleFunc = (CEntity, Float, Float, Float) -> Unit
+typealias EntityScaleFunc = (CEntity, Float, Float, Float) -> Unit
 
 @OptIn(ExperimentalForeignApi::class)
-var c_setEntityScale: SetEntityScaleFunc? = null
+var c_setEntityScale: EntityScaleFunc? = null
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 @CName("ktSetEntityScaleFunc")
-fun ktSetEntityScaleFunc(callback: CPointer<CFunction<SetEntityScaleFunc>>) {
+fun ktSetEntityScaleFunc(callback: CPointer<CFunction<EntityScaleFunc>>) {
     c_setEntityScale = { entity, x, y, z ->
         memScoped {
-            callback.reinterpret<CFunction<SetEntityScaleFunc>>()(
+            callback.reinterpret<CFunction<EntityScaleFunc>>()(
                 entity, x, y, z
             )
         }

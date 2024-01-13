@@ -4,7 +4,7 @@
 #include "include/sound.h"
 #include "include/light.h"
 #include "include/camera.h"
-#include "include/renderresources.h"
+#include "include/entity.h"
 #include "libkotlin_game_api.h"
 
 bool keys[1024];
