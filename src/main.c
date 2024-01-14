@@ -42,11 +42,6 @@ int main() {
         return -1;
     }
 
-    //
-    // Init Kotlin Application
-    //
-    ktInitApplication();
-
     VkSemaphore imageAvailableSemaphore;
     VkSemaphore renderFinishedSemaphore;
     VkFence inFlightFence;
@@ -75,6 +70,11 @@ int main() {
     VkSemaphore waitSemaphores[] = {imageAvailableSemaphore};
 
     Entity **collisionTargetInfos = malloc(sizeof(void *) * 500); // TODO adjust as needed
+
+    //
+    // Init Kotlin Application
+    //
+    ktInitApplication();
 
     /*
      * MAIN LOOP
