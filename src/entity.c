@@ -19,9 +19,12 @@ Entity *createEntity(ApplicationContext *context, const char *filename, CreateEn
 
     // Dynamically allocate a BufferMemory
     entity->transformUBO = (BufferMemory *) malloc(sizeof(BufferMemory));
-    createBufferMemory(context->vulkanDeviceContext, entity->transformUBO, sizeof(TransformUBO),
-                       VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    createBufferMemory(
+            context->vulkanDeviceContext,
+            entity->transformUBO,
+            sizeof(TransformUBO),
+            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
     // Dynamically allocate a BufferMemory
     entity->lightingUBO = (BufferMemory *) malloc(sizeof(BufferMemory));
@@ -64,7 +67,7 @@ Entity *createEntity(ApplicationContext *context, const char *filename, CreateEn
 
     entity->aabb = entity->renderResources->aabb;
 
-    if(entity->useOBB)
+    if (entity->useOBB)
         updateEntityOBB(entity);
     else
         updateEntityAABB(entity);
@@ -77,7 +80,7 @@ void setEntityPosition(Entity *obj, float x, float y, float z) {
     obj->position[1] = y;
     obj->position[2] = z;
 
-    if(obj->useOBB)
+    if (obj->useOBB)
         updateEntityOBB(obj);
     else
         updateEntityAABB(obj);
@@ -88,7 +91,7 @@ void setEntityRotation(Entity *obj, float x, float y, float z) {
     obj->rotation[1] = y;
     obj->rotation[2] = z;
 
-    if(obj->useOBB)
+    if (obj->useOBB)
         updateEntityOBB(obj);
 }
 
@@ -97,7 +100,7 @@ void setEntityScale(Entity *obj, float x, float y, float z) {
     obj->scale[1] = y;
     obj->scale[2] = z;
 
-    if(obj->useOBB)
+    if (obj->useOBB)
         updateEntityOBB(obj);
     else
         updateEntityAABB(obj);
@@ -117,7 +120,7 @@ void updateEntityAABB(Entity *entity) {
     glm_vec3_add(scaledMax, entity->position, entity->aabb.max);
 }
 
-void updateEntityOBB(Entity* entity) {
+void updateEntityOBB(Entity *entity) {
     AABB aabb = entity->renderResources->aabb;
 
     // Calculate the original center and extents of the AABB
@@ -153,7 +156,7 @@ void updateEntityOBB(Entity* entity) {
 }
 
 void attachKotlinEntityInfo(Entity *entity, void *kotlinEntityInfo) {
-     entity->kotlinEntityInfo = kotlinEntityInfo;
+    entity->kotlinEntityInfo = kotlinEntityInfo;
 }
 
 void destroyEntity(ApplicationContext *context, Entity *entity) {
