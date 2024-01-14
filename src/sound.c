@@ -49,7 +49,7 @@ Sound *loadSound(const char *filename, CreateSoundInfo *info) {
         return NULL;
     }
 
-    drwav_read_pcm_frames_s32(&wav, wav.totalPCMFrameCount, pSampleData);
+    drwav_read_pcm_frames_s16(&wav, wav.totalPCMFrameCount, pSampleData);
 
     drwav_uninit(&wav);
 
@@ -60,7 +60,9 @@ Sound *loadSound(const char *filename, CreateSoundInfo *info) {
 
     ALuint buffer;
     alGenBuffers(1, &buffer);
-    alBufferData(buffer, AL_FORMAT_STEREO16, sound->data, (int)sound->bufferSize, (int)sound->sampleRate);
+    ALenum format = (wav.channels == 1) ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+    alBufferData(buffer, format, sound->data, (ALsizei)sound->bufferSize, (ALsizei)sound->sampleRate);
+
     ALuint source;
     alGenSources(1, &source);
     alSourcei(source, AL_BUFFER, (int)buffer);
