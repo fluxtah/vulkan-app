@@ -1,7 +1,7 @@
 package com.fluxtah.application.api.interop
 
-import com.fluxtah.application.api.SceneImpl
-import com.fluxtah.application.api.activeSceneInfo
+import com.fluxtah.application.api.scene.SceneImpl
+import com.fluxtah.application.api.scene.activeSceneInfo
 import com.fluxtah.application.api.interop.model.CreateEntityInfo
 import com.fluxtah.application.api.interop.model.EntityArray
 import kotlinx.cinterop.*

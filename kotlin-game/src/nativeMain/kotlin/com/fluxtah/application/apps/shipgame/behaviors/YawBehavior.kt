@@ -1,17 +1,15 @@
 package com.fluxtah.application.apps.shipgame.behaviors
 
-import com.fluxtah.application.api.Entity
 import com.fluxtah.application.api.EntityBehavior
-import com.fluxtah.application.api.Scene
 import com.fluxtah.application.api.fixedTimeStep
 
 class YawBehavior(
     private val yawLeft: () -> Boolean,
     private val yawRight: () -> Boolean
-) : EntityBehavior {
+) : EntityBehavior() {
     private val yawSpeed = 50.0f // Increased for faster rotation
 
-    override fun update(scene: Scene, entity: Entity, time: Float) {
+    override fun update(time: Float) {
         var yawDirection = 0.0f
         if (yawLeft()) {
             yawDirection -= 1.0f

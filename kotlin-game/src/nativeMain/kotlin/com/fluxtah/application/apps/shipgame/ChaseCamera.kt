@@ -1,7 +1,7 @@
 package com.fluxtah.application.apps.shipgame
 
 import com.fluxtah.application.api.Camera
-import com.fluxtah.application.api.Entity
+import com.fluxtah.application.api.entity.Entity
 import com.fluxtah.application.api.math.Vector3
 import com.fluxtah.application.api.math.lerp
 import kotlin.math.PI

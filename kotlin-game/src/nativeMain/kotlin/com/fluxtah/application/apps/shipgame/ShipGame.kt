@@ -2,6 +2,8 @@ package com.fluxtah.application.apps.shipgame
 
 import com.fluxtah.application.api.*
 import com.fluxtah.application.api.input.Key
+import com.fluxtah.application.api.scene.scene
+import com.fluxtah.application.api.scene.setActiveScene
 import com.fluxtah.application.apps.shipgame.behaviors.*
 import kotlin.random.Random
 
@@ -73,14 +75,13 @@ class ShipGame : Application {
                 }
                 onCollision { scene, entity, entities ->
                     println("${entity.id} collided with ${entities.size} entities")
-                    entities.forEach { otherEntity ->
+                    for (otherEntity in entities) {
                         if (otherEntity.id == Id.ENT_ASTEROID) {
+                            val asteroidDieBehavior = otherEntity.getBehaviorByType<AsteroidDieBehavior>()
                             scene.entityToPool(entity)
-                            scene.entityToPool(otherEntity)
-                            scene.soundById(Id.SOUND_ASTEROID_EXPLODE)?.play()
-
+                            asteroidDieBehavior.die()
                             entity.visible = false
-                            otherEntity.visible = false
+                            return@onCollision
                         }
                     }
                 }
@@ -89,6 +90,7 @@ class ShipGame : Application {
             entityPool(Id.ENT_ASTEROID, "models/asteroid.glb") {
                 initialSize(50)
                 startActive()
+                behaviour { AsteroidDieBehavior() }
                 behaviour {
                     AsteroidBehavior(
                         speedX = Random.nextFloat() * 50,

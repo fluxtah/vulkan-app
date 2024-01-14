@@ -4,6 +4,7 @@ package com.fluxtah.application.api
 
 import com.fluxtah.application.api.interop.*
 import com.fluxtah.application.api.interop.model.CreateSoundInfo
+import com.fluxtah.application.api.scene.SceneDsl
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.cValue
 import kotlinx.cinterop.cstr

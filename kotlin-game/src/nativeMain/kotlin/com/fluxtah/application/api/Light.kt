@@ -3,6 +3,7 @@ package com.fluxtah.application.api
 import com.fluxtah.application.api.interop.CLight
 import com.fluxtah.application.api.interop.c_createLight
 import com.fluxtah.application.api.interop.model.CreateLightInfo
+import com.fluxtah.application.api.scene.SceneDsl
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.cValue
 import kotlinx.cinterop.memScoped

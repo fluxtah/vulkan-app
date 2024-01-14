@@ -1,6 +1,6 @@
 package com.fluxtah.application.apps.shipgame
 
-import com.fluxtah.application.api.Scene
+import com.fluxtah.application.api.scene.Scene
 import com.fluxtah.application.api.input.Key
 import com.fluxtah.application.api.isKeyPressed
 

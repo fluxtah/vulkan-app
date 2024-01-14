@@ -2,6 +2,8 @@ package com.fluxtah.application.api
 
 import com.fluxtah.application.api.input.Key
 import com.fluxtah.application.api.interop.*
+import com.fluxtah.application.api.scene.SceneImpl
+import com.fluxtah.application.api.scene.activeSceneInfo
 import com.fluxtah.application.apps.shipgame.ShipGame
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlin.experimental.ExperimentalNativeApi
@@ -50,7 +52,7 @@ fun ktUpdateApplication(time: Float, deltaTime: Float) {
     activeSceneInfo.onSceneBeforeUpdate?.invoke(activeSceneInfo.scene, time, deltaTime)
     entities.forEach {
         it.behaviors.forEach { behavior ->
-            behavior.beforeUpdate(scene, it.entity, time, deltaTime)
+            behavior.beforeUpdate(time, deltaTime)
         }
         it.onSceneBeforeEntityUpdate?.invoke(scene, it.entity, time, deltaTime)
     }
@@ -60,7 +62,7 @@ fun ktUpdateApplication(time: Float, deltaTime: Float) {
         activeSceneInfo.onSceneUpdate?.invoke(activeSceneInfo.scene, time)
         entities.forEach {
             it.behaviors.forEach { behavior ->
-                behavior.update(scene, it.entity, time)
+                behavior.update(time)
             }
             it.onSceneEntityUpdate?.invoke(scene, it.entity, time)
         }
@@ -71,7 +73,7 @@ fun ktUpdateApplication(time: Float, deltaTime: Float) {
     activeSceneInfo.onSceneAfterUpdate?.invoke(activeSceneInfo.scene, time, deltaTime)
     entities.forEach {
         it.behaviors.forEach { behavior ->
-            behavior.afterUpdate(scene, it.entity, time, deltaTime)
+            behavior.afterUpdate(time, deltaTime)
         }
         it.onSceneAfterEntityUpdate?.invoke(scene, it.entity, time, deltaTime)
     }

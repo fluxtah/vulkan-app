@@ -2,6 +2,7 @@ package com.fluxtah.application.api
 
 import com.fluxtah.application.api.interop.*
 import com.fluxtah.application.api.interop.model.CreateCameraInfo
+import com.fluxtah.application.api.scene.SceneDsl
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.cValue
 import kotlinx.cinterop.memScoped

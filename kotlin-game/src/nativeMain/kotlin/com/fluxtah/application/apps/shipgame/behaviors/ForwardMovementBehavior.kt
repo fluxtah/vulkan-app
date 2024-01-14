@@ -1,10 +1,11 @@
 package com.fluxtah.application.apps.shipgame.behaviors
 
-import com.fluxtah.application.api.*
+import com.fluxtah.application.api.EntityBehavior
+import com.fluxtah.application.api.Sound
+import com.fluxtah.application.api.fixedTimeStep
 import com.fluxtah.application.api.math.Vector3
 import com.fluxtah.application.api.math.toRadians
 import com.fluxtah.application.apps.shipgame.Id
-import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
@@ -16,16 +17,16 @@ class ForwardMovementBehavior(
     private val reversingFactor: Float = 2.0f,
     private val maxForwardSpeed: Float = 5.0f,
     private val maxReverseSpeed: Float = -1.0f,
-) : EntityBehavior {
+) : EntityBehavior() {
     private var forwardVelocity = 0.0f
     private lateinit var engineSound: Sound
 
-    override fun initialize(scene: Scene, entity: Entity) {
+    override fun initialize() {
         engineSound = scene.soundById(Id.SOUND_ENGINE)!!
         engineSound.playIfNotPlaying()
     }
 
-    override fun update(scene: Scene, entity: Entity, time: Float) {
+    override fun update(time: Float) {
 
         forwardVelocity = when {
             isMovingForward() -> {
@@ -61,7 +62,7 @@ class ForwardMovementBehavior(
         return a + f * (b - a)
     }
 
-    override fun afterUpdate(scene: Scene, entity: Entity, time: Float, deltaTime: Float) {
+    override fun afterUpdate(time: Float, deltaTime: Float) {
         engineSound.setPitch(abs(0.7f + (forwardVelocity / maxForwardSpeed) * 0.6f))
     }
 
