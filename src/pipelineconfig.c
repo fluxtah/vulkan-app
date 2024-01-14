@@ -202,11 +202,14 @@ void destroyPipelineConfig(VulkanDeviceContext *context, PipelineConfig *pipelin
     if (pipelineConfig->pipeline != VK_NULL_HANDLE)
         vkDestroyPipeline(context->device, pipelineConfig->pipeline, NULL);
 
-    if (pipelineConfig->vertexShaderModule != VK_NULL_HANDLE)
+    if (pipelineConfig->vertexShaderModule != VK_NULL_HANDLE) {
         vkDestroyShaderModule(context->device, pipelineConfig->vertexShaderModule, NULL);
-
-    if (pipelineConfig->fragmentShaderModule != VK_NULL_HANDLE)
+        pipelineConfig->vertexShaderModule = VK_NULL_HANDLE;
+    }
+    if (pipelineConfig->fragmentShaderModule != VK_NULL_HANDLE) {
         vkDestroyShaderModule(context->device, pipelineConfig->fragmentShaderModule, NULL);
+        pipelineConfig->fragmentShaderModule = VK_NULL_HANDLE;
+    }
 
     if (pipelineConfig->renderPass != VK_NULL_HANDLE)
         vkDestroyRenderPass(context->device, pipelineConfig->renderPass, NULL);

@@ -74,6 +74,8 @@ int main() {
     VkSemaphore signalSemaphores[] = {renderFinishedSemaphore};
     VkSemaphore waitSemaphores[] = {imageAvailableSemaphore};
 
+    Entity **collisionTargetInfos = malloc(sizeof(void *) * 500); // TODO adjust as needed
+
     /*
      * MAIN LOOP
      */
@@ -100,7 +102,6 @@ int main() {
             // make an array to hold the entities that collided with the source entity
             // we have to dynamically allocate this array because we don't know how many entities will collide
             // with the source entity
-            Entity **collisionTargetInfos = malloc(sizeof(void *) * ktEntities->size);
             int collisionTargetInfosSize = 0;
             for (size_t j = 0; j < ktEntities->size; j++) {
                 Entity *otherEntity = (Entity *) (ktEntities->entities[j]);
@@ -113,7 +114,6 @@ int main() {
             if(collisionTargetInfosSize > 0) {
                 ktCollisionCallback(sourceEntity->kotlinEntityInfo, collisionTargetInfos, collisionTargetInfosSize);
             }
-            free(collisionTargetInfos);
         }
 
         for (size_t i = 0; i < context->vulkanSwapchainContext->swapChainImageCount; i++) {
@@ -151,9 +151,6 @@ int main() {
             updateLightsUBO(context->vulkanDeviceContext->device, obj, context->activeCamera);
         }
 
-        free(ktEntities->entities);
-        free(ktEntities);
-
         uint32_t imageIndex;
         vkAcquireNextImageKHR(context->vulkanDeviceContext->device, context->vulkanSwapchainContext->swapChain,
                               UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE,
@@ -177,10 +174,13 @@ int main() {
         renderSubmit(context->vulkanDeviceContext, waitSemaphores, signalSemaphores, inFlightFence,
                      commandBuffersToSubmit, commandBufferCount);
 
+        vkWaitForFences(context->vulkanDeviceContext->device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
+
         renderPresent(context->vulkanDeviceContext, context->vulkanSwapchainContext->swapChain, signalSemaphores,
                       imageIndex);
 
-        vkWaitForFences(context->vulkanDeviceContext->device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
+        free(ktEntities->entities);
+        free(ktEntities);
     }
 
     /*

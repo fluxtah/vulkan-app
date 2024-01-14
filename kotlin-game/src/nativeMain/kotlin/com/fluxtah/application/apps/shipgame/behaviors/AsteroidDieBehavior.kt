@@ -5,8 +5,10 @@ import com.fluxtah.application.apps.shipgame.Id
 
 class AsteroidDieBehavior : EntityBehavior() {
     fun die() {
-        scene.entityToPool(entity)
-        scene.soundById(Id.SOUND_ASTEROID_EXPLODE)?.play()
-        entity.visible = false
+        if(entity.inUse) {
+            scene.entityToPool(entity)
+            scene.soundById(Id.SOUND_ASTEROID_EXPLODE)?.play()
+            entity.visible = false
+        }
     }
 }

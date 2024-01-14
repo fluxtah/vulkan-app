@@ -71,10 +71,6 @@ typealias OnSceneBeforeEntityUpdate = ((scene: Scene, entity: Entity, time: Floa
 typealias OnSceneAfterEntityUpdate = ((scene: Scene, entity: Entity, time: Float, deltaTime: Float) -> Unit)
 typealias OnCollision = ((scene: Scene, entity: Entity, entities: List<Entity>) -> Unit)
 
-//fun Application.scene(): Scene {
-//    return activeScene.scene
-//}
-
 fun Application.scene(id: String, block: SceneBuilder.() -> Unit) {
     sceneBuilders[id] = {
         val builder = SceneBuilder(id)

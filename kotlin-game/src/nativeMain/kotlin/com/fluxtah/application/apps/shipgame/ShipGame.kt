@@ -74,7 +74,6 @@ class ShipGame : Application {
                     PlasmaBoltBehaviour()
                 }
                 onCollision { scene, entity, entities ->
-                    println("${entity.id} collided with ${entities.size} entities")
                     for (otherEntity in entities) {
                         if (otherEntity.id == Id.ENT_ASTEROID) {
                             val asteroidDieBehavior = otherEntity.getBehaviorByType<AsteroidDieBehavior>()

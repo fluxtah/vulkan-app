@@ -12,10 +12,6 @@ fun ktCollisionCallback(entityInfoPtr: COpaquePointer, entityInfosArrayPtr: CPoi
     val entityInfo = entityInfoPtr.asStableRef<EntityInfo>().get()
     val entityList = mutableListOf<Entity>()
 
-    if(entityInfo.entity.id == Id.ENT_PLASMA_BOLT) {
-        println("${entityInfo.entity.id} (${entityInfo.entity.inUse}) collided with with ${entityList.size} entities")
-    }
-
     if(!entityInfo.entity.inUse) return
 
     for (i in 0 until size) {
