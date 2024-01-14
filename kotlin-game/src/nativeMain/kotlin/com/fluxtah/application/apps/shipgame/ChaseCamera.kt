@@ -2,6 +2,7 @@ package com.fluxtah.application.apps.shipgame
 
 import com.fluxtah.application.api.Camera
 import com.fluxtah.application.api.entity.Entity
+import com.fluxtah.application.api.fixedTimeStep
 import com.fluxtah.application.api.math.Vector3
 import com.fluxtah.application.api.math.lerp
 import kotlin.math.PI
@@ -24,7 +25,7 @@ class ChaseCamera(
         val desiredPosition = Vector3(target.positionX, target.positionY, target.positionZ) + rotatedOffset
 
         // Add smoothing/lerping for smoother camera movement
-        position.lerp(desiredPosition, deltaTime * smoothingFactor)
+        position.lerp(desiredPosition, fixedTimeStep * smoothingFactor)
 
         // Update the camera's position
         setCameraPosition(position)

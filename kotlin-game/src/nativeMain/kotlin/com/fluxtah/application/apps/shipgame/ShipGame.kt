@@ -65,6 +65,12 @@ class ShipGame : Application {
                         isMovingForward = { isKeyPressed(Key.W) },
                         isReversing = { isKeyPressed(Key.S) })
                 }
+                behaviour {
+                    LateralMovementBehavior(
+                        isMovingLeft = { isKeyPressed(Key.Left) },
+                        isMovingRight = { isKeyPressed(Key.Right) }
+                    )
+                }
             }
 
             entityPool(Id.ENT_PLASMA_BOLT, "models/plasma-bolt.glb") {
@@ -103,6 +109,9 @@ class ShipGame : Application {
                 loop(true)
             }
             sound(Id.SOUND_ENGINE, "sounds/engine.wav") {
+                loop(true)
+            }
+            sound(Id.SOUND_LATERAL_THRUST, "sounds/lateral-thrust.wav") {
                 loop(true)
             }
             sound(Id.SOUND_SONIC_BOOM, "sounds/sonic-boom.wav")

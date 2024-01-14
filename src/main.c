@@ -187,7 +187,6 @@ int main() {
     /*
      * CLEAN UP
      */
-    vkQueueWaitIdle(context->vulkanDeviceContext->graphicsQueue);
     vkWaitForFences(context->vulkanDeviceContext->device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
     vkResetFences(context->vulkanDeviceContext->device, 1, &inFlightFence);
     vkDestroySemaphore(context->vulkanDeviceContext->device, renderFinishedSemaphore, NULL);
