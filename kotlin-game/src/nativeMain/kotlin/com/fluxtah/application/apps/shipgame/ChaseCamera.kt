@@ -15,7 +15,7 @@ class ChaseCamera(
     private var offset: Vector3 = Vector3(0f, 3f, -4.2f)
 ) {
     private var position: Vector3 = Vector3()
-    private var smoothingFactor = 1.6f // Adjust for desired smoothing
+    private var smoothingFactor = 4.0f // Adjust for desired smoothing
 
     fun update(deltaTime: Float) {
         // Calculate the offset position based on target's rotation
