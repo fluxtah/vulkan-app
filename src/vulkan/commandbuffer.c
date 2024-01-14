@@ -61,7 +61,7 @@ void beginCommandBufferRecording(VkCommandBuffer commandBuffer, VkRenderPass ren
                                  VkExtent2D *swapChainExtent, VkPipeline graphicsPipeline) {
     VkCommandBufferBeginInfo beginInfo = {};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;               // Optional
+   // beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;               // Optional
     beginInfo.pInheritanceInfo = NULL; // Optional for primary command buffers
 
     if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {

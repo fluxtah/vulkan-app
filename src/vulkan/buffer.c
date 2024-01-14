@@ -98,8 +98,20 @@ void copyBuffer(VkDevice device, VkCommandPool commandPool, VkQueue queue, VkBuf
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffer;
 
-    vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(queue);
+    VkFenceCreateInfo fenceInfo = {};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+
+    VkFence fence;
+    vkCreateFence(device, &fenceInfo, NULL, &fence);
+
+    if (vkQueueSubmit(queue, 1, &submitInfo, fence) != VK_SUCCESS) {
+        fprintf(stderr, "Failed to submit draw command buffer\n");
+        exit(1);
+    }
+
+    vkWaitForFences(device, 1, &fence, VK_TRUE, UINT64_MAX); // Wait for the fence
+
+    vkDestroyFence(device, fence, NULL);
 
     // Free the temporary command buffer
     vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);

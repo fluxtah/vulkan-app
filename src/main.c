@@ -111,7 +111,7 @@ int main() {
                 if (aabbCollision(&sourceEntity->aabb, &otherEntity->aabb))
                     collisionTargetInfos[collisionTargetInfosSize++] = otherEntity->kotlinEntityInfo;
             }
-            if(collisionTargetInfosSize > 0) {
+            if (collisionTargetInfosSize > 0) {
                 ktCollisionCallback(sourceEntity->kotlinEntityInfo, collisionTargetInfos, collisionTargetInfosSize);
             }
         }
@@ -156,8 +156,6 @@ int main() {
                               UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE,
                               &imageIndex);
 
-        vkResetFences(context->vulkanDeviceContext->device, 1, &inFlightFence);
-
         VkCommandBuffer commandBuffersToSubmit[2]; // Maximum of 2 command buffers
         uint32_t commandBufferCount = 0;
 
@@ -174,10 +172,13 @@ int main() {
         renderSubmit(context->vulkanDeviceContext, waitSemaphores, signalSemaphores, inFlightFence,
                      commandBuffersToSubmit, commandBufferCount);
 
-        vkWaitForFences(context->vulkanDeviceContext->device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
 
         renderPresent(context->vulkanDeviceContext, context->vulkanSwapchainContext->swapChain, signalSemaphores,
                       imageIndex);
+
+        vkWaitForFences(context->vulkanDeviceContext->device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
+        vkResetFences(context->vulkanDeviceContext->device, 1, &inFlightFence);
+        vkResetCommandPool(context->vulkanDeviceContext->device, context->commandPool, 0);
 
         free(ktEntities->entities);
         free(ktEntities);
@@ -186,6 +187,7 @@ int main() {
     /*
      * CLEAN UP
      */
+    vkQueueWaitIdle(context->vulkanDeviceContext->graphicsQueue);
     vkWaitForFences(context->vulkanDeviceContext->device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
     vkResetFences(context->vulkanDeviceContext->device, 1, &inFlightFence);
     vkDestroySemaphore(context->vulkanDeviceContext->device, renderFinishedSemaphore, NULL);

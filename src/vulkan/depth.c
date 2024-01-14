@@ -23,10 +23,18 @@ ImageMemory *createDepthStencil(VulkanDeviceContext *context, VkCommandPool comm
     VkFormat depthFormat = findDepthFormat(context->physicalDevice);
 
     // Assuming createImage and createImageView are implemented
-    createImage(context->device, context->physicalDevice, swapChainExtent.width,
-                swapChainExtent.height, depthFormat,
-                VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &depthStencil->image, &depthStencil->memory);
+    createImage(
+            context->device,
+            context->physicalDevice,
+            swapChainExtent.width,
+            swapChainExtent.height,
+            depthFormat,
+            VK_IMAGE_TILING_OPTIMAL,
+            VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT,
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT | VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT,
+            &depthStencil->image,
+            &depthStencil->memory
+    );
 
     depthStencil->imageView = createImageView(context->device, &depthStencil->image, depthFormat,
                                               VK_IMAGE_ASPECT_DEPTH_BIT);

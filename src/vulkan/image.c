@@ -32,7 +32,11 @@ void endSingleTimeCommands(VkDevice device, VkCommandPool commandPool, VkCommand
     VkFence fence;
     vkCreateFence(device, &fenceInfo, NULL, &fence);
 
-    vkQueueSubmit(graphicsQueue, 1, &submitInfo, fence);
+    if(vkQueueSubmit(graphicsQueue, 1, &submitInfo, fence) != VK_SUCCESS) {
+        fprintf(stderr, "Failed to submit draw command buffer\n");
+        exit(1);
+    }
+
     vkWaitForFences(device, 1, &fence, VK_TRUE, UINT64_MAX); // Wait for the fence
 
     vkDestroyFence(device, fence, NULL);

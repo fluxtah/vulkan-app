@@ -45,7 +45,7 @@ Entity *createEntity(ApplicationContext *context, const char *filename, CreateEn
             context->vulkanDeviceContext->device,
             context->pipelineConfig->descriptorPool,
             context->pipelineConfig->fragmentShaderDescriptorSetLayout,
-            &entity->fragmentDescriptorSet)) {
+            &entity->fragmentDescriptorSet) != VK_SUCCESS) {
         LOG_ERROR("Failed to allocate fragment descriptor set");
         return NULL;
     }

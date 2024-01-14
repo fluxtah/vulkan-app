@@ -305,6 +305,7 @@ void destroyApplication(ApplicationContext *context) {
                               context->vulkanSwapchainContext->swapChainImageCount);
     }
 
+#if DEBUG
     if (context->debugPipelineConfig != NULL && context->vulkanSwapchainContext != NULL) {
 
         if (context->debugCubeBuffer != NULL && context->vulkanDeviceContext != NULL) {
@@ -320,7 +321,7 @@ void destroyApplication(ApplicationContext *context) {
                               context->vulkanSwapchainContext->swapChainImageCount);
 
     }
-
+#endif
     if (context->audioContext != NULL) {
         destroyAudioContext(context->audioContext);
     }
