@@ -5,7 +5,7 @@
 #ifndef APP_DEBUG_CUBE_H
 #define APP_DEBUG_CUBE_H
 
-#include "include/vulkan/pipeline.h"
+#include "include/vertex.h"
 
 DebugVertex cubeVertices[] = {
         // Front face

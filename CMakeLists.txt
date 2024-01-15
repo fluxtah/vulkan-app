@@ -39,9 +39,6 @@ add_executable(Game
         include/vulkan/shaders.h
         src/vulkan/shaders.c
 
-        include/vulkan/pipeline.h
-        src/vulkan/pipeline.c
-
         include/vulkan/renderpass.h
         src/vulkan/renderpass.c
 
@@ -112,8 +109,8 @@ add_executable(Game
         include/aabb.h
         src/aabb.c
 
-        src/pipelines/shared.c
         include/pipelines/shared.h
+        src/pipelines/shared.c
 
         include/pipelines/basic/config.h
         src/pipelines/basic/config.c
@@ -126,6 +123,18 @@ add_executable(Game
 
         include/pipelines/debug/pipeline_layout.h
         src/pipelines/debug/pipeline_layout.c
+
+        include/pipelines/basic/pipeline.h
+        src/pipelines/basic/pipeline.c
+
+        include/pipelines/debug/pipeline.h
+        src/pipelines/debug/pipeline.c
+
+        include/pipelines/viewport_util.h
+        src/pipelines/viewport_util.c
+
+        include/pipelines/shader_util.h
+        src/pipelines/shader_util.c
 )
 
 include_directories(kotlin-game/build/bin/native/releaseShared)

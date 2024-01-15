@@ -3,13 +3,13 @@
 
 #include "include/context.h"
 #include "include/vulkan/descriptor.h"
-#include "include/vulkan/pipeline.h"
 #include "include/vulkan/shaders.h"
 #include "include/vulkan/commandbuffer.h"
 #include "include/vulkan/renderpass.h"
 #include "include/vulkan/framebuffer.h"
 #include "include/pipelines/shared.h"
 #include "include/pipelines/debug/pipeline_layout.h"
+#include "include/pipelines/debug/pipeline.h"
 
 PipelineConfig *createDebugPipelineConfig(
         VulkanDeviceContext *context,
