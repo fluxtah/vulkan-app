@@ -13,8 +13,8 @@
 #include "include/vulkan/framebuffer.h"
 #include "include/vulkan/renderpass.h"
 
-#include "include/pipelines/basic/config.h"
-#include "include/pipelines/debug/config.h"
+#include "include/pipelines/basic/basic_pipeline_config.h"
+#include "include/pipelines/debug/debug_pipeline_config.h"
 
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_beta.h>

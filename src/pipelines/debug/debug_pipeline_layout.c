@@ -1,4 +1,4 @@
-#include "include/pipelines/debug/pipeline_layout.h"
+#include "include/pipelines/debug/debug_pipeline_layout.h"
 
 VkPipelineLayout createDebugPipelineLayout(VkDevice device) {
 

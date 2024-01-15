@@ -1,19 +1,17 @@
-#ifndef APP_PIPELINES_DEBUG_CONFIG_H
-#define APP_PIPELINES_DEBUG_CONFIG_H
-
+#ifndef APP_PIPELINES_BASIC_CONFIG_H
+#define APP_PIPELINES_BASIC_CONFIG_H
 #include "include/context.h"
 #include "include/vulkan/descriptor.h"
 #include "include/vulkan/shaders.h"
 #include "include/vulkan/commandbuffer.h"
 #include "include/vulkan/renderpass.h"
 #include "include/vulkan/framebuffer.h"
-#include "include/pipelines/shared.h"
-#include "include/pipelines/debug/pipeline_layout.h"
-#include "include/pipelines/debug/pipeline.h"
+#include "include/pipelines/pipeline_config_shared.h"
+#include "include/pipelines/basic/basic_pipeline_layout.h"
+#include "include/pipelines/basic/basic_pipeline.h"
 
-PipelineConfig *createDebugPipelineConfig(
+PipelineConfig *createBasicShaderPipelineConfig(
         VulkanDeviceContext *context,
         VkCommandPool commandPool,
         VulkanSwapchainContext *vulkanSwapchainContext);
-
-#endif //APP_PIPELINES_DEBUG_CONFIG_H
+#endif //APP_PIPELINES_BASIC_CONFIG_H

@@ -1,6 +1,6 @@
-#include "include/pipelines/debug/pipeline.h"
+#include "include/pipelines/basic/basic_pipeline.h"
 
-VkPipeline createDebugPipeline(
+VkPipeline createBasicPipeline(
         VkDevice device, VkPipelineLayout pipelineLayout, VkRenderPass renderPass, Viewport viewport,
         VkShaderModule vertShaderModule, VkShaderModule fragShaderModule) {
 
@@ -8,10 +8,10 @@ VkPipeline createDebugPipeline(
 
     VkVertexInputBindingDescription bindingDescription = {};
     bindingDescription.binding = 0; // Binding index
-    bindingDescription.stride = sizeof(DebugVertex);
+    bindingDescription.stride = sizeof(Vertex);
     bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX; // Move to the next data entry after each vertex
 
-    VkVertexInputAttributeDescription attributeDescriptions[1];
+    VkVertexInputAttributeDescription attributeDescriptions[4];
 
     // Position attribute
     attributeDescriptions[0].binding = 0;
@@ -19,16 +19,34 @@ VkPipeline createDebugPipeline(
     attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
     attributeDescriptions[0].offset = offsetof(Vertex, position);
 
+    // Normal attribute
+    attributeDescriptions[1].binding = 0;
+    attributeDescriptions[1].location = 1; // location = 1 in the shader
+    attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+    attributeDescriptions[1].offset = offsetof(Vertex, normal);
+
+    // UV attribute
+    attributeDescriptions[2].binding = 0;
+    attributeDescriptions[2].location = 2; // location = 2 in the shader
+    attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
+    attributeDescriptions[2].offset = offsetof(Vertex, uv);
+
+    // Tangent attribute
+    attributeDescriptions[3].binding = 0;
+    attributeDescriptions[3].location = 3; // location = 3 in the shader
+    attributeDescriptions[3].format = VK_FORMAT_R32G32B32A32_SFLOAT;
+    attributeDescriptions[3].offset = offsetof(Vertex, tangent);
+
     VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertexInputInfo.vertexBindingDescriptionCount = 1;
     vertexInputInfo.pVertexBindingDescriptions = &bindingDescription; // Pointer to binding descriptions
-    vertexInputInfo.vertexAttributeDescriptionCount = 1;
+    vertexInputInfo.vertexAttributeDescriptionCount = 4;
     vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions; // Pointer to attribute descriptions
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     inputAssembly.primitiveRestartEnable = VK_FALSE;
 
     VkViewport vkViewport = viewportToVkViewport(&viewport);
@@ -46,7 +64,7 @@ VkPipeline createDebugPipeline(
     rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
     rasterizer.depthClampEnable = VK_FALSE;         // If set to VK_TRUE, fragments beyond near and far planes are clamped
     rasterizer.rasterizerDiscardEnable = VK_FALSE;  // If set to VK_TRUE, geometry never passes through the rasterizer stage
-    rasterizer.polygonMode = VK_POLYGON_MODE_LINE;  // Determines how fragments are generated. For filling the area of the polygon with fragments, use VK_POLYGON_MODE_FILL.
+    rasterizer.polygonMode = VK_POLYGON_MODE_FILL;  // Determines how fragments are generated. For filling the area of the polygon with fragments, use VK_POLYGON_MODE_FILL.
     rasterizer.lineWidth = 1.0f;                    // Line width (greater than 1.0f requires enabling wideLines GPU feature)
     rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;    // Type of face culling to use
     rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE; // Specifies the vertex order for faces to be considered front-facing
@@ -104,7 +122,7 @@ VkPipeline createDebugPipeline(
 
     VkPipeline graphicsPipeline;
     if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, NULL, &graphicsPipeline) != VK_SUCCESS) {
-        fprintf(stderr, "Failed to create DEBUG graphics pipeline\n");
+        fprintf(stderr, "Failed to create BASIC graphics pipeline\n");
         return NULL;
     }
 

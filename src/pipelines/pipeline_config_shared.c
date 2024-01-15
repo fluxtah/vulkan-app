@@ -1,4 +1,4 @@
-#include "include/pipelines/shared.h"
+#include "include/pipelines/pipeline_config_shared.h"
 
 void destroyPipelineConfig(VulkanDeviceContext *context, PipelineConfig *pipelineConfig,
                            uint32_t swapChainImageCount) {

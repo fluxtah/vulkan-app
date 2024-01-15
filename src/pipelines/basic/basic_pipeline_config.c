@@ -1,4 +1,4 @@
-#include "include/pipelines/basic/config.h"
+#include "include/pipelines/basic/basic_pipeline_config.h"
 
 PipelineConfig *createBasicShaderPipelineConfig(
         VulkanDeviceContext *context,

@@ -1,4 +1,4 @@
-#include "include/pipelines/debug/config.h"
+#include "include/pipelines/debug/debug_pipeline_config.h"
 
 PipelineConfig *createDebugPipelineConfig(
         VulkanDeviceContext *context,

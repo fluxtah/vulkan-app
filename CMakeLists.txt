@@ -109,32 +109,32 @@ add_executable(Game
         include/aabb.h
         src/aabb.c
 
-        include/pipelines/shared.h
-        src/pipelines/shared.c
+        include/pipelines/pipeline_config_shared.h
+        src/pipelines/pipeline_config_shared.c
 
-        include/pipelines/basic/config.h
-        src/pipelines/basic/config.c
+        include/pipelines/basic/basic_pipeline_config.h
+        src/pipelines/basic/basic_pipeline_config.c
 
-        include/pipelines/debug/config.h
-        src/pipelines/debug/config.c
+        include/pipelines/debug/debug_pipeline_config.h
+        src/pipelines/debug/debug_pipeline_config.c
 
-        include/pipelines/basic/pipeline_layout.h
-        src/pipelines/basic/pipeline_layout.c
+        include/pipelines/basic/basic_pipeline_layout.h
+        src/pipelines/basic/basic_pipeline_layout.c
 
-        include/pipelines/debug/pipeline_layout.h
-        src/pipelines/debug/pipeline_layout.c
+        include/pipelines/debug/debug_pipeline_layout.h
+        src/pipelines/debug/debug_pipeline_layout.c
 
-        include/pipelines/basic/pipeline.h
-        src/pipelines/basic/pipeline.c
+        include/pipelines/basic/basic_pipeline.h
+        src/pipelines/basic/basic_pipeline.c
 
-        include/pipelines/debug/pipeline.h
-        src/pipelines/debug/pipeline.c
+        include/pipelines/debug/debug_pipeline.h
+        src/pipelines/debug/debug_pipeline.c
 
         include/pipelines/viewport_util.h
         src/pipelines/viewport_util.c
 
-        include/pipelines/shader_util.h
-        src/pipelines/shader_util.c
+        include/pipelines/pipeline_shader_util.h
+        src/pipelines/pipeline_shader_util.c
 )
 
 include_directories(kotlin-game/build/bin/native/releaseShared)

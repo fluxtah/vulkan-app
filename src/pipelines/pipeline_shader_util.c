@@ -1,4 +1,4 @@
-#include "include/pipelines/shader_util.h"
+#include "include/pipelines/pipeline_shader_util.h"
 
 VkPipelineShaderStageCreateInfo *createBasicShaderStages(
         VkShaderModule vertShaderModule, VkShaderModule fragShaderModule) {
