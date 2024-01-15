@@ -1,6 +1,3 @@
-//
-// Created by Ian Warwick on 12/01/2024.
-//
 #include "include/entity.h"
 
 Entity *createEntity(ApplicationContext *context, const char *filename, CreateEntityInfo *info) {
@@ -53,7 +50,7 @@ Entity *createEntity(ApplicationContext *context, const char *filename, CreateEn
         return NULL;
     }
 
-    updateBasicShaderDescriptorSet(
+    updateBasicPipelineDescriptorSets(
             context->vulkanDeviceContext->device,
             entity->vertexDescriptorSet,
             entity->fragmentDescriptorSet,

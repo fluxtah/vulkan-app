@@ -151,6 +151,8 @@ add_executable(Game
         src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.c
         include/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.h
         src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.c
+        include/pipelines/basic/basic_pipeline_update_descriptor_sets.h
+        src/pipelines/basic/basic_pipeline_update_descriptor_sets.c
 )
 
 include_directories(kotlin-game/build/bin/native/releaseShared)

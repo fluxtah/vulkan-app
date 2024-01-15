@@ -11,6 +11,7 @@
 #include "include/vulkan/buffer_memory.h"
 #include "renderresources.h"
 #include "obb.h"
+#include "include/pipelines/basic/basic_pipeline_update_descriptor_sets.h"
 
 typedef struct Entity {
     vec3 scale;

@@ -13,15 +13,4 @@ VkResult allocateDescriptorSet(
         VkDescriptorSetLayout layout,
         VkDescriptorSet *descriptorSet);
 
-void updateBasicShaderDescriptorSet(
-        VkDevice device,
-        VkDescriptorSet vertexDescriptorSet,
-        VkDescriptorSet fragmentDescriptorSet,
-        VkBuffer transformUboBuffer,
-        VkBuffer lightingUboBuffer,
-        VkImageView baseColorImageView,
-        VkImageView normalMapImageView,
-        VkImageView metallicRoughnessMapImageView,
-        VkSampler sampler);
-
 #endif // VULKAN_DESCRIPTOR_H

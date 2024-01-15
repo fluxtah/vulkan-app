@@ -489,6 +489,30 @@ src/pipelines/basic/basic_pipeline_renderpass.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/basic_pipeline_renderpass.c.s
 .PHONY : src/pipelines/basic/basic_pipeline_renderpass.c.s
 
+src/pipelines/basic/basic_pipeline_update_descriptor_sets.o: src/pipelines/basic/basic_pipeline_update_descriptor_sets.c.o
+.PHONY : src/pipelines/basic/basic_pipeline_update_descriptor_sets.o
+
+# target to build an object file
+src/pipelines/basic/basic_pipeline_update_descriptor_sets.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/basic_pipeline_update_descriptor_sets.c.o
+.PHONY : src/pipelines/basic/basic_pipeline_update_descriptor_sets.c.o
+
+src/pipelines/basic/basic_pipeline_update_descriptor_sets.i: src/pipelines/basic/basic_pipeline_update_descriptor_sets.c.i
+.PHONY : src/pipelines/basic/basic_pipeline_update_descriptor_sets.i
+
+# target to preprocess a source file
+src/pipelines/basic/basic_pipeline_update_descriptor_sets.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/basic_pipeline_update_descriptor_sets.c.i
+.PHONY : src/pipelines/basic/basic_pipeline_update_descriptor_sets.c.i
+
+src/pipelines/basic/basic_pipeline_update_descriptor_sets.s: src/pipelines/basic/basic_pipeline_update_descriptor_sets.c.s
+.PHONY : src/pipelines/basic/basic_pipeline_update_descriptor_sets.s
+
+# target to generate assembly for a file
+src/pipelines/basic/basic_pipeline_update_descriptor_sets.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/basic_pipeline_update_descriptor_sets.c.s
+.PHONY : src/pipelines/basic/basic_pipeline_update_descriptor_sets.c.s
+
 src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.o: src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.c.o
 .PHONY : src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.o
 
@@ -1263,6 +1287,9 @@ help:
 	@echo "... src/pipelines/basic/basic_pipeline_renderpass.o"
 	@echo "... src/pipelines/basic/basic_pipeline_renderpass.i"
 	@echo "... src/pipelines/basic/basic_pipeline_renderpass.s"
+	@echo "... src/pipelines/basic/basic_pipeline_update_descriptor_sets.o"
+	@echo "... src/pipelines/basic/basic_pipeline_update_descriptor_sets.i"
+	@echo "... src/pipelines/basic/basic_pipeline_update_descriptor_sets.s"
 	@echo "... src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.o"
 	@echo "... src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.i"
 	@echo "... src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.s"
