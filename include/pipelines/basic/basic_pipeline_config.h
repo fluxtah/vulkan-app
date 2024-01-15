@@ -9,6 +9,9 @@
 #include "include/pipelines/basic/basic_pipeline_layout.h"
 #include "include/pipelines/basic/basic_pipeline.h"
 #include "include/pipelines/basic/basic_pipeline_renderpass.h"
+#include "include/pipelines/basic/basic_pipeline_descriptor_pool.h"
+#include "include/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.h"
+#include "include/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.h"
 
 PipelineConfig *createBasicShaderPipelineConfig(
         VulkanDeviceContext *context,

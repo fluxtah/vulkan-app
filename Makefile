@@ -67,8 +67,8 @@ CMAKE_BINARY_DIR = /Users/ian.warwick/Documents/sdev/game
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
-	/opt/homebrew/Cellar/cmake/3.28.0/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "No interactive CMake dialog available..."
+	/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -393,6 +393,54 @@ src/pipelines/basic/basic_pipeline_config.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/basic_pipeline_config.c.s
 .PHONY : src/pipelines/basic/basic_pipeline_config.c.s
 
+src/pipelines/basic/basic_pipeline_descriptor_pool.o: src/pipelines/basic/basic_pipeline_descriptor_pool.c.o
+.PHONY : src/pipelines/basic/basic_pipeline_descriptor_pool.o
+
+# target to build an object file
+src/pipelines/basic/basic_pipeline_descriptor_pool.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/basic_pipeline_descriptor_pool.c.o
+.PHONY : src/pipelines/basic/basic_pipeline_descriptor_pool.c.o
+
+src/pipelines/basic/basic_pipeline_descriptor_pool.i: src/pipelines/basic/basic_pipeline_descriptor_pool.c.i
+.PHONY : src/pipelines/basic/basic_pipeline_descriptor_pool.i
+
+# target to preprocess a source file
+src/pipelines/basic/basic_pipeline_descriptor_pool.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/basic_pipeline_descriptor_pool.c.i
+.PHONY : src/pipelines/basic/basic_pipeline_descriptor_pool.c.i
+
+src/pipelines/basic/basic_pipeline_descriptor_pool.s: src/pipelines/basic/basic_pipeline_descriptor_pool.c.s
+.PHONY : src/pipelines/basic/basic_pipeline_descriptor_pool.s
+
+# target to generate assembly for a file
+src/pipelines/basic/basic_pipeline_descriptor_pool.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/basic_pipeline_descriptor_pool.c.s
+.PHONY : src/pipelines/basic/basic_pipeline_descriptor_pool.c.s
+
+src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.o: src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.c.o
+.PHONY : src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.o
+
+# target to build an object file
+src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.c.o
+.PHONY : src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.c.o
+
+src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.i: src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.c.i
+.PHONY : src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.i
+
+# target to preprocess a source file
+src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.c.i
+.PHONY : src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.c.i
+
+src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.s: src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.c.s
+.PHONY : src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.s
+
+# target to generate assembly for a file
+src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.c.s
+.PHONY : src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.c.s
+
 src/pipelines/basic/basic_pipeline_layout.o: src/pipelines/basic/basic_pipeline_layout.c.o
 .PHONY : src/pipelines/basic/basic_pipeline_layout.o
 
@@ -440,6 +488,30 @@ src/pipelines/basic/basic_pipeline_renderpass.s: src/pipelines/basic/basic_pipel
 src/pipelines/basic/basic_pipeline_renderpass.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/basic_pipeline_renderpass.c.s
 .PHONY : src/pipelines/basic/basic_pipeline_renderpass.c.s
+
+src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.o: src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.c.o
+.PHONY : src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.o
+
+# target to build an object file
+src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.c.o
+.PHONY : src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.c.o
+
+src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.i: src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.c.i
+.PHONY : src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.i
+
+# target to preprocess a source file
+src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.c.i
+.PHONY : src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.c.i
+
+src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.s: src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.c.s
+.PHONY : src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.s
+
+# target to generate assembly for a file
+src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.c.s
+.PHONY : src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.c.s
 
 src/pipelines/debug/debug_pipeline.o: src/pipelines/debug/debug_pipeline.c.o
 .PHONY : src/pipelines/debug/debug_pipeline.o
@@ -536,6 +608,54 @@ src/pipelines/debug/debug_pipeline_renderpass.s: src/pipelines/debug/debug_pipel
 src/pipelines/debug/debug_pipeline_renderpass.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/debug/debug_pipeline_renderpass.c.s
 .PHONY : src/pipelines/debug/debug_pipeline_renderpass.c.s
+
+src/pipelines/pfx/pfx_pipeline_layout.o: src/pipelines/pfx/pfx_pipeline_layout.c.o
+.PHONY : src/pipelines/pfx/pfx_pipeline_layout.o
+
+# target to build an object file
+src/pipelines/pfx/pfx_pipeline_layout.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_layout.c.o
+.PHONY : src/pipelines/pfx/pfx_pipeline_layout.c.o
+
+src/pipelines/pfx/pfx_pipeline_layout.i: src/pipelines/pfx/pfx_pipeline_layout.c.i
+.PHONY : src/pipelines/pfx/pfx_pipeline_layout.i
+
+# target to preprocess a source file
+src/pipelines/pfx/pfx_pipeline_layout.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_layout.c.i
+.PHONY : src/pipelines/pfx/pfx_pipeline_layout.c.i
+
+src/pipelines/pfx/pfx_pipeline_layout.s: src/pipelines/pfx/pfx_pipeline_layout.c.s
+.PHONY : src/pipelines/pfx/pfx_pipeline_layout.s
+
+# target to generate assembly for a file
+src/pipelines/pfx/pfx_pipeline_layout.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_layout.c.s
+.PHONY : src/pipelines/pfx/pfx_pipeline_layout.c.s
+
+src/pipelines/pfx/pfx_pipeline_renderpass.o: src/pipelines/pfx/pfx_pipeline_renderpass.c.o
+.PHONY : src/pipelines/pfx/pfx_pipeline_renderpass.o
+
+# target to build an object file
+src/pipelines/pfx/pfx_pipeline_renderpass.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_renderpass.c.o
+.PHONY : src/pipelines/pfx/pfx_pipeline_renderpass.c.o
+
+src/pipelines/pfx/pfx_pipeline_renderpass.i: src/pipelines/pfx/pfx_pipeline_renderpass.c.i
+.PHONY : src/pipelines/pfx/pfx_pipeline_renderpass.i
+
+# target to preprocess a source file
+src/pipelines/pfx/pfx_pipeline_renderpass.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_renderpass.c.i
+.PHONY : src/pipelines/pfx/pfx_pipeline_renderpass.c.i
+
+src/pipelines/pfx/pfx_pipeline_renderpass.s: src/pipelines/pfx/pfx_pipeline_renderpass.c.s
+.PHONY : src/pipelines/pfx/pfx_pipeline_renderpass.s
+
+# target to generate assembly for a file
+src/pipelines/pfx/pfx_pipeline_renderpass.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_renderpass.c.s
+.PHONY : src/pipelines/pfx/pfx_pipeline_renderpass.c.s
 
 src/pipelines/pipeline_config_shared.o: src/pipelines/pipeline_config_shared.c.o
 .PHONY : src/pipelines/pipeline_config_shared.o
@@ -1131,12 +1251,21 @@ help:
 	@echo "... src/pipelines/basic/basic_pipeline_config.o"
 	@echo "... src/pipelines/basic/basic_pipeline_config.i"
 	@echo "... src/pipelines/basic/basic_pipeline_config.s"
+	@echo "... src/pipelines/basic/basic_pipeline_descriptor_pool.o"
+	@echo "... src/pipelines/basic/basic_pipeline_descriptor_pool.i"
+	@echo "... src/pipelines/basic/basic_pipeline_descriptor_pool.s"
+	@echo "... src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.o"
+	@echo "... src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.i"
+	@echo "... src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.s"
 	@echo "... src/pipelines/basic/basic_pipeline_layout.o"
 	@echo "... src/pipelines/basic/basic_pipeline_layout.i"
 	@echo "... src/pipelines/basic/basic_pipeline_layout.s"
 	@echo "... src/pipelines/basic/basic_pipeline_renderpass.o"
 	@echo "... src/pipelines/basic/basic_pipeline_renderpass.i"
 	@echo "... src/pipelines/basic/basic_pipeline_renderpass.s"
+	@echo "... src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.o"
+	@echo "... src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.i"
+	@echo "... src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.s"
 	@echo "... src/pipelines/debug/debug_pipeline.o"
 	@echo "... src/pipelines/debug/debug_pipeline.i"
 	@echo "... src/pipelines/debug/debug_pipeline.s"
@@ -1149,6 +1278,12 @@ help:
 	@echo "... src/pipelines/debug/debug_pipeline_renderpass.o"
 	@echo "... src/pipelines/debug/debug_pipeline_renderpass.i"
 	@echo "... src/pipelines/debug/debug_pipeline_renderpass.s"
+	@echo "... src/pipelines/pfx/pfx_pipeline_layout.o"
+	@echo "... src/pipelines/pfx/pfx_pipeline_layout.i"
+	@echo "... src/pipelines/pfx/pfx_pipeline_layout.s"
+	@echo "... src/pipelines/pfx/pfx_pipeline_renderpass.o"
+	@echo "... src/pipelines/pfx/pfx_pipeline_renderpass.i"
+	@echo "... src/pipelines/pfx/pfx_pipeline_renderpass.s"
 	@echo "... src/pipelines/pipeline_config_shared.o"
 	@echo "... src/pipelines/pipeline_config_shared.i"
 	@echo "... src/pipelines/pipeline_config_shared.s"

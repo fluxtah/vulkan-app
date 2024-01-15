@@ -1,5 +1,5 @@
-#ifndef APP_PIPELINES_BASIC_PIPELINE_H
-#define APP_PIPELINES_BASIC_PIPELINE_H
+#ifndef APP_PIPELINES_BASIC_H
+#define APP_PIPELINES_BASIC_H
 
 #include "include/pipelines/pipeline_shader_util.h"
 #include "include/pipelines/viewport_util.h"
@@ -11,4 +11,4 @@ VkPipeline createBasicPipeline(
         VkDevice device, VkPipelineLayout pipelineLayout, VkRenderPass renderPass, Viewport viewport,
         VkShaderModule vertShaderModule, VkShaderModule fragShaderModule);
 
-#endif //APP_PIPELINES_BASIC_PIPELINE_H
+#endif //APP_PIPELINES_BASIC_H

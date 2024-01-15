@@ -24,7 +24,7 @@ PipelineConfig *createBasicShaderPipelineConfig(
     //
     // Create a descriptor pool
     //
-    pipelineConfig->descriptorPool = createBasicShaderDescriptorPool(context->device);
+    pipelineConfig->descriptorPool = createBasicPipelineDescriptorPool(context->device);
     if (pipelineConfig->descriptorPool == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create descriptor pool for basic shader pipeline");
         destroyPipelineConfig(context, pipelineConfig, vulkanSwapchainContext->swapChainImageCount);
@@ -34,14 +34,16 @@ PipelineConfig *createBasicShaderPipelineConfig(
     //
     // Create descriptor set layouts
     //
-    pipelineConfig->vertexShaderDescriptorSetLayout = createBasicVertexShaderDescriptorSetLayout(context->device);
+    pipelineConfig->vertexShaderDescriptorSetLayout = createBasicPipelineVertexShaderDescriptorSetLayout(
+            context->device);
     if (pipelineConfig->vertexShaderDescriptorSetLayout == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create vertex shader descriptor set layout for basic shader pipeline");
         destroyPipelineConfig(context, pipelineConfig, vulkanSwapchainContext->swapChainImageCount);
         return NULL;
     }
 
-    pipelineConfig->fragmentShaderDescriptorSetLayout = createBasicFragmentShaderDescriptorSetLayout(context->device);
+    pipelineConfig->fragmentShaderDescriptorSetLayout = createBasicPipelineFragmentShaderDescriptorSetLayout(
+            context->device);
     if (pipelineConfig->fragmentShaderDescriptorSetLayout == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create fragment shader descriptor set layout for basic shader pipeline");
         destroyPipelineConfig(context, pipelineConfig, vulkanSwapchainContext->swapChainImageCount);
@@ -93,7 +95,8 @@ PipelineConfig *createBasicShaderPipelineConfig(
         return NULL;
     }
 
-    pipelineConfig->commandBuffers = allocateCommandBuffers(context->device, commandPool, vulkanSwapchainContext->swapChainImageCount);
+    pipelineConfig->commandBuffers = allocateCommandBuffers(context->device, commandPool,
+                                                            vulkanSwapchainContext->swapChainImageCount);
     if (pipelineConfig->commandBuffers == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to allocate command buffers for basic shader pipeline");
         destroyPipelineConfig(context, pipelineConfig, vulkanSwapchainContext->swapChainImageCount);

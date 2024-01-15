@@ -138,6 +138,19 @@ add_executable(Game
 
         include/pipelines/debug/debug_pipeline_renderpass.h
         src/pipelines/debug/debug_pipeline_renderpass.c
+
+        include/pipelines/basic/basic_pipeline_descriptor_pool.h
+        src/pipelines/basic/basic_pipeline_descriptor_pool.c
+
+        include/pipelines/pfx/pfx_pipeline_renderpass.h
+        src/pipelines/pfx/pfx_pipeline_renderpass.c
+
+        include/pipelines/pfx/pfx_pipeline_layout.h
+        src/pipelines/pfx/pfx_pipeline_layout.c
+        include/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.h
+        src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.c
+        include/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.h
+        src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.c
 )
 
 include_directories(kotlin-game/build/bin/native/releaseShared)
