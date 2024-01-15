@@ -92,23 +92,40 @@ add_executable(Game
         include/kotlin.h
         src/kotlin.c
 
-        include/pipelineconfig.h
-        src/pipelineconfig.c
-
         include/imagememory.h
         src/imagememory.c
         libs/uthash.h
 
         include/debug.h
         src/debug.c
+
         include/push_constants.h
         include/debug_cube.h
         include/vulkan/buffer_memory.h
         include/vertex.h
-        include/aabb.h
+
         include/entity.h
         src/entity.c
+
         include/obb.h
+
+        include/aabb.h
+        src/aabb.c
+
+        src/pipelines/shared.c
+        include/pipelines/shared.h
+
+        include/pipelines/basic/config.h
+        src/pipelines/basic/config.c
+
+        include/pipelines/debug/config.h
+        src/pipelines/debug/config.c
+
+        include/pipelines/basic/pipeline_layout.h
+        src/pipelines/basic/pipeline_layout.c
+
+        include/pipelines/debug/pipeline_layout.h
+        src/pipelines/debug/pipeline_layout.c
 )
 
 include_directories(kotlin-game/build/bin/native/releaseShared)

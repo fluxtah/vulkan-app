@@ -12,4 +12,6 @@ typedef struct AABB {
     vec3 max; // Maximum corner of the AABB
 } AABB;
 
+bool aabbCollision(AABB *a, AABB *b);
+
 #endif //GAME_AABB_H

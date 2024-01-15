@@ -3,28 +3,10 @@
 #define DR_WAV_IMPLEMENTATION
 
 #include "include/vulkan/setup.h"
-#include "include/vulkan/commandbuffer.h"
-#include "include/context.h"
 #include "include/vulkan/render.h"
-
-#include "libkotlin_game_api.h"
-#include "kotlin-game/cinterop/model.h"
 #include "include/ubo_update.h"
-#include "include/kotlin.h"
-
-#include <stdlib.h>
-#include <vulkan/vulkan.h>
-#include <vulkan/vulkan_beta.h>
-#include <GLFW/glfw3.h>
-#include <stdio.h>
 
 static float lastFrameTime = 0.0f;
-
-bool aabbCollision(AABB *a, AABB *b) {
-    return (a->min[0] <= b->max[0] && a->max[0] >= b->min[0]) &&
-           (a->min[1] <= b->max[1] && a->max[1] >= b->min[1]) &&
-           (a->min[2] <= b->max[2] && a->max[2] >= b->min[2]);
-}
 
 int main() {
     //

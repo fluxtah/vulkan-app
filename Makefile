@@ -67,8 +67,8 @@ CMAKE_BINARY_DIR = /Users/ian.warwick/Documents/sdev/game
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "No interactive CMake dialog available..."
-	/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
+	/opt/homebrew/Cellar/cmake/3.28.0/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -128,6 +128,30 @@ Game: cmake_check_build_system
 Game/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/build
 .PHONY : Game/fast
+
+src/aabb.o: src/aabb.c.o
+.PHONY : src/aabb.o
+
+# target to build an object file
+src/aabb.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/aabb.c.o
+.PHONY : src/aabb.c.o
+
+src/aabb.i: src/aabb.c.i
+.PHONY : src/aabb.i
+
+# target to preprocess a source file
+src/aabb.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/aabb.c.i
+.PHONY : src/aabb.c.i
+
+src/aabb.s: src/aabb.c.s
+.PHONY : src/aabb.s
+
+# target to generate assembly for a file
+src/aabb.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/aabb.c.s
+.PHONY : src/aabb.c.s
 
 src/camera.o: src/camera.c.o
 .PHONY : src/camera.o
@@ -321,29 +345,125 @@ src/modeldata.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/modeldata.c.s
 .PHONY : src/modeldata.c.s
 
-src/pipelineconfig.o: src/pipelineconfig.c.o
-.PHONY : src/pipelineconfig.o
+src/pipelines/basic/config.o: src/pipelines/basic/config.c.o
+.PHONY : src/pipelines/basic/config.o
 
 # target to build an object file
-src/pipelineconfig.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelineconfig.c.o
-.PHONY : src/pipelineconfig.c.o
+src/pipelines/basic/config.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/config.c.o
+.PHONY : src/pipelines/basic/config.c.o
 
-src/pipelineconfig.i: src/pipelineconfig.c.i
-.PHONY : src/pipelineconfig.i
+src/pipelines/basic/config.i: src/pipelines/basic/config.c.i
+.PHONY : src/pipelines/basic/config.i
 
 # target to preprocess a source file
-src/pipelineconfig.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelineconfig.c.i
-.PHONY : src/pipelineconfig.c.i
+src/pipelines/basic/config.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/config.c.i
+.PHONY : src/pipelines/basic/config.c.i
 
-src/pipelineconfig.s: src/pipelineconfig.c.s
-.PHONY : src/pipelineconfig.s
+src/pipelines/basic/config.s: src/pipelines/basic/config.c.s
+.PHONY : src/pipelines/basic/config.s
 
 # target to generate assembly for a file
-src/pipelineconfig.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelineconfig.c.s
-.PHONY : src/pipelineconfig.c.s
+src/pipelines/basic/config.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/config.c.s
+.PHONY : src/pipelines/basic/config.c.s
+
+src/pipelines/basic/pipeline_layout.o: src/pipelines/basic/pipeline_layout.c.o
+.PHONY : src/pipelines/basic/pipeline_layout.o
+
+# target to build an object file
+src/pipelines/basic/pipeline_layout.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/pipeline_layout.c.o
+.PHONY : src/pipelines/basic/pipeline_layout.c.o
+
+src/pipelines/basic/pipeline_layout.i: src/pipelines/basic/pipeline_layout.c.i
+.PHONY : src/pipelines/basic/pipeline_layout.i
+
+# target to preprocess a source file
+src/pipelines/basic/pipeline_layout.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/pipeline_layout.c.i
+.PHONY : src/pipelines/basic/pipeline_layout.c.i
+
+src/pipelines/basic/pipeline_layout.s: src/pipelines/basic/pipeline_layout.c.s
+.PHONY : src/pipelines/basic/pipeline_layout.s
+
+# target to generate assembly for a file
+src/pipelines/basic/pipeline_layout.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/basic/pipeline_layout.c.s
+.PHONY : src/pipelines/basic/pipeline_layout.c.s
+
+src/pipelines/debug/config.o: src/pipelines/debug/config.c.o
+.PHONY : src/pipelines/debug/config.o
+
+# target to build an object file
+src/pipelines/debug/config.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/debug/config.c.o
+.PHONY : src/pipelines/debug/config.c.o
+
+src/pipelines/debug/config.i: src/pipelines/debug/config.c.i
+.PHONY : src/pipelines/debug/config.i
+
+# target to preprocess a source file
+src/pipelines/debug/config.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/debug/config.c.i
+.PHONY : src/pipelines/debug/config.c.i
+
+src/pipelines/debug/config.s: src/pipelines/debug/config.c.s
+.PHONY : src/pipelines/debug/config.s
+
+# target to generate assembly for a file
+src/pipelines/debug/config.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/debug/config.c.s
+.PHONY : src/pipelines/debug/config.c.s
+
+src/pipelines/debug/pipeline_layout.o: src/pipelines/debug/pipeline_layout.c.o
+.PHONY : src/pipelines/debug/pipeline_layout.o
+
+# target to build an object file
+src/pipelines/debug/pipeline_layout.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/debug/pipeline_layout.c.o
+.PHONY : src/pipelines/debug/pipeline_layout.c.o
+
+src/pipelines/debug/pipeline_layout.i: src/pipelines/debug/pipeline_layout.c.i
+.PHONY : src/pipelines/debug/pipeline_layout.i
+
+# target to preprocess a source file
+src/pipelines/debug/pipeline_layout.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/debug/pipeline_layout.c.i
+.PHONY : src/pipelines/debug/pipeline_layout.c.i
+
+src/pipelines/debug/pipeline_layout.s: src/pipelines/debug/pipeline_layout.c.s
+.PHONY : src/pipelines/debug/pipeline_layout.s
+
+# target to generate assembly for a file
+src/pipelines/debug/pipeline_layout.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/debug/pipeline_layout.c.s
+.PHONY : src/pipelines/debug/pipeline_layout.c.s
+
+src/pipelines/shared.o: src/pipelines/shared.c.o
+.PHONY : src/pipelines/shared.o
+
+# target to build an object file
+src/pipelines/shared.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/shared.c.o
+.PHONY : src/pipelines/shared.c.o
+
+src/pipelines/shared.i: src/pipelines/shared.c.i
+.PHONY : src/pipelines/shared.i
+
+# target to preprocess a source file
+src/pipelines/shared.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/shared.c.i
+.PHONY : src/pipelines/shared.c.i
+
+src/pipelines/shared.s: src/pipelines/shared.c.s
+.PHONY : src/pipelines/shared.s
+
+# target to generate assembly for a file
+src/pipelines/shared.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/shared.c.s
+.PHONY : src/pipelines/shared.c.s
 
 src/renderresources.o: src/renderresources.c.o
 .PHONY : src/renderresources.o
@@ -882,6 +1002,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... Game"
+	@echo "... src/aabb.o"
+	@echo "... src/aabb.i"
+	@echo "... src/aabb.s"
 	@echo "... src/camera.o"
 	@echo "... src/camera.i"
 	@echo "... src/camera.s"
@@ -906,9 +1029,21 @@ help:
 	@echo "... src/modeldata.o"
 	@echo "... src/modeldata.i"
 	@echo "... src/modeldata.s"
-	@echo "... src/pipelineconfig.o"
-	@echo "... src/pipelineconfig.i"
-	@echo "... src/pipelineconfig.s"
+	@echo "... src/pipelines/basic/config.o"
+	@echo "... src/pipelines/basic/config.i"
+	@echo "... src/pipelines/basic/config.s"
+	@echo "... src/pipelines/basic/pipeline_layout.o"
+	@echo "... src/pipelines/basic/pipeline_layout.i"
+	@echo "... src/pipelines/basic/pipeline_layout.s"
+	@echo "... src/pipelines/debug/config.o"
+	@echo "... src/pipelines/debug/config.i"
+	@echo "... src/pipelines/debug/config.s"
+	@echo "... src/pipelines/debug/pipeline_layout.o"
+	@echo "... src/pipelines/debug/pipeline_layout.i"
+	@echo "... src/pipelines/debug/pipeline_layout.s"
+	@echo "... src/pipelines/shared.o"
+	@echo "... src/pipelines/shared.i"
+	@echo "... src/pipelines/shared.s"
 	@echo "... src/renderresources.o"
 	@echo "... src/renderresources.i"
 	@echo "... src/renderresources.s"

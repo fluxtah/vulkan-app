@@ -7,13 +7,6 @@
 #include "include/debug.h"
 #include "include/vertex.h"
 
-VkPipelineLayout createBasicPipelineLayout(
-        VkDevice device,
-        VkDescriptorSetLayout vertexDescriptorSetLayout,
-        VkDescriptorSetLayout fragmentDescriptorSetLayout);
-
-VkPipelineLayout createDebugPipelineLayout(VkDevice device);
-
 VkPipeline createBasicPipeline(
         VkDevice device,
         VkPipelineLayout pipelineLayout,

@@ -17,7 +17,7 @@ class ChaseCamera(
     private var position: Vector3 = Vector3()
     private var smoothingFactor = 4.0f // Adjust for desired smoothing
 
-    fun update(deltaTime: Float) {
+    fun update() {
         // Calculate the offset position based on target's rotation
         val rotatedOffset = rotateOffsetByTargetYaw(offset, -target.rotationY)
 

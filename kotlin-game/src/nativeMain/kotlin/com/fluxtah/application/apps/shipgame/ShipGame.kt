@@ -146,7 +146,7 @@ class ShipGame : Application {
                     handleCameraInput(scene, fixedTimeStep)
                 }
 
-                chaseCam?.update(fixedTimeStep)
+                chaseCam?.update()
             }
         }
 
