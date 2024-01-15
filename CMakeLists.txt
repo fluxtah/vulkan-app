@@ -39,9 +39,6 @@ add_executable(Game
         include/vulkan/shaders.h
         src/vulkan/shaders.c
 
-        include/vulkan/renderpass.h
-        src/vulkan/renderpass.c
-
         include/vulkan/framebuffer.h
         src/vulkan/framebuffer.c
 
@@ -135,6 +132,12 @@ add_executable(Game
 
         include/pipelines/pipeline_shader_util.h
         src/pipelines/pipeline_shader_util.c
+
+        include/pipelines/basic/basic_pipeline_renderpass.h
+        src/pipelines/basic/basic_pipeline_renderpass.c
+
+        include/pipelines/debug/debug_pipeline_renderpass.h
+        src/pipelines/debug/debug_pipeline_renderpass.c
 )
 
 include_directories(kotlin-game/build/bin/native/releaseShared)

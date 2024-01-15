@@ -6,7 +6,7 @@ PipelineConfig *createBasicShaderPipelineConfig(
         VulkanSwapchainContext *vulkanSwapchainContext) {
     PipelineConfig *pipelineConfig = malloc(sizeof(PipelineConfig));
 
-    pipelineConfig->renderPass = createRenderPass(context);
+    pipelineConfig->renderPass = createBasicPipelineRenderPass(context);
     if (pipelineConfig->renderPass == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create render pass for basic shader pipeline");
         destroyPipelineConfig(context, pipelineConfig, vulkanSwapchainContext->swapChainImageCount);

@@ -11,7 +11,6 @@
 #include "include/kotlin.h"
 #include "include/vulkan/swapchain.h"
 #include "include/vulkan/framebuffer.h"
-#include "include/vulkan/renderpass.h"
 
 #include "include/pipelines/basic/basic_pipeline_config.h"
 #include "include/pipelines/debug/debug_pipeline_config.h"
