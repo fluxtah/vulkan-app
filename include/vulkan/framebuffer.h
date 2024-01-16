@@ -4,7 +4,7 @@
 #include <vulkan/vulkan.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "include/context.h"
+#include "include/application_context.h"
 
 VkFramebuffer *
 createSwapChainFramebuffers(VkDevice device, VulkanSwapchainContext *vulkanSwapchainContext, VkRenderPass renderPass);

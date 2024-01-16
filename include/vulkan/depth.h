@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 #include "image.h"
-#include "include/context.h"
+#include "include/application_context.h"
 #include "include/imagememory.h"
 
 VkFormat findDepthFormat(VkPhysicalDevice physicalDevice);

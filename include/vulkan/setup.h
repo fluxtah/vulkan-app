@@ -1,7 +1,7 @@
 #ifndef VULKAN_SETUP_H
 #define VULKAN_SETUP_H
 
-#include "include/context.h"
+#include "include/application_context.h"
 #include "include/window.h"
 #include "instance.h"
 #include "physicaldevice.h"

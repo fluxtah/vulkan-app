@@ -66,7 +66,7 @@ add_executable(Game
         include/vulkan/sampler.h
         src/vulkan/sampler.c
 
-        include/context.h
+        include/application_context.h
 
         include/camera.h
         src/camera.c
@@ -105,9 +105,6 @@ add_executable(Game
 
         include/aabb.h
         src/aabb.c
-
-        include/pipelines/pipeline_config_shared.h
-        src/pipelines/pipeline_config_shared.c
 
         include/pipelines/basic/basic_pipeline_config.h
         src/pipelines/basic/basic_pipeline_config.c
@@ -168,6 +165,10 @@ add_executable(Game
         src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.c
         include/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.h
         src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.c
+        include/pipelines/pipeline_config.h
+        src/pipelines/pipeline_config.c
+        include/vulkan_device_context.h
+        include/pipelines/compute_pipeline_config.h
 )
 
 include_directories(kotlin-game/build/bin/native/releaseShared)

@@ -801,29 +801,29 @@ src/pipelines/pfx/pfx_pipeline_renderpass.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_renderpass.c.s
 .PHONY : src/pipelines/pfx/pfx_pipeline_renderpass.c.s
 
-src/pipelines/pipeline_config_shared.o: src/pipelines/pipeline_config_shared.c.o
-.PHONY : src/pipelines/pipeline_config_shared.o
+src/pipelines/pipeline_config.o: src/pipelines/pipeline_config.c.o
+.PHONY : src/pipelines/pipeline_config.o
 
 # target to build an object file
-src/pipelines/pipeline_config_shared.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pipeline_config_shared.c.o
-.PHONY : src/pipelines/pipeline_config_shared.c.o
+src/pipelines/pipeline_config.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pipeline_config.c.o
+.PHONY : src/pipelines/pipeline_config.c.o
 
-src/pipelines/pipeline_config_shared.i: src/pipelines/pipeline_config_shared.c.i
-.PHONY : src/pipelines/pipeline_config_shared.i
+src/pipelines/pipeline_config.i: src/pipelines/pipeline_config.c.i
+.PHONY : src/pipelines/pipeline_config.i
 
 # target to preprocess a source file
-src/pipelines/pipeline_config_shared.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pipeline_config_shared.c.i
-.PHONY : src/pipelines/pipeline_config_shared.c.i
+src/pipelines/pipeline_config.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pipeline_config.c.i
+.PHONY : src/pipelines/pipeline_config.c.i
 
-src/pipelines/pipeline_config_shared.s: src/pipelines/pipeline_config_shared.c.s
-.PHONY : src/pipelines/pipeline_config_shared.s
+src/pipelines/pipeline_config.s: src/pipelines/pipeline_config.c.s
+.PHONY : src/pipelines/pipeline_config.s
 
 # target to generate assembly for a file
-src/pipelines/pipeline_config_shared.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pipeline_config_shared.c.s
-.PHONY : src/pipelines/pipeline_config_shared.c.s
+src/pipelines/pipeline_config.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pipeline_config.c.s
+.PHONY : src/pipelines/pipeline_config.c.s
 
 src/pipelines/pipeline_shader_util.o: src/pipelines/pipeline_shader_util.c.o
 .PHONY : src/pipelines/pipeline_shader_util.o
@@ -1446,9 +1446,9 @@ help:
 	@echo "... src/pipelines/pfx/pfx_pipeline_renderpass.o"
 	@echo "... src/pipelines/pfx/pfx_pipeline_renderpass.i"
 	@echo "... src/pipelines/pfx/pfx_pipeline_renderpass.s"
-	@echo "... src/pipelines/pipeline_config_shared.o"
-	@echo "... src/pipelines/pipeline_config_shared.i"
-	@echo "... src/pipelines/pipeline_config_shared.s"
+	@echo "... src/pipelines/pipeline_config.o"
+	@echo "... src/pipelines/pipeline_config.i"
+	@echo "... src/pipelines/pipeline_config.s"
 	@echo "... src/pipelines/pipeline_shader_util.o"
 	@echo "... src/pipelines/pipeline_shader_util.i"
 	@echo "... src/pipelines/pipeline_shader_util.s"

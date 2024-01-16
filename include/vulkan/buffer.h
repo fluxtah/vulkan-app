@@ -1,7 +1,7 @@
 #ifndef VULKAN_BUFFER_H
 #define VULKAN_BUFFER_H
 
-#include "include/context.h"
+#include "include/application_context.h"
 #include "include/vulkan/memory.h"
 #include "buffer_memory.h"
 #include <vulkan/vulkan.h>
