@@ -2,11 +2,8 @@
 
 ComputePipelineConfig *createPfxComputePipelineConfig(
         VulkanDeviceContext *context,
-        VkCommandPool commandPool,
-        VulkanSwapchainContext *vulkanSwapchainContext) {
+        VkCommandPool commandPool) {
     ComputePipelineConfig *config = malloc(sizeof(ComputePipelineConfig));
-
-    config->pipelineLayout = createPfxComputePipelineLayout(context->device);
 
     config->descriptorPool = createPfxComputePipelineDescriptorPool(context->device);
     if (config->descriptorPool == VK_NULL_HANDLE) {
@@ -14,8 +11,7 @@ ComputePipelineConfig *createPfxComputePipelineConfig(
         destroyComputePipelineConfig(
                 context,
                 commandPool,
-                config,
-                vulkanSwapchainContext->swapChainImageCount);
+                config);
         return NULL;
     }
 
@@ -25,8 +21,7 @@ ComputePipelineConfig *createPfxComputePipelineConfig(
         destroyComputePipelineConfig(
                 context,
                 commandPool,
-                config,
-                vulkanSwapchainContext->swapChainImageCount);
+                config);
         return NULL;
     }
 
@@ -36,8 +31,7 @@ ComputePipelineConfig *createPfxComputePipelineConfig(
         destroyComputePipelineConfig(
                 context,
                 commandPool,
-                config,
-                vulkanSwapchainContext->swapChainImageCount);
+                config);
         return NULL;
     }
 
@@ -47,20 +41,17 @@ ComputePipelineConfig *createPfxComputePipelineConfig(
         destroyComputePipelineConfig(
                 context,
                 commandPool,
-                config,
-                vulkanSwapchainContext->swapChainImageCount);
+                config);
         return NULL;
     }
 
-    config->commandBuffers = allocateCommandBuffers(context->device, commandPool,
-                                                    vulkanSwapchainContext->swapChainImageCount);
+    config->commandBuffers = allocateCommandBuffers(context->device, commandPool, 1);
     if (config->commandBuffers == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to allocate command buffers for basic shader pipeline");
         destroyComputePipelineConfig(
                 context,
                 commandPool,
-                config,
-                vulkanSwapchainContext->swapChainImageCount);
+                config);
         return NULL;
     }
 

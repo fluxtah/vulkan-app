@@ -14,7 +14,6 @@
 
 ComputePipelineConfig *createPfxComputePipelineConfig(
         VulkanDeviceContext *context,
-        VkCommandPool commandPool,
-        VulkanSwapchainContext *vulkanSwapchainContext);
+        VkCommandPool commandPool);
 
 #endif //APP_PIPELINES_PFX_COMPUTE_PIPELINE_CONFIG_H

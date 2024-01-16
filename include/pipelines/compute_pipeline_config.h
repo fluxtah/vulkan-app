@@ -16,7 +16,6 @@ typedef struct ComputePipelineConfig {
 void destroyComputePipelineConfig(
         VulkanDeviceContext *context,
         VkCommandPool commandPool,
-        ComputePipelineConfig *pipelineConfig,
-        uint32_t swapChainImageCount);
+        ComputePipelineConfig *pipelineConfig);
 
 #endif //APP_PIPELINES_COMPUTE_PIPELINE_CONFIG_H

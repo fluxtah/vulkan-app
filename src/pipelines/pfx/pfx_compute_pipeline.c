@@ -7,15 +7,15 @@ VkPipeline createPfxComputePipeline(VkDevice device, VkPipelineLayout layout) {
         return VK_NULL_HANDLE;
     }
 
-    VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
-    vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT; // Vertex shader
-    vertShaderStageInfo.module = computeShaderModule;
-    vertShaderStageInfo.pName = "main"; // Entry point in the shader
+    VkPipelineShaderStageCreateInfo computeShaderStageInfo = {};
+    computeShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    computeShaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+    computeShaderStageInfo.module = computeShaderModule;
+    computeShaderStageInfo.pName = "main";
 
     VkComputePipelineCreateInfo pipelineCreateInfo = {};
     pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
-    pipelineCreateInfo.stage = vertShaderStageInfo;
+    pipelineCreateInfo.stage = computeShaderStageInfo;
     pipelineCreateInfo.layout = layout;
 
     VkPipeline computePipeline;
