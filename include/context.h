@@ -17,14 +17,20 @@ typedef struct PipelineConfig {
     VkDescriptorPool descriptorPool;
     VkDescriptorSetLayout vertexShaderDescriptorSetLayout;
     VkDescriptorSetLayout fragmentShaderDescriptorSetLayout;
-    VkShaderModule vertexShaderModule;
-    VkShaderModule fragmentShaderModule;
     VkPipelineLayout pipelineLayout;
     VkPipeline pipeline;
     VkCommandBuffer *commandBuffers;
     VkRenderPass renderPass;
     VkFramebuffer *swapChainFramebuffers;
 } PipelineConfig;
+
+typedef struct ComputePipelineConfig {
+    VkDescriptorPool descriptorPool;
+    VkDescriptorSetLayout descriptorSetLayout;
+    VkPipelineLayout pipelineLayout;
+    VkPipeline computePipeline;
+    VkCommandBuffer *commandBuffers;
+} ComputePipelineConfig;
 
 typedef struct VulkanDeviceContext {
     GLFWwindow *window;
@@ -61,7 +67,7 @@ typedef struct ApplicationContext {
     PipelineConfig *debugPipelineConfig;
     AudioContext *audioContext;
     Camera *activeCamera;
-    BufferMemory* debugCubeBuffer;
+    BufferMemory *debugCubeBuffer;
     bool debugBoundingVolumes;
 } ApplicationContext;
 

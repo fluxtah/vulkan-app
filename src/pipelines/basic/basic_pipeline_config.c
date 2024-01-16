@@ -50,15 +50,15 @@ PipelineConfig *createBasicShaderPipelineConfig(
         return NULL;
     }
 
-    pipelineConfig->vertexShaderModule = createShaderModule(context->device, "shaders/basic.vert.spv");
-    if (pipelineConfig->vertexShaderModule == VK_NULL_HANDLE) {
+    VkShaderModule vertexShaderModule = createShaderModule(context->device, "shaders/basic.vert.spv");
+    if (vertexShaderModule == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create vertex shader module for basic shader pipeline");
         destroyPipelineConfig(context, pipelineConfig, vulkanSwapchainContext->swapChainImageCount);
         return NULL;
     }
 
-    pipelineConfig->fragmentShaderModule = createShaderModule(context->device, "shaders/basic.frag.spv");
-    if (pipelineConfig->fragmentShaderModule == VK_NULL_HANDLE) {
+    VkShaderModule fragmentShaderModule = createShaderModule(context->device, "shaders/basic.frag.spv");
+    if (fragmentShaderModule == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create fragment shader module for basic shader pipeline");
         destroyPipelineConfig(context, pipelineConfig, vulkanSwapchainContext->swapChainImageCount);
         return NULL;
@@ -86,14 +86,17 @@ PipelineConfig *createBasicShaderPipelineConfig(
             pipelineConfig->pipelineLayout,
             pipelineConfig->renderPass,
             viewport,
-            pipelineConfig->vertexShaderModule,
-            pipelineConfig->fragmentShaderModule);
+            vertexShaderModule,
+            fragmentShaderModule);
 
     if (pipelineConfig->pipeline == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create pipeline for basic shader pipeline");
         destroyPipelineConfig(context, pipelineConfig, vulkanSwapchainContext->swapChainImageCount);
         return NULL;
     }
+
+    vkDestroyShaderModule(context->device, vertexShaderModule, NULL);
+    vkDestroyShaderModule(context->device, fragmentShaderModule, NULL);
 
     pipelineConfig->commandBuffers = allocateCommandBuffers(context->device, commandPool,
                                                             vulkanSwapchainContext->swapChainImageCount);
