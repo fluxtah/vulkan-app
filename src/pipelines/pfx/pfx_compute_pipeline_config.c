@@ -26,7 +26,7 @@ ComputePipelineConfig *createPfxComputePipelineConfig(
         return NULL;
     }
 
-    config->pipelineLayout = createPfxComputePipelineLayout(context->device);
+    config->pipelineLayout = createPfxComputePipelineLayout(context->device, config->descriptorSetLayout);
     if (config->pipelineLayout == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create pipeline layout for pfx compute pipeline");
         destroyComputePipelineConfig(

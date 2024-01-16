@@ -5,6 +5,7 @@
 #include "include/vulkan/setup.h"
 #include "include/vulkan/render.h"
 #include "include/ubo_update.h"
+#include "include/pipelines/pfx/pfx_compute_pipeline_config.h"
 
 static float lastFrameTime = 0.0f;
 
@@ -57,6 +58,14 @@ int main() {
     // Init Kotlin Application
     //
     ktInitApplication();
+
+    //
+    // TEMP PARTICLE EMITTER
+    //
+    ComputePipelineConfig *pfxComputePipelineConfig = createPfxComputePipelineConfig(
+            context->vulkanDeviceContext,
+            context->commandPool
+            );
 
     /*
      * MAIN LOOP

@@ -17,9 +17,9 @@ const vec3 initialVelocity = vec3(0.0, 10.0, 0.0);
 const vec3 startPosition = vec3(0.0, 0.0, 0.0);
 
 // Encapsulate deltaTime in a uniform block
-layout(binding = 1) uniform Time {
+layout(push_constant) uniform PushConstants {
     float deltaTime;
-};
+} pushConstants;
 
 void main() {
     uint id = gl_GlobalInvocationID.x;
@@ -28,9 +28,9 @@ void main() {
     Particle p = particles[id];
 
     // Apply physics update using deltaTime from the uniform block
-    p.velocity += gravity * deltaTime;
-    p.position += p.velocity * deltaTime;
-    p.lifeTime -= deltaTime;
+    p.velocity += gravity * pushConstants.deltaTime;
+    p.position += p.velocity * pushConstants.deltaTime;
+    p.lifeTime -= pushConstants.deltaTime;
 
     if (p.lifeTime <= 0.0) {
         p.position = startPosition;
