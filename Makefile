@@ -657,6 +657,54 @@ src/pipelines/pfx/pfx_compute_pipeline.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_compute_pipeline.c.s
 .PHONY : src/pipelines/pfx/pfx_compute_pipeline.c.s
 
+src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.o: src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.c.o
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.o
+
+# target to build an object file
+src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.c.o
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.c.o
+
+src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.i: src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.c.i
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.i
+
+# target to preprocess a source file
+src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.c.i
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.c.i
+
+src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.s: src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.c.s
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.s
+
+# target to generate assembly for a file
+src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.c.s
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.c.s
+
+src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.o: src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.c.o
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.o
+
+# target to build an object file
+src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.c.o
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.c.o
+
+src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.i: src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.c.i
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.i
+
+# target to preprocess a source file
+src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.c.i
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.c.i
+
+src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.s: src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.c.s
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.s
+
+# target to generate assembly for a file
+src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.c.s
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.c.s
+
 src/pipelines/pfx/pfx_compute_pipeline_layout.o: src/pipelines/pfx/pfx_compute_pipeline_layout.c.o
 .PHONY : src/pipelines/pfx/pfx_compute_pipeline_layout.o
 
@@ -1380,6 +1428,12 @@ help:
 	@echo "... src/pipelines/pfx/pfx_compute_pipeline.o"
 	@echo "... src/pipelines/pfx/pfx_compute_pipeline.i"
 	@echo "... src/pipelines/pfx/pfx_compute_pipeline.s"
+	@echo "... src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.o"
+	@echo "... src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.i"
+	@echo "... src/pipelines/pfx/pfx_compute_pipeline_descriptor_pool.s"
+	@echo "... src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.o"
+	@echo "... src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.i"
+	@echo "... src/pipelines/pfx/pfx_compute_pipeline_descriptor_set_layout.s"
 	@echo "... src/pipelines/pfx/pfx_compute_pipeline_layout.o"
 	@echo "... src/pipelines/pfx/pfx_compute_pipeline_layout.i"
 	@echo "... src/pipelines/pfx/pfx_compute_pipeline_layout.s"
