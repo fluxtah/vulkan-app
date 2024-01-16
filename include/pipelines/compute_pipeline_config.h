@@ -3,6 +3,7 @@
 
 #include <vulkan/vulkan.h>
 #include "include/vulkan_device_context.h"
+#include "include/vulkan/buffer_memory.h"
 #include <stdlib.h>
 
 typedef struct ComputePipelineConfig {
@@ -11,6 +12,7 @@ typedef struct ComputePipelineConfig {
     VkPipelineLayout pipelineLayout;
     VkPipeline computePipeline;
     VkCommandBuffer *commandBuffers;
+    BufferMemory *particleBuffer;
 } ComputePipelineConfig;
 
 void destroyComputePipelineConfig(

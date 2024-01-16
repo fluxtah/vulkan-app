@@ -3,6 +3,8 @@
 
 #include "cglm/cglm.h"
 
+const int MAX_PARTICLE_COUNT = 10000;
+
 typedef struct Particle {
     vec3 position;
     vec3 velocity;

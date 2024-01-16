@@ -1,4 +1,5 @@
 #include "include/pipelines/pfx/pfx_compute_pipeline_config.h"
+#include "include/pipelines/pfx/particle.h"
 
 ComputePipelineConfig *createPfxComputePipelineConfig(
         VulkanDeviceContext *context,
@@ -54,6 +55,15 @@ ComputePipelineConfig *createPfxComputePipelineConfig(
                 config);
         return NULL;
     }
+
+    VkDeviceSize bufferSize = sizeof(Particle) * MAX_PARTICLE_COUNT;
+
+    config->particleBuffer = (BufferMemory *) malloc(sizeof(BufferMemory));
+
+    createBufferMemory(context, config->particleBuffer, bufferSize,
+                       VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
 
     return config;
 }

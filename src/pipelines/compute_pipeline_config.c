@@ -1,4 +1,5 @@
 #include "include/pipelines/compute_pipeline_config.h"
+#include "include/vulkan/buffer.h"
 
 void destroyComputePipelineConfig(
         VulkanDeviceContext *context,
@@ -28,6 +29,11 @@ void destroyComputePipelineConfig(
         vkFreeCommandBuffers(context->device, commandPool, 1, pipelineConfig->commandBuffers);
         free(pipelineConfig->commandBuffers);
         pipelineConfig->commandBuffers = VK_NULL_HANDLE;
+    }
+
+    if (pipelineConfig->particleBuffer != NULL) {
+        destroyBufferMemory(context, pipelineConfig->particleBuffer);
+        pipelineConfig->particleBuffer = NULL;
     }
 
     free(pipelineConfig);

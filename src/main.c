@@ -151,6 +151,12 @@ int main() {
         }
 #endif
 
+        if(vkGetFenceStatus(context->vulkanDeviceContext->device, inFlightFence) != VK_SUCCESS) {
+            fprintf(stderr, "Fence not signaled\n");
+        }
+
+        vkResetFences(context->vulkanDeviceContext->device, 1, &inFlightFence);
+
         renderSubmit(context->vulkanDeviceContext, waitSemaphores, signalSemaphores, inFlightFence,
                      commandBuffersToSubmit, commandBufferCount);
 
@@ -159,7 +165,6 @@ int main() {
                       imageIndex);
 
         vkWaitForFences(context->vulkanDeviceContext->device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
-        vkResetFences(context->vulkanDeviceContext->device, 1, &inFlightFence);
         vkResetCommandPool(context->vulkanDeviceContext->device, context->commandPool, 0);
 
         free(ktEntities->entities);
