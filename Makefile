@@ -633,6 +633,78 @@ src/pipelines/debug/debug_pipeline_renderpass.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/debug/debug_pipeline_renderpass.c.s
 .PHONY : src/pipelines/debug/debug_pipeline_renderpass.c.s
 
+src/pipelines/pfx/pfx_compute_pipeline.o: src/pipelines/pfx/pfx_compute_pipeline.c.o
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline.o
+
+# target to build an object file
+src/pipelines/pfx/pfx_compute_pipeline.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_compute_pipeline.c.o
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline.c.o
+
+src/pipelines/pfx/pfx_compute_pipeline.i: src/pipelines/pfx/pfx_compute_pipeline.c.i
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline.i
+
+# target to preprocess a source file
+src/pipelines/pfx/pfx_compute_pipeline.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_compute_pipeline.c.i
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline.c.i
+
+src/pipelines/pfx/pfx_compute_pipeline.s: src/pipelines/pfx/pfx_compute_pipeline.c.s
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline.s
+
+# target to generate assembly for a file
+src/pipelines/pfx/pfx_compute_pipeline.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_compute_pipeline.c.s
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline.c.s
+
+src/pipelines/pfx/pfx_compute_pipeline_layout.o: src/pipelines/pfx/pfx_compute_pipeline_layout.c.o
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline_layout.o
+
+# target to build an object file
+src/pipelines/pfx/pfx_compute_pipeline_layout.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_compute_pipeline_layout.c.o
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline_layout.c.o
+
+src/pipelines/pfx/pfx_compute_pipeline_layout.i: src/pipelines/pfx/pfx_compute_pipeline_layout.c.i
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline_layout.i
+
+# target to preprocess a source file
+src/pipelines/pfx/pfx_compute_pipeline_layout.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_compute_pipeline_layout.c.i
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline_layout.c.i
+
+src/pipelines/pfx/pfx_compute_pipeline_layout.s: src/pipelines/pfx/pfx_compute_pipeline_layout.c.s
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline_layout.s
+
+# target to generate assembly for a file
+src/pipelines/pfx/pfx_compute_pipeline_layout.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_compute_pipeline_layout.c.s
+.PHONY : src/pipelines/pfx/pfx_compute_pipeline_layout.c.s
+
+src/pipelines/pfx/pfx_pipeline.o: src/pipelines/pfx/pfx_pipeline.c.o
+.PHONY : src/pipelines/pfx/pfx_pipeline.o
+
+# target to build an object file
+src/pipelines/pfx/pfx_pipeline.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline.c.o
+.PHONY : src/pipelines/pfx/pfx_pipeline.c.o
+
+src/pipelines/pfx/pfx_pipeline.i: src/pipelines/pfx/pfx_pipeline.c.i
+.PHONY : src/pipelines/pfx/pfx_pipeline.i
+
+# target to preprocess a source file
+src/pipelines/pfx/pfx_pipeline.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline.c.i
+.PHONY : src/pipelines/pfx/pfx_pipeline.c.i
+
+src/pipelines/pfx/pfx_pipeline.s: src/pipelines/pfx/pfx_pipeline.c.s
+.PHONY : src/pipelines/pfx/pfx_pipeline.s
+
+# target to generate assembly for a file
+src/pipelines/pfx/pfx_pipeline.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline.c.s
+.PHONY : src/pipelines/pfx/pfx_pipeline.c.s
+
 src/pipelines/pfx/pfx_pipeline_layout.o: src/pipelines/pfx/pfx_pipeline_layout.c.o
 .PHONY : src/pipelines/pfx/pfx_pipeline_layout.o
 
@@ -1305,6 +1377,15 @@ help:
 	@echo "... src/pipelines/debug/debug_pipeline_renderpass.o"
 	@echo "... src/pipelines/debug/debug_pipeline_renderpass.i"
 	@echo "... src/pipelines/debug/debug_pipeline_renderpass.s"
+	@echo "... src/pipelines/pfx/pfx_compute_pipeline.o"
+	@echo "... src/pipelines/pfx/pfx_compute_pipeline.i"
+	@echo "... src/pipelines/pfx/pfx_compute_pipeline.s"
+	@echo "... src/pipelines/pfx/pfx_compute_pipeline_layout.o"
+	@echo "... src/pipelines/pfx/pfx_compute_pipeline_layout.i"
+	@echo "... src/pipelines/pfx/pfx_compute_pipeline_layout.s"
+	@echo "... src/pipelines/pfx/pfx_pipeline.o"
+	@echo "... src/pipelines/pfx/pfx_pipeline.i"
+	@echo "... src/pipelines/pfx/pfx_pipeline.s"
 	@echo "... src/pipelines/pfx/pfx_pipeline_layout.o"
 	@echo "... src/pipelines/pfx/pfx_pipeline_layout.i"
 	@echo "... src/pipelines/pfx/pfx_pipeline_layout.s"

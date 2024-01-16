@@ -147,12 +147,23 @@ add_executable(Game
 
         include/pipelines/pfx/pfx_pipeline_layout.h
         src/pipelines/pfx/pfx_pipeline_layout.c
+
+        include/pipelines/pfx/pfx_pipeline.h
+        src/pipelines/pfx/pfx_pipeline.c
+
         include/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.h
         src/pipelines/basic/basic_pipeline_vertex_descriptor_set_layout.c
+
         include/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.h
         src/pipelines/basic/basic_pipeline_frag_descriptor_set_layout.c
+
         include/pipelines/basic/basic_pipeline_update_descriptor_sets.h
         src/pipelines/basic/basic_pipeline_update_descriptor_sets.c
+        include/pipelines/pfx/pfx_compute_pipeline.h
+        src/pipelines/pfx/pfx_compute_pipeline.c
+        include/pipelines/pfx/pfx_compute_pipeline_layout.h
+        src/pipelines/pfx/pfx_compute_pipeline_layout.c
+        include/pipelines/pfx/particle.h
 )
 
 include_directories(kotlin-game/build/bin/native/releaseShared)
