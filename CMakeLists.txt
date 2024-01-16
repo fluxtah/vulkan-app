@@ -169,6 +169,9 @@ add_executable(Game
         src/pipelines/pipeline_config.c
         include/vulkan_device_context.h
         include/pipelines/compute_pipeline_config.h
+        include/pipelines/pfx/pfx_compute_pipeline_config.h
+        src/pipelines/pfx/pfx_compute_pipeline_config.c
+        src/pipelines/compute_pipeline_config.c
 )
 
 include_directories(kotlin-game/build/bin/native/releaseShared)

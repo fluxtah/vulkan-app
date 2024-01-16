@@ -296,13 +296,11 @@ void destroyApplication(ApplicationContext *context) {
     // else associated with the pipeline config is freed in destroyPipelineConfig
     //
     if (context->pipelineConfig != NULL && context->vulkanSwapchainContext != NULL) {
-        if (context->pipelineConfig->commandBuffers != NULL && context->vulkanDeviceContext != NULL) {
-            vkFreeCommandBuffers(context->vulkanDeviceContext->device, context->commandPool,
-                                 context->vulkanSwapchainContext->swapChainImageCount,
-                                 context->pipelineConfig->commandBuffers);
-        }
-        destroyPipelineConfig(context->vulkanDeviceContext, context->pipelineConfig,
-                              context->vulkanSwapchainContext->swapChainImageCount);
+        destroyPipelineConfig(
+                context->vulkanDeviceContext,
+                context->commandPool,
+                context->pipelineConfig,
+                context->vulkanSwapchainContext->swapChainImageCount);
     }
 
 #if DEBUG
@@ -312,13 +310,11 @@ void destroyApplication(ApplicationContext *context) {
             destroyBufferMemory(context->vulkanDeviceContext, context->debugCubeBuffer);
         }
 
-        if (context->debugPipelineConfig->commandBuffers != NULL && context->vulkanDeviceContext != NULL) {
-            vkFreeCommandBuffers(context->vulkanDeviceContext->device, context->commandPool,
-                                 context->vulkanSwapchainContext->swapChainImageCount,
-                                 context->debugPipelineConfig->commandBuffers);
-        }
-        destroyPipelineConfig(context->vulkanDeviceContext, context->debugPipelineConfig,
-                              context->vulkanSwapchainContext->swapChainImageCount);
+        destroyPipelineConfig(
+                context->vulkanDeviceContext,
+                context->commandPool,
+                context->debugPipelineConfig,
+                context->vulkanSwapchainContext->swapChainImageCount);
 
     }
 #endif

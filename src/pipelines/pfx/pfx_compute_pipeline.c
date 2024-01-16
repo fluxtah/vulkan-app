@@ -2,6 +2,11 @@
 
 VkPipeline createPfxComputePipeline(VkDevice device, VkPipelineLayout layout) {
     VkShaderModule computeShaderModule = createShaderModule(device, "shaders/particle.comp.spv");
+    if (computeShaderModule == VK_NULL_HANDLE) {
+        LOG_ERROR("Failed to create compute shader module");
+        return VK_NULL_HANDLE;
+    }
+
     VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT; // Vertex shader
@@ -14,10 +19,14 @@ VkPipeline createPfxComputePipeline(VkDevice device, VkPipelineLayout layout) {
     pipelineCreateInfo.layout = layout;
 
     VkPipeline computePipeline;
-    if (vkCreateComputePipelines(device, VK_NULL_HANDLE, 1, &pipelineCreateInfo, NULL, &computePipeline) != VK_SUCCESS) {
+    if (vkCreateComputePipelines(device, VK_NULL_HANDLE, 1, &pipelineCreateInfo, NULL, &computePipeline) !=
+        VK_SUCCESS) {
+        vkDestroyShaderModule(device, computeShaderModule, NULL);
         LOG_ERROR("Failed to create compute pipeline");
         return VK_NULL_HANDLE;
     }
+
+    vkDestroyShaderModule(device, computeShaderModule, NULL);
 
     return computePipeline;
 }

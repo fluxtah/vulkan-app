@@ -16,6 +16,10 @@ typedef struct PipelineConfig {
     VkFramebuffer *swapChainFramebuffers;
 } PipelineConfig;
 
-void destroyPipelineConfig(VulkanDeviceContext *context, PipelineConfig *pipelineConfig, uint32_t swapChainImageCount);
+void destroyPipelineConfig(
+        VulkanDeviceContext *context,
+        VkCommandPool commandPool,
+        PipelineConfig *pipelineConfig,
+        uint32_t swapChainImageCount);
 
 #endif //APP_PIPELINES_PIPELINE_CONFIG_H

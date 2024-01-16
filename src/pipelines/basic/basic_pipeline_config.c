@@ -9,7 +9,11 @@ PipelineConfig *createBasicShaderPipelineConfig(
     pipelineConfig->renderPass = createBasicPipelineRenderPass(context);
     if (pipelineConfig->renderPass == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create render pass for basic shader pipeline");
-        destroyPipelineConfig(context, pipelineConfig, vulkanSwapchainContext->swapChainImageCount);
+        destroyPipelineConfig(
+                context,
+                commandPool,
+                pipelineConfig,
+                vulkanSwapchainContext->swapChainImageCount);
         return NULL;
     }
 
@@ -17,7 +21,11 @@ PipelineConfig *createBasicShaderPipelineConfig(
                                                                         pipelineConfig->renderPass);
     if (pipelineConfig->swapChainFramebuffers == NULL) {
         LOG_ERROR("Failed to create swap chain framebuffers for debug shader pipeline");
-        destroyPipelineConfig(context, pipelineConfig, vulkanSwapchainContext->swapChainImageCount);
+        destroyPipelineConfig(
+                context,
+                commandPool,
+                pipelineConfig,
+                vulkanSwapchainContext->swapChainImageCount);
         return NULL;
     }
 
@@ -27,7 +35,11 @@ PipelineConfig *createBasicShaderPipelineConfig(
     pipelineConfig->descriptorPool = createBasicPipelineDescriptorPool(context->device);
     if (pipelineConfig->descriptorPool == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create descriptor pool for basic shader pipeline");
-        destroyPipelineConfig(context, pipelineConfig, vulkanSwapchainContext->swapChainImageCount);
+        destroyPipelineConfig(
+                context,
+                commandPool,
+                pipelineConfig,
+                vulkanSwapchainContext->swapChainImageCount);
         return NULL;
     }
 
@@ -38,7 +50,11 @@ PipelineConfig *createBasicShaderPipelineConfig(
             context->device);
     if (pipelineConfig->vertexShaderDescriptorSetLayout == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create vertex shader descriptor set layout for basic shader pipeline");
-        destroyPipelineConfig(context, pipelineConfig, vulkanSwapchainContext->swapChainImageCount);
+        destroyPipelineConfig(
+                context,
+                commandPool,
+                pipelineConfig,
+                vulkanSwapchainContext->swapChainImageCount);
         return NULL;
     }
 
@@ -46,21 +62,33 @@ PipelineConfig *createBasicShaderPipelineConfig(
             context->device);
     if (pipelineConfig->fragmentShaderDescriptorSetLayout == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create fragment shader descriptor set layout for basic shader pipeline");
-        destroyPipelineConfig(context, pipelineConfig, vulkanSwapchainContext->swapChainImageCount);
+        destroyPipelineConfig(
+                context,
+                commandPool,
+                pipelineConfig,
+                vulkanSwapchainContext->swapChainImageCount);
         return NULL;
     }
 
     VkShaderModule vertexShaderModule = createShaderModule(context->device, "shaders/basic.vert.spv");
     if (vertexShaderModule == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create vertex shader module for basic shader pipeline");
-        destroyPipelineConfig(context, pipelineConfig, vulkanSwapchainContext->swapChainImageCount);
+        destroyPipelineConfig(
+                context,
+                commandPool,
+                pipelineConfig,
+                vulkanSwapchainContext->swapChainImageCount);
         return NULL;
     }
 
     VkShaderModule fragmentShaderModule = createShaderModule(context->device, "shaders/basic.frag.spv");
     if (fragmentShaderModule == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create fragment shader module for basic shader pipeline");
-        destroyPipelineConfig(context, pipelineConfig, vulkanSwapchainContext->swapChainImageCount);
+        destroyPipelineConfig(
+                context,
+                commandPool,
+                pipelineConfig,
+                vulkanSwapchainContext->swapChainImageCount);
         return NULL;
     }
 
@@ -70,7 +98,11 @@ PipelineConfig *createBasicShaderPipelineConfig(
 
     if (pipelineConfig->pipelineLayout == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create pipeline layout for basic shader pipeline");
-        destroyPipelineConfig(context, pipelineConfig, vulkanSwapchainContext->swapChainImageCount);
+        destroyPipelineConfig(
+                context,
+                commandPool,
+                pipelineConfig,
+                vulkanSwapchainContext->swapChainImageCount);
         return NULL;
     }
 
@@ -91,7 +123,11 @@ PipelineConfig *createBasicShaderPipelineConfig(
 
     if (pipelineConfig->pipeline == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create pipeline for basic shader pipeline");
-        destroyPipelineConfig(context, pipelineConfig, vulkanSwapchainContext->swapChainImageCount);
+        destroyPipelineConfig(
+                context,
+                commandPool,
+                pipelineConfig,
+                vulkanSwapchainContext->swapChainImageCount);
         return NULL;
     }
 
@@ -102,7 +138,11 @@ PipelineConfig *createBasicShaderPipelineConfig(
                                                             vulkanSwapchainContext->swapChainImageCount);
     if (pipelineConfig->commandBuffers == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to allocate command buffers for basic shader pipeline");
-        destroyPipelineConfig(context, pipelineConfig, vulkanSwapchainContext->swapChainImageCount);
+        destroyPipelineConfig(
+                context,
+                commandPool,
+                pipelineConfig,
+                vulkanSwapchainContext->swapChainImageCount);
         return NULL;
     }
 
