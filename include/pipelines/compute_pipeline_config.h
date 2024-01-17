@@ -9,6 +9,7 @@
 typedef struct ComputePipelineConfig {
     VkDescriptorPool descriptorPool;
     VkDescriptorSetLayout descriptorSetLayout;
+    VkDescriptorSet descriptorSet;
     VkPipelineLayout pipelineLayout;
     VkPipeline computePipeline;
     VkCommandBuffer *commandBuffers;

@@ -159,4 +159,3 @@ void recordDebugCommandBuffer(
         exit(-1);
     }
 }
-

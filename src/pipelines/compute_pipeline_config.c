@@ -5,6 +5,11 @@ void destroyComputePipelineConfig(
         VulkanDeviceContext *context,
         VkCommandPool commandPool,
         ComputePipelineConfig *pipelineConfig) {
+
+//    if (pipelineConfig->descriptorSet != VK_NULL_HANDLE) {
+//        vkFreeDescriptorSets(context->device, pipelineConfig->descriptorPool, 1, &pipelineConfig->descriptorSet);
+//    }
+
     if (pipelineConfig->descriptorPool != VK_NULL_HANDLE) {
         vkDestroyDescriptorPool(context->device, pipelineConfig->descriptorPool, NULL);
         pipelineConfig->descriptorPool = VK_NULL_HANDLE;

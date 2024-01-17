@@ -9,6 +9,12 @@
 
 static float lastFrameTime = 0.0f;
 
+/**
+ * This is the maximum number of entities that can collide with another entity per frame.
+ * If this number is exceeded, the remaining entities will not be checked for collisions.
+ */
+const int MAX_COLLIDING_ENTITIES = 100;
+
 int main() {
     //
     // Bind kotlin callbacks to C API functions
@@ -52,7 +58,7 @@ int main() {
     VkSemaphore signalSemaphores[] = {renderFinishedSemaphore};
     VkSemaphore waitSemaphores[] = {imageAvailableSemaphore};
 
-    Entity **collisionTargetInfos = malloc(sizeof(void *) * 500); // TODO adjust as needed
+    Entity **collidingEntities = malloc(sizeof(void *) * MAX_COLLIDING_ENTITIES);
 
     //
     // Init Kotlin Application
@@ -65,7 +71,7 @@ int main() {
     ComputePipelineConfig *pfxComputePipelineConfig = createPfxComputePipelineConfig(
             context->vulkanDeviceContext,
             context->commandPool
-            );
+    );
 
     /*
      * MAIN LOOP
@@ -93,17 +99,21 @@ int main() {
             // make an array to hold the entities that collided with the source entity
             // we have to dynamically allocate this array because we don't know how many entities will collide
             // with the source entity
-            int collisionTargetInfosSize = 0;
+            int collingEntityCount = 0;
             for (size_t j = 0; j < ktEntities->size; j++) {
                 Entity *otherEntity = (Entity *) (ktEntities->entities[j]);
 
                 if (otherEntity == sourceEntity) continue;
+                if(MAX_COLLIDING_ENTITIES == collingEntityCount) {
+                    fprintf(stderr, "Max colliding entities reached, skipping collision detection for remaining entities\n");
+                    break;
+                }
 
                 if (aabbCollision(&sourceEntity->aabb, &otherEntity->aabb))
-                    collisionTargetInfos[collisionTargetInfosSize++] = otherEntity->kotlinEntityInfo;
+                    collidingEntities[collingEntityCount++] = otherEntity->kotlinEntityInfo;
             }
-            if (collisionTargetInfosSize > 0) {
-                ktCollisionCallback(sourceEntity->kotlinEntityInfo, collisionTargetInfos, collisionTargetInfosSize);
+            if (collingEntityCount > 0) {
+                ktCollisionCallback(sourceEntity->kotlinEntityInfo, collidingEntities, collingEntityCount);
             }
         }
 
@@ -147,11 +157,18 @@ int main() {
                               UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE,
                               &imageIndex);
 
-        VkCommandBuffer commandBuffersToSubmit[2]; // Maximum of 2 command buffers
+        VkCommandBuffer commandBuffersToSubmit[3]; // Maximum of 2 command buffers
         uint32_t commandBufferCount = 0;
 
         // Always add the primary command buffer
         commandBuffersToSubmit[commandBufferCount++] = context->pipelineConfig->commandBuffers[imageIndex];
+
+        //
+        // TODO TEMP PARTICLE EMITTER
+        //
+        recordComputeCommandBuffer(pfxComputePipelineConfig, deltaTime);
+
+        commandBuffersToSubmit[commandBufferCount++] = pfxComputePipelineConfig->commandBuffers[0];
 
 #ifdef DEBUG
         // Add the debug pipeline's command buffer in debug mode
@@ -159,10 +176,6 @@ int main() {
             commandBuffersToSubmit[commandBufferCount++] = context->debugPipelineConfig->commandBuffers[imageIndex];
         }
 #endif
-
-        if(vkGetFenceStatus(context->vulkanDeviceContext->device, inFlightFence) != VK_SUCCESS) {
-            fprintf(stderr, "Fence not signaled\n");
-        }
 
         vkResetFences(context->vulkanDeviceContext->device, 1, &inFlightFence);
 
@@ -188,6 +201,12 @@ int main() {
     vkDestroySemaphore(context->vulkanDeviceContext->device, renderFinishedSemaphore, NULL);
     vkDestroySemaphore(context->vulkanDeviceContext->device, imageAvailableSemaphore, NULL);
     vkDestroyFence(context->vulkanDeviceContext->device, inFlightFence, NULL);
+
+    // TODO TEMP PARTICLE EMITTER
+    destroyComputePipelineConfig(
+            context->vulkanDeviceContext,
+            context->commandPool,
+            pfxComputePipelineConfig);
 
     ktDestroyApplication();
 
