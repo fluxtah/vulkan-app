@@ -1,4 +1,5 @@
 #include "include/vulkan/commandbuffer.h"
+#include "include/pipelines/pfx/particle.h"
 
 void beginCommandBufferRecording(VkCommandBuffer commandBuffer, VkRenderPass renderPass, VkFramebuffer framebuffer,
                                  VkExtent2D *swapChainExtent, VkPipeline graphicsPipeline);
@@ -61,7 +62,7 @@ void beginCommandBufferRecording(VkCommandBuffer commandBuffer, VkRenderPass ren
                                  VkExtent2D *swapChainExtent, VkPipeline graphicsPipeline) {
     VkCommandBufferBeginInfo beginInfo = {};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-   // beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;               // Optional
+    // beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;               // Optional
     beginInfo.pInheritanceInfo = NULL; // Optional for primary command buffers
 
     if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
@@ -156,6 +157,41 @@ void recordDebugCommandBuffer(
 
     if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
         fprintf(stderr, "Failed to record command buffer\n");
+        exit(-1);
+    }
+}
+
+void recordEmitterBuffer(
+        VkCommandBuffer commandBuffer,
+        VkFramebuffer framebuffer,
+        VkExtent2D swapChainExtent,
+        PipelineConfig *pipelineConfig,
+        BufferMemory *particleBuffer,
+        Emitter *emitter
+) {
+    beginCommandBufferRecording(commandBuffer, pipelineConfig->renderPass, framebuffer, &swapChainExtent,
+                                pipelineConfig->pipeline);
+
+    VkBuffer vertexBuffers[] = {
+            emitter->renderResources->vertexBuffer->buffer,
+            particleBuffer->buffer
+    };
+    VkDeviceSize offsets[] = {0, 0};
+    vkCmdBindVertexBuffers(commandBuffer, 0, 2, vertexBuffers, offsets);
+    vkCmdBindIndexBuffer(commandBuffer, emitter->renderResources->indexBuffer->buffer, 0, VK_INDEX_TYPE_UINT16);
+
+    VkDescriptorSet descriptorSets[] = {emitter->vertexDescriptorSet, emitter->fragmentDescriptorSet};
+    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineConfig->pipelineLayout, 0, 2,
+                            descriptorSets, 0,
+                            NULL);
+
+    // vkCmdDrawIndexed(commandBuffer, indexCountPerInstance, MAX_PARTICLE_COUNT, firstIndex, vertexOffset, firstInstance);
+    vkCmdDrawIndexed(commandBuffer, emitter->renderResources->modelData->num_indices, MAX_PARTICLE_COUNT, 0, 0, 0);
+
+    vkCmdEndRenderPass(commandBuffer);
+
+    if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+        fprintf(stderr, "Failed to record emitter command buffer\n");
         exit(-1);
     }
 }

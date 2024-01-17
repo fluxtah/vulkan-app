@@ -3,10 +3,11 @@
 
 #include "cglm/cglm.h"
 
-const int MAX_PARTICLE_COUNT = 10000;
+extern const int MAX_PARTICLE_COUNT;
 
 typedef struct Particle {
     vec3 position;
+    char _pad[4];
     vec3 velocity;
     float lifeTime;
     // Add more per-particle attributes if needed

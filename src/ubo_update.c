@@ -54,3 +54,25 @@ void updateTransformUBO(VkDevice device, Entity *entity, Camera *camera) {
     vkUnmapMemory(device, entity->transformUBO->memory);
 }
 
+void updateEmitterTransformUBO(VkDevice device, Emitter *emitter, Camera *camera) {
+    TransformUBO transformUBO = {0};
+    glm_mat4_identity(transformUBO.model);
+
+    // Apply rotation and translation first
+    glm_translate(transformUBO.model, emitter->position);
+    glm_rotate(transformUBO.model, glm_rad(emitter->rotation[0]), (vec3) {1.0f, 0.0f, 0.0f}); // X rotation
+    glm_rotate(transformUBO.model, glm_rad(emitter->rotation[1]), (vec3) {0.0f, 1.0f, 0.0f}); // Y rotation
+    glm_rotate(transformUBO.model, glm_rad(emitter->rotation[2]), (vec3) {0.0f, 0.0f, 1.0f}); // Z rotation
+
+    // Then apply non-uniform scaling
+    glm_scale(transformUBO.model, emitter->scale);
+
+    memcpy(transformUBO.view, camera->view, sizeof(mat4));
+    memcpy(transformUBO.proj, camera->proj, sizeof(mat4));
+
+    void *transformData;
+    vkMapMemory(device, emitter->transformUBO->memory, 0, sizeof(TransformUBO), 0, &transformData);
+    memcpy(transformData, &transformUBO, sizeof(TransformUBO));
+    vkUnmapMemory(device, emitter->transformUBO->memory);
+}
+

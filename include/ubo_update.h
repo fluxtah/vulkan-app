@@ -6,8 +6,11 @@
 #include "entity.h"
 #include "camera.h"
 #include "libkotlin_game_api.h"
+#include "include/emitter.h"
+
 #include <vulkan/vulkan.h>
 
 void updateLightsUBO(VkDevice device, Entity *entity, Camera *camera);
 void updateTransformUBO(VkDevice device, Entity *entity, Camera *camera);
+void updateEmitterTransformUBO(VkDevice device, Emitter *emitter, Camera *camera);
 #endif // APP_UBO_UPDATE_H

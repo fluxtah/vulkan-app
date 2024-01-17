@@ -201,6 +201,30 @@ src/debug.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/debug.c.s
 .PHONY : src/debug.c.s
 
+src/emitter.o: src/emitter.c.o
+.PHONY : src/emitter.o
+
+# target to build an object file
+src/emitter.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/emitter.c.o
+.PHONY : src/emitter.c.o
+
+src/emitter.i: src/emitter.c.i
+.PHONY : src/emitter.i
+
+# target to preprocess a source file
+src/emitter.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/emitter.c.i
+.PHONY : src/emitter.c.i
+
+src/emitter.s: src/emitter.c.s
+.PHONY : src/emitter.s
+
+# target to generate assembly for a file
+src/emitter.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/emitter.c.s
+.PHONY : src/emitter.c.s
+
 src/entity.o: src/entity.c.o
 .PHONY : src/entity.o
 
@@ -801,6 +825,78 @@ src/pipelines/pfx/pfx_pipeline.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline.c.s
 .PHONY : src/pipelines/pfx/pfx_pipeline.c.s
 
+src/pipelines/pfx/pfx_pipeline_config.o: src/pipelines/pfx/pfx_pipeline_config.c.o
+.PHONY : src/pipelines/pfx/pfx_pipeline_config.o
+
+# target to build an object file
+src/pipelines/pfx/pfx_pipeline_config.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_config.c.o
+.PHONY : src/pipelines/pfx/pfx_pipeline_config.c.o
+
+src/pipelines/pfx/pfx_pipeline_config.i: src/pipelines/pfx/pfx_pipeline_config.c.i
+.PHONY : src/pipelines/pfx/pfx_pipeline_config.i
+
+# target to preprocess a source file
+src/pipelines/pfx/pfx_pipeline_config.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_config.c.i
+.PHONY : src/pipelines/pfx/pfx_pipeline_config.c.i
+
+src/pipelines/pfx/pfx_pipeline_config.s: src/pipelines/pfx/pfx_pipeline_config.c.s
+.PHONY : src/pipelines/pfx/pfx_pipeline_config.s
+
+# target to generate assembly for a file
+src/pipelines/pfx/pfx_pipeline_config.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_config.c.s
+.PHONY : src/pipelines/pfx/pfx_pipeline_config.c.s
+
+src/pipelines/pfx/pfx_pipeline_descriptor_pool.o: src/pipelines/pfx/pfx_pipeline_descriptor_pool.c.o
+.PHONY : src/pipelines/pfx/pfx_pipeline_descriptor_pool.o
+
+# target to build an object file
+src/pipelines/pfx/pfx_pipeline_descriptor_pool.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_descriptor_pool.c.o
+.PHONY : src/pipelines/pfx/pfx_pipeline_descriptor_pool.c.o
+
+src/pipelines/pfx/pfx_pipeline_descriptor_pool.i: src/pipelines/pfx/pfx_pipeline_descriptor_pool.c.i
+.PHONY : src/pipelines/pfx/pfx_pipeline_descriptor_pool.i
+
+# target to preprocess a source file
+src/pipelines/pfx/pfx_pipeline_descriptor_pool.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_descriptor_pool.c.i
+.PHONY : src/pipelines/pfx/pfx_pipeline_descriptor_pool.c.i
+
+src/pipelines/pfx/pfx_pipeline_descriptor_pool.s: src/pipelines/pfx/pfx_pipeline_descriptor_pool.c.s
+.PHONY : src/pipelines/pfx/pfx_pipeline_descriptor_pool.s
+
+# target to generate assembly for a file
+src/pipelines/pfx/pfx_pipeline_descriptor_pool.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_descriptor_pool.c.s
+.PHONY : src/pipelines/pfx/pfx_pipeline_descriptor_pool.c.s
+
+src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.o: src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.c.o
+.PHONY : src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.o
+
+# target to build an object file
+src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.c.o
+.PHONY : src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.c.o
+
+src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.i: src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.c.i
+.PHONY : src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.i
+
+# target to preprocess a source file
+src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.c.i
+.PHONY : src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.c.i
+
+src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.s: src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.c.s
+.PHONY : src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.s
+
+# target to generate assembly for a file
+src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.c.s
+.PHONY : src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.c.s
+
 src/pipelines/pfx/pfx_pipeline_layout.o: src/pipelines/pfx/pfx_pipeline_layout.c.o
 .PHONY : src/pipelines/pfx/pfx_pipeline_layout.o
 
@@ -848,6 +944,54 @@ src/pipelines/pfx/pfx_pipeline_renderpass.s: src/pipelines/pfx/pfx_pipeline_rend
 src/pipelines/pfx/pfx_pipeline_renderpass.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_renderpass.c.s
 .PHONY : src/pipelines/pfx/pfx_pipeline_renderpass.c.s
+
+src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.o: src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.c.o
+.PHONY : src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.o
+
+# target to build an object file
+src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.c.o
+.PHONY : src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.c.o
+
+src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.i: src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.c.i
+.PHONY : src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.i
+
+# target to preprocess a source file
+src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.c.i
+.PHONY : src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.c.i
+
+src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.s: src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.c.s
+.PHONY : src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.s
+
+# target to generate assembly for a file
+src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.c.s
+.PHONY : src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.c.s
+
+src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.o: src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.c.o
+.PHONY : src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.o
+
+# target to build an object file
+src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.c.o
+.PHONY : src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.c.o
+
+src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.i: src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.c.i
+.PHONY : src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.i
+
+# target to preprocess a source file
+src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.c.i
+.PHONY : src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.c.i
+
+src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.s: src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.c.s
+.PHONY : src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.s
+
+# target to generate assembly for a file
+src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.c.s
+.PHONY : src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.c.s
 
 src/pipelines/pipeline_config.o: src/pipelines/pipeline_config.c.o
 .PHONY : src/pipelines/pipeline_config.o
@@ -1419,6 +1563,9 @@ help:
 	@echo "... src/debug.o"
 	@echo "... src/debug.i"
 	@echo "... src/debug.s"
+	@echo "... src/emitter.o"
+	@echo "... src/emitter.i"
+	@echo "... src/emitter.s"
 	@echo "... src/entity.o"
 	@echo "... src/entity.i"
 	@echo "... src/entity.s"
@@ -1494,12 +1641,27 @@ help:
 	@echo "... src/pipelines/pfx/pfx_pipeline.o"
 	@echo "... src/pipelines/pfx/pfx_pipeline.i"
 	@echo "... src/pipelines/pfx/pfx_pipeline.s"
+	@echo "... src/pipelines/pfx/pfx_pipeline_config.o"
+	@echo "... src/pipelines/pfx/pfx_pipeline_config.i"
+	@echo "... src/pipelines/pfx/pfx_pipeline_config.s"
+	@echo "... src/pipelines/pfx/pfx_pipeline_descriptor_pool.o"
+	@echo "... src/pipelines/pfx/pfx_pipeline_descriptor_pool.i"
+	@echo "... src/pipelines/pfx/pfx_pipeline_descriptor_pool.s"
+	@echo "... src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.o"
+	@echo "... src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.i"
+	@echo "... src/pipelines/pfx/pfx_pipeline_frag_descriptor_set_layout.s"
 	@echo "... src/pipelines/pfx/pfx_pipeline_layout.o"
 	@echo "... src/pipelines/pfx/pfx_pipeline_layout.i"
 	@echo "... src/pipelines/pfx/pfx_pipeline_layout.s"
 	@echo "... src/pipelines/pfx/pfx_pipeline_renderpass.o"
 	@echo "... src/pipelines/pfx/pfx_pipeline_renderpass.i"
 	@echo "... src/pipelines/pfx/pfx_pipeline_renderpass.s"
+	@echo "... src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.o"
+	@echo "... src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.i"
+	@echo "... src/pipelines/pfx/pfx_pipeline_update_descriptor_sets.s"
+	@echo "... src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.o"
+	@echo "... src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.i"
+	@echo "... src/pipelines/pfx/pfx_pipeline_vertex_descriptor_set_layout.s"
 	@echo "... src/pipelines/pipeline_config.o"
 	@echo "... src/pipelines/pipeline_config.i"
 	@echo "... src/pipelines/pipeline_config.s"

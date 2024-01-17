@@ -6,6 +6,9 @@
 #include "include/vulkan/render.h"
 #include "include/ubo_update.h"
 #include "include/pipelines/pfx/pfx_compute_pipeline_config.h"
+#include "include/emitter.h"
+#include "include/pipelines/pfx/pfx_pipeline.h"
+#include "include/pipelines/pfx/pfx_pipeline_config.h"
 
 static float lastFrameTime = 0.0f;
 
@@ -73,6 +76,27 @@ int main() {
             context->commandPool
     );
 
+    PipelineConfig *emitterPipelineConfig = createPfxPipelineConfig(
+            context->vulkanDeviceContext,
+            context->commandPool,
+            context->vulkanSwapchainContext
+            );
+
+    CreateEmitterInfo emitterInfo = {
+            .positionX = 0.0f,
+            .positionY = 0.0f,
+            .positionZ = 0.0f,
+            .scaleX = 1.0f,
+            .scaleY = 1.0f,
+            .scaleZ = 1.0f
+    };
+
+    Emitter *emitter = createEmitter(
+            context,
+            emitterPipelineConfig,
+            "models/cube.glb",
+            &emitterInfo);
+
     /*
      * MAIN LOOP
      */
@@ -117,6 +141,8 @@ int main() {
             }
         }
 
+        recordComputeCommandBuffer(pfxComputePipelineConfig, deltaTime);
+
         for (size_t i = 0; i < context->vulkanSwapchainContext->swapChainImageCount; i++) {
             recordCommandBuffer(
                     context->pipelineConfig->commandBuffers[i],
@@ -141,6 +167,15 @@ int main() {
                         context->activeCamera);
             }
 #endif
+
+            recordEmitterBuffer(
+                    emitterPipelineConfig->commandBuffers[i],
+                    emitterPipelineConfig->swapChainFramebuffers[i],
+                    context->vulkanSwapchainContext->swapChainExtent,
+                    emitterPipelineConfig,
+                    pfxComputePipelineConfig->particleBuffer,
+                    emitter
+            );
         }
 
         //
@@ -152,12 +187,14 @@ int main() {
             updateLightsUBO(context->vulkanDeviceContext->device, obj, context->activeCamera);
         }
 
+        updateEmitterTransformUBO(context->vulkanDeviceContext->device, emitter, context->activeCamera);
+
         uint32_t imageIndex;
         vkAcquireNextImageKHR(context->vulkanDeviceContext->device, context->vulkanSwapchainContext->swapChain,
                               UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE,
                               &imageIndex);
 
-        VkCommandBuffer commandBuffersToSubmit[3]; // Maximum of 2 command buffers
+        VkCommandBuffer commandBuffersToSubmit[4]; // Maximum of 2 command buffers
         uint32_t commandBufferCount = 0;
 
         // Always add the primary command buffer
@@ -166,9 +203,9 @@ int main() {
         //
         // TODO TEMP PARTICLE EMITTER
         //
-        recordComputeCommandBuffer(pfxComputePipelineConfig, deltaTime);
-
         commandBuffersToSubmit[commandBufferCount++] = pfxComputePipelineConfig->commandBuffers[0];
+
+        commandBuffersToSubmit[commandBufferCount++] = emitterPipelineConfig->commandBuffers[imageIndex];
 
 #ifdef DEBUG
         // Add the debug pipeline's command buffer in debug mode

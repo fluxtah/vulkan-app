@@ -2,6 +2,7 @@
 #define VULKAN_COMMANDBUFFER_H
 
 #include "include/entity.h"
+#include "include/emitter.h"
 #include "include/push_constants.h"
 #include <vulkan/vulkan.h>
 #include <stdio.h>
@@ -27,4 +28,13 @@ void recordDebugCommandBuffer(
         EntityArray *ktEntities,
         VkBuffer unitCubeVertexBuffer,
         Camera *camera);
+
+void recordEmitterBuffer(
+        VkCommandBuffer commandBuffer,
+        VkFramebuffer framebuffer,
+        VkExtent2D swapChainExtent,
+        PipelineConfig *pipelineConfig,
+        BufferMemory *particleBuffer,
+        Emitter *emitter
+);
 #endif // VULKAN_COMMANDBUFFER_H

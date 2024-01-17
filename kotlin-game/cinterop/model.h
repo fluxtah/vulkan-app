@@ -92,4 +92,17 @@ typedef struct CreateSoundInfo {
     int loop;
 } CreateSoundInfo;
 
+
+typedef struct CreateEmitterInfo {
+    float positionX;
+    float positionY;
+    float positionZ;
+    float rotationX;
+    float rotationY;
+    float rotationZ;
+    float scaleX;
+    float scaleY;
+    float scaleZ;
+} CreateEmitterInfo;
+
 #endif // MODEL_H

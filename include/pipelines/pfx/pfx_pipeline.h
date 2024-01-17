@@ -10,14 +10,6 @@
 #include "cglm/cglm.h"
 #include <stdio.h>
 
-// Particle instance data structure
-struct Particle {
-    vec3 position;
-    vec3 velocity;
-    float lifeTime;
-    // Add more per-particle attributes if needed
-};
-
 VkPipeline createPfxPipeline(
         VkDevice device, VkPipelineLayout pipelineLayout, VkRenderPass renderPass, Viewport viewport,
         VkShaderModule vertShaderModule, VkShaderModule fragShaderModule);
