@@ -122,8 +122,8 @@ VkPipeline createPfxPipeline(
 
     VkPipeline graphicsPipeline;
     if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, NULL, &graphicsPipeline) != VK_SUCCESS) {
-        fprintf(stderr, "Failed to create BASIC graphics pipeline\n");
-        return NULL;
+        LOG_ERROR("Failed to create pfx graphics pipeline");
+        return VK_NULL_HANDLE;
     }
 
     free(shaderStages);

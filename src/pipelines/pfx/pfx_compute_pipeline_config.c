@@ -61,7 +61,7 @@ ComputePipelineConfig *createPfxComputePipelineConfig(
     config->particleBuffer = (BufferMemory *) malloc(sizeof(BufferMemory));
 
     createBufferMemory(context, config->particleBuffer, bufferSize,
-                       VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+                       VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
      if(allocateDescriptorSet(
