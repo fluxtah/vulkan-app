@@ -4,7 +4,7 @@ import com.fluxtah.application.api.EntityBehavior
 import com.fluxtah.application.api.fixedTimeStep
 import kotlin.random.Random
 
-class AsteroidBehavior(
+class AsteroidMovementBehavior(
     private val speedX: Float = 0.0f,
     private val speedY: Float = 0.0f,
     private val speedZ: Float = 0.0f

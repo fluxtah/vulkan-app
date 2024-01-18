@@ -97,7 +97,7 @@ class ShipGame : Application {
                 startActive()
                 behaviour { AsteroidDieBehavior() }
                 behaviour {
-                    AsteroidBehavior(
+                    AsteroidMovementBehavior(
                         speedX = Random.nextFloat() * 50,
                         speedY = Random.nextFloat() * 50,
                         speedZ = Random.nextFloat() * 50
