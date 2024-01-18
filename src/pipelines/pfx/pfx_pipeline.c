@@ -79,7 +79,7 @@ VkPipeline createPfxPipeline(
     rasterizer.rasterizerDiscardEnable = VK_FALSE;  // If set to VK_TRUE, geometry never passes through the rasterizer stage
     rasterizer.polygonMode = VK_POLYGON_MODE_FILL;  // Determines how fragments are generated. For filling the area of the polygon with fragments, use VK_POLYGON_MODE_FILL.
     rasterizer.lineWidth = 1.0f;                    // Line width (greater than 1.0f requires enabling wideLines GPU feature)
-    rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;    // Type of face culling to use
+    rasterizer.cullMode = VK_CULL_MODE_NONE;    // Type of face culling to use
     rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE; // Specifies the vertex order for faces to be considered front-facing
     rasterizer.depthBiasEnable = VK_FALSE;          // Set to VK_TRUE if you want to enable depth bias (good for shadow mapping)
     // rasterizer.depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor are ignored if depthBiasEnable is VK_FALSE
@@ -93,8 +93,13 @@ VkPipeline createPfxPipeline(
     VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
     colorBlendAttachment.colorWriteMask =
             VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-    colorBlendAttachment.blendEnable = VK_FALSE; // Set to VK_TRUE if you need blending
-    // Other properties like srcColorBlendFactor, dstColorBlendFactor, colorBlendOp, srcAlphaBlendFactor, dstAlphaBlendFactor, alphaBlendOp are ignored if blendEnable is VK_FALSE
+    colorBlendAttachment.blendEnable = VK_TRUE;
+    colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_DARKEN_EXT;
+    colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+    colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+    colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+    colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
 
     VkPipelineColorBlendStateCreateInfo colorBlending = {};
     colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -110,7 +115,7 @@ VkPipeline createPfxPipeline(
     VkPipelineDepthStencilStateCreateInfo depthStencil = {};
     depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
     depthStencil.depthTestEnable = VK_TRUE;
-    depthStencil.depthWriteEnable = VK_TRUE;
+    depthStencil.depthWriteEnable = VK_FALSE;
     depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
     depthStencil.depthBoundsTestEnable = VK_FALSE;
     depthStencil.minDepthBounds = 0.0f; // Optional

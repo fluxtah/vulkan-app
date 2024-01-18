@@ -12,5 +12,5 @@ layout(set = 1, binding = 0) uniform sampler2D texSampler;
 void main() {
     vec4 textureColor = texture(texSampler, uv);
 
-    outColor = vec4(textureColor.rgb, 1.0f);
+    outColor = vec4(textureColor.rgb * 2.0, textureColor.a);
 }

@@ -29,8 +29,8 @@ void main() {
 
     // Initialize or reset particle
     if (particles[id].lifeTime <= 0.0) {
-        float radius = 0.5; // Small radius for explosion origin
-        vec3 randomPos = vec3(rand(vec2(id, id)) - 0.5, rand(vec2(id, id + 1)) - 0.5, rand(vec2(id + 1, id)) - 0.5) * radius;
+        float radius = 0.2; // Small radius for explosion origin
+        vec3 randomPos = vec3(rand(vec2(id, id)) - 0.2, rand(vec2(id, id + 1)) - 0.2, rand(vec2(id + 1, id)) - 0.2) * radius;
         particles[id].position = randomPos; // Start near the origin
 
         float angle = 2.0 * 3.14159265 * rand(vec2(id, id)); // Random angle

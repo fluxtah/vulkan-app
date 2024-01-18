@@ -84,17 +84,17 @@ int main() {
 
     CreateEmitterInfo emitterInfo = {
             .positionX = 0.0f,
-            .positionY = 2.0f,
-            .positionZ = 0.0f,
-            .scaleX = 0.5f,
-            .scaleY = 0.5f,
-            .scaleZ = 0.5f
+            .positionY = 0.0f,
+            .positionZ = 10.0f,
+            .scaleX = 1.0f,
+            .scaleY = 1.0f,
+            .scaleZ = 1.0f,
     };
 
     Emitter *emitter = createEmitter(
             context,
             emitterPipelineConfig,
-            "models/asteroid.glb",
+            "models/quad-explosion.glb",
             &emitterInfo);
 
     /*
