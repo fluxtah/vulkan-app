@@ -31,7 +31,7 @@ void main() {
     if (particles[id].lifeTime <= 0.0) {
         particles[id].position = vec3(0.0); // Start at the origin
         float angle = 2.0 * 3.14159265 * rand(vec2(id, id)); // Random angle
-        float speed = rand(vec2(id, angle)) * 5.0; // Random speed
+        float speed = rand(vec2(id, angle)) * 10.0; // Random speed
         particles[id].velocity = vec3(cos(angle) * speed, sin(angle) * speed, rand(vec2(angle, id)) * speed);
         particles[id].lifeTime = 5.0; // Reset lifetime
     }

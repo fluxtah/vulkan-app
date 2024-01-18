@@ -1,9 +1,6 @@
 #include "include/vulkan/commandbuffer.h"
 #include "include/pipelines/pfx/particle.h"
 
-void beginCommandBufferRecording(VkCommandBuffer commandBuffer, VkRenderPass renderPass, VkFramebuffer framebuffer,
-                                 VkExtent2D *swapChainExtent, VkPipeline graphicsPipeline);
-
 VkCommandBuffer *allocateCommandBuffers(VkDevice device, VkCommandPool commandPool, uint32_t commandBufferCount) {
     VkCommandBuffer *commandBuffers = malloc(sizeof(VkCommandBuffer) * commandBufferCount);
     if (commandBuffers == VK_NULL_HANDLE) {
@@ -27,14 +24,12 @@ VkCommandBuffer *allocateCommandBuffers(VkDevice device, VkCommandPool commandPo
 }
 
 void recordCommandBuffer(
+        ImageMemory *depthImage,
         VkCommandBuffer commandBuffer,
-        VkRenderPass renderPass,
-        VkFramebuffer framebuffer,
-        VkExtent2D swapChainExtent,
         VkPipeline graphicsPipeline,
         VkPipelineLayout pipelineLayout,
         EntityArray *ktEntities) {
-    beginCommandBufferRecording(commandBuffer, renderPass, framebuffer, &swapChainExtent, graphicsPipeline);
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
     for (size_t i = 0; i < ktEntities->size; i++) {
         Entity *obj = (Entity *) (ktEntities->entities[i]);
@@ -50,16 +45,38 @@ void recordCommandBuffer(
 
         vkCmdDrawIndexed(commandBuffer, obj->renderResources->modelData->num_indices, 1, 0, 0, 0);
     }
-    vkCmdEndRenderPass(commandBuffer);
 
-    if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-        fprintf(stderr, "Failed to record command buffer\n");
-        exit(-1);
-    }
+//    VkImageMemoryBarrier barrier = {};
+//    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+//    barrier.oldLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+//    barrier.newLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+//    barrier.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+//    barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+//    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+//    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+//    barrier.image = depthImage->image; // The depth buffer image
+//    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+//    barrier.subresourceRange.baseMipLevel = 0;
+//    barrier.subresourceRange.levelCount = 1;
+//    barrier.subresourceRange.baseArrayLayer = 0;
+//    barrier.subresourceRange.layerCount = 1;
+//
+//    vkCmdPipelineBarrier(
+//            commandBuffer,
+//            VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT, // or VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT
+//            VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, // for the second render pass
+//            0,
+//            0, NULL,
+//            0, NULL,
+//            1, &barrier
+//    );
 }
 
-void beginCommandBufferRecording(VkCommandBuffer commandBuffer, VkRenderPass renderPass, VkFramebuffer framebuffer,
-                                 VkExtent2D *swapChainExtent, VkPipeline graphicsPipeline) {
+void beginCommandBufferRecording(
+        VkCommandBuffer commandBuffer,
+        VkRenderPass renderPass,
+        VkFramebuffer framebuffer,
+        VkExtent2D *swapChainExtent) {
     VkCommandBufferBeginInfo beginInfo = {};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     // beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;               // Optional
@@ -77,16 +94,14 @@ void beginCommandBufferRecording(VkCommandBuffer commandBuffer, VkRenderPass ren
     renderPassInfo.renderArea.offset = (VkOffset2D) {0, 0};
     renderPassInfo.renderArea.extent = (*swapChainExtent);
 
+    // Clear depth at the start of the render pass
     VkClearValue clearValues[2];
     clearValues[0].color = (VkClearColorValue) {{0.0f, 0.0f, 0.0f, 1.0f}}; // Clear color
     clearValues[1].depthStencil = (VkClearDepthStencilValue) {1.0f, 0};    // Clear depth
 
     renderPassInfo.clearValueCount = 2;
     renderPassInfo.pClearValues = clearValues;
-
     vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 }
 
 void calculateAABBTransform(Entity *entity, mat4 transform) {
@@ -118,15 +133,12 @@ void calculateOBBTransform(Entity *entity, mat4 transform) {
 
 void recordDebugCommandBuffer(
         VkCommandBuffer commandBuffer,
-        VkRenderPass renderPass,
-        VkFramebuffer framebuffer,
-        VkExtent2D swapChainExtent,
         VkPipeline graphicsPipeline,
         VkPipelineLayout pipelineLayout,
         EntityArray *ktEntities,
         VkBuffer unitCubeVertexBuffer,
         Camera *camera) {
-    beginCommandBufferRecording(commandBuffer, renderPass, framebuffer, &swapChainExtent, graphicsPipeline);
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
     for (size_t i = 0; i < ktEntities->size; ++i) {
         Entity *entity = (Entity *) (ktEntities->entities[i]);
@@ -153,24 +165,15 @@ void recordDebugCommandBuffer(
         // Assuming you have a predefined way to get the number of vertices for your unit cube
         vkCmdDraw(commandBuffer, 24, 1, 0, 0);
     }
-    vkCmdEndRenderPass(commandBuffer);
-
-    if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-        fprintf(stderr, "Failed to record command buffer\n");
-        exit(-1);
-    }
 }
 
 void recordEmitterBuffer(
         VkCommandBuffer commandBuffer,
-        VkFramebuffer framebuffer,
-        VkExtent2D swapChainExtent,
         PipelineConfig *pipelineConfig,
         BufferMemory *particleBuffer,
         Emitter *emitter
 ) {
-    beginCommandBufferRecording(commandBuffer, pipelineConfig->renderPass, framebuffer, &swapChainExtent,
-                                pipelineConfig->pipeline);
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineConfig->pipeline);
 
     VkBuffer vertexBuffers[] = {
             emitter->renderResources->vertexBuffer->buffer,
@@ -185,9 +188,10 @@ void recordEmitterBuffer(
                             descriptorSets, 0,
                             NULL);
 
-    // vkCmdDrawIndexed(commandBuffer, indexCountPerInstance, MAX_PARTICLE_COUNT, firstIndex, vertexOffset, firstInstance);
     vkCmdDrawIndexed(commandBuffer, emitter->renderResources->modelData->num_indices, MAX_PARTICLE_COUNT, 0, 0, 0);
+}
 
+void endCommandBufferRecording(VkCommandBuffer commandBuffer) {
     vkCmdEndRenderPass(commandBuffer);
 
     if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {

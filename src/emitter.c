@@ -1,7 +1,7 @@
 #include "include/emitter.h"
 #include "include/pipelines/pfx/pfx_pipeline_update_descriptor_sets.h"
 
-const int MAX_PARTICLE_COUNT = 100;
+const int MAX_PARTICLE_COUNT = 1000;
 
 Emitter *createEmitter(
         ApplicationContext *context,

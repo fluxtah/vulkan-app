@@ -6,7 +6,7 @@
 
 PipelineConfig *createPfxPipelineConfig(
         VulkanDeviceContext *context,
-        VkCommandPool commandPool,
-        VulkanSwapchainContext *vulkanSwapchainContext);
+        VulkanSwapchainContext *vulkanSwapchainContext,
+        VkRenderPass renderPass);
 
 #endif //APP_PIPELINES_PFX_PIPELINE_CONFIG_H

@@ -2,9 +2,7 @@
 
 void destroyPipelineConfig(
         VulkanDeviceContext *context,
-        VkCommandPool commandPool,
-        PipelineConfig *pipelineConfig,
-        uint32_t swapChainImageCount) {
+        PipelineConfig *pipelineConfig) {
     if (pipelineConfig->descriptorPool != VK_NULL_HANDLE) {
         vkDestroyDescriptorPool(context->device, pipelineConfig->descriptorPool, NULL);
         pipelineConfig->descriptorPool = VK_NULL_HANDLE;
@@ -28,22 +26,6 @@ void destroyPipelineConfig(
     if (pipelineConfig->pipeline != VK_NULL_HANDLE) {
         vkDestroyPipeline(context->device, pipelineConfig->pipeline, NULL);
         pipelineConfig->pipeline = VK_NULL_HANDLE;
-    }
-
-    if (pipelineConfig->renderPass != VK_NULL_HANDLE) {
-        vkDestroyRenderPass(context->device, pipelineConfig->renderPass, NULL);
-        pipelineConfig->renderPass = VK_NULL_HANDLE;
-    }
-
-    for (size_t i = 0; i < swapChainImageCount; i++) {
-        vkDestroyFramebuffer(context->device, pipelineConfig->swapChainFramebuffers[i], NULL);
-    }
-    free(pipelineConfig->swapChainFramebuffers);
-
-    if (pipelineConfig->commandBuffers != VK_NULL_HANDLE) {
-        vkFreeCommandBuffers(context->device, commandPool, swapChainImageCount, pipelineConfig->commandBuffers);
-        free(pipelineConfig->commandBuffers);
-        pipelineConfig->commandBuffers = VK_NULL_HANDLE;
     }
 
     free(pipelineConfig);

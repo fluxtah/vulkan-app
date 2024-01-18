@@ -11,15 +11,10 @@ typedef struct PipelineConfig {
     VkDescriptorSetLayout fragmentShaderDescriptorSetLayout;
     VkPipelineLayout pipelineLayout;
     VkPipeline pipeline;
-    VkCommandBuffer *commandBuffers;
-    VkRenderPass renderPass;
-    VkFramebuffer *swapChainFramebuffers;
 } PipelineConfig;
 
 void destroyPipelineConfig(
         VulkanDeviceContext *context,
-        VkCommandPool commandPool,
-        PipelineConfig *pipelineConfig,
-        uint32_t swapChainImageCount);
+        PipelineConfig *pipelineConfig);
 
 #endif //APP_PIPELINES_PIPELINE_CONFIG_H

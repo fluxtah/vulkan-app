@@ -247,11 +247,38 @@ ApplicationContext *createApplication() {
 
     glfwSetKeyCallback(vulkanDeviceContext->window, key_callback);
 
+    applicationContext->renderPass = createBasicPipelineRenderPass(vulkanDeviceContext);
+    if (applicationContext->renderPass == VK_NULL_HANDLE) {
+        LOG_ERROR("Failed to create render pass for basic shader pipeline");
+        destroyApplication(applicationContext);
+        return NULL;
+    }
+
+    applicationContext->swapChainFramebuffers = createSwapChainFramebuffers(vulkanDeviceContext->device,
+                                                                            vulkanSwapchainContext,
+                                                                            applicationContext->renderPass);
+    if (applicationContext->swapChainFramebuffers == NULL) {
+        LOG_ERROR("Failed to create swap chain framebuffers for debug shader pipeline");
+        destroyApplication(applicationContext);
+        return NULL;
+    }
+
+    applicationContext->commandBuffers = allocateCommandBuffers(vulkanDeviceContext->device,
+                                                                applicationContext->commandPool,
+                                                                vulkanSwapchainContext->swapChainImageCount);
+    if (applicationContext->commandBuffers == VK_NULL_HANDLE) {
+        LOG_ERROR("Failed to allocate command buffers for basic shader pipeline");
+        destroyApplication(applicationContext);
+        return NULL;
+    }
+
     applicationContext->pipelineConfig = createBasicShaderPipelineConfig(
             vulkanDeviceContext,
             applicationContext->commandPool,
-            vulkanSwapchainContext
+            vulkanSwapchainContext,
+            applicationContext->renderPass
     );
+
     if (applicationContext->pipelineConfig == NULL) {
         LOG_ERROR("Failed to create basic shader pipeline config");
         destroyApplication(applicationContext);
@@ -261,8 +288,8 @@ ApplicationContext *createApplication() {
 #ifdef DEBUG
     applicationContext->debugPipelineConfig = createDebugPipelineConfig(
             vulkanDeviceContext,
-            applicationContext->commandPool,
-            vulkanSwapchainContext
+            vulkanSwapchainContext,
+            applicationContext->renderPass
     );
     if (applicationContext->debugPipelineConfig == NULL) {
         LOG_ERROR("Failed to create debug shader pipeline config");
@@ -291,6 +318,23 @@ ApplicationContext *createApplication() {
 void destroyApplication(ApplicationContext *context) {
     context->activeCamera = NULL;
 
+    if (context->renderPass != VK_NULL_HANDLE) {
+        vkDestroyRenderPass(context->vulkanDeviceContext->device, context->renderPass, NULL);
+        context->renderPass = VK_NULL_HANDLE;
+    }
+
+    for (size_t i = 0; i < context->vulkanSwapchainContext->swapChainImageCount; i++) {
+        vkDestroyFramebuffer(context->vulkanDeviceContext->device, context->swapChainFramebuffers[i], NULL);
+    }
+    free(context->swapChainFramebuffers);
+
+    if (context->commandBuffers != VK_NULL_HANDLE) {
+        vkFreeCommandBuffers(context->vulkanDeviceContext->device, context->commandPool,
+                             context->vulkanSwapchainContext->swapChainImageCount, context->commandBuffers);
+        free(context->commandBuffers);
+        context->commandBuffers = VK_NULL_HANDLE;
+    }
+
     //
     // NOTE: We associate command buffers to the pipeline configs, so we need to free them first, everything
     // else associated with the pipeline config is freed in destroyPipelineConfig
@@ -298,9 +342,7 @@ void destroyApplication(ApplicationContext *context) {
     if (context->pipelineConfig != NULL && context->vulkanSwapchainContext != NULL) {
         destroyPipelineConfig(
                 context->vulkanDeviceContext,
-                context->commandPool,
-                context->pipelineConfig,
-                context->vulkanSwapchainContext->swapChainImageCount);
+                context->pipelineConfig);
     }
 
 #if DEBUG
@@ -312,9 +354,7 @@ void destroyApplication(ApplicationContext *context) {
 
         destroyPipelineConfig(
                 context->vulkanDeviceContext,
-                context->commandPool,
-                context->debugPipelineConfig,
-                context->vulkanSwapchainContext->swapChainImageCount);
+                context->debugPipelineConfig);
 
     }
 #endif

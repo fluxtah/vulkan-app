@@ -78,23 +78,23 @@ int main() {
 
     PipelineConfig *emitterPipelineConfig = createPfxPipelineConfig(
             context->vulkanDeviceContext,
-            context->commandPool,
-            context->vulkanSwapchainContext
-            );
+            context->vulkanSwapchainContext,
+            context->renderPass
+    );
 
     CreateEmitterInfo emitterInfo = {
             .positionX = 0.0f,
-            .positionY = 0.0f,
+            .positionY = 2.0f,
             .positionZ = 0.0f,
-            .scaleX = 1.0f,
-            .scaleY = 1.0f,
-            .scaleZ = 1.0f
+            .scaleX = 0.5f,
+            .scaleY = 0.5f,
+            .scaleZ = 0.5f
     };
 
     Emitter *emitter = createEmitter(
             context,
             emitterPipelineConfig,
-            "models/cube.glb",
+            "models/asteroid.glb",
             &emitterInfo);
 
     /*
@@ -128,8 +128,9 @@ int main() {
                 Entity *otherEntity = (Entity *) (ktEntities->entities[j]);
 
                 if (otherEntity == sourceEntity) continue;
-                if(MAX_COLLIDING_ENTITIES == collingEntityCount) {
-                    fprintf(stderr, "Max colliding entities reached, skipping collision detection for remaining entities\n");
+                if (MAX_COLLIDING_ENTITIES == collingEntityCount) {
+                    fprintf(stderr,
+                            "Max colliding entities reached, skipping collision detection for remaining entities\n");
                     break;
                 }
 
@@ -144,22 +145,29 @@ int main() {
         recordComputeCommandBuffer(pfxComputePipelineConfig, deltaTime);
 
         for (size_t i = 0; i < context->vulkanSwapchainContext->swapChainImageCount; i++) {
+            beginCommandBufferRecording(
+                    context->commandBuffers[i],
+                    context->renderPass,
+                    context->swapChainFramebuffers[i],
+                    &context->vulkanSwapchainContext->swapChainExtent);
             recordCommandBuffer(
-                    context->pipelineConfig->commandBuffers[i],
-                    context->pipelineConfig->renderPass,
-                    context->pipelineConfig->swapChainFramebuffers[i],
-                    context->vulkanSwapchainContext->swapChainExtent,
+                    context->vulkanSwapchainContext->depthStencil,
+                    context->commandBuffers[i],
                     context->pipelineConfig->pipeline,
                     context->pipelineConfig->pipelineLayout,
                     ktEntities);
 
+            recordEmitterBuffer(
+                    context->commandBuffers[i],
+                    emitterPipelineConfig,
+                    pfxComputePipelineConfig->particleBuffer,
+                    emitter
+            );
+
 #ifdef DEBUG
             if (context->debugBoundingVolumes) {
                 recordDebugCommandBuffer(
-                        context->debugPipelineConfig->commandBuffers[i],
-                        context->debugPipelineConfig->renderPass,
-                        context->debugPipelineConfig->swapChainFramebuffers[i],
-                        context->vulkanSwapchainContext->swapChainExtent,
+                        context->commandBuffers[i],
                         context->debugPipelineConfig->pipeline,
                         context->debugPipelineConfig->pipelineLayout,
                         ktEntities,
@@ -168,14 +176,7 @@ int main() {
             }
 #endif
 
-            recordEmitterBuffer(
-                    emitterPipelineConfig->commandBuffers[i],
-                    emitterPipelineConfig->swapChainFramebuffers[i],
-                    context->vulkanSwapchainContext->swapChainExtent,
-                    emitterPipelineConfig,
-                    pfxComputePipelineConfig->particleBuffer,
-                    emitter
-            );
+            endCommandBufferRecording(context->commandBuffers[i]);
         }
 
         //
@@ -194,25 +195,12 @@ int main() {
                               UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE,
                               &imageIndex);
 
-        VkCommandBuffer commandBuffersToSubmit[4]; // Maximum of 2 command buffers
+        VkCommandBuffer commandBuffersToSubmit[2]; // Maximum of 1 command buffers
         uint32_t commandBufferCount = 0;
 
         // Always add the primary command buffer
-        commandBuffersToSubmit[commandBufferCount++] = context->pipelineConfig->commandBuffers[imageIndex];
-
-        //
-        // TODO TEMP PARTICLE EMITTER
-        //
+        commandBuffersToSubmit[commandBufferCount++] = context->commandBuffers[imageIndex];
         commandBuffersToSubmit[commandBufferCount++] = pfxComputePipelineConfig->commandBuffers[0];
-
-        commandBuffersToSubmit[commandBufferCount++] = emitterPipelineConfig->commandBuffers[imageIndex];
-
-#ifdef DEBUG
-        // Add the debug pipeline's command buffer in debug mode
-        if (context->debugBoundingVolumes) {
-            commandBuffersToSubmit[commandBufferCount++] = context->debugPipelineConfig->commandBuffers[imageIndex];
-        }
-#endif
 
         vkResetFences(context->vulkanDeviceContext->device, 1, &inFlightFence);
 

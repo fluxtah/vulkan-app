@@ -16,5 +16,6 @@
 PipelineConfig *createBasicShaderPipelineConfig(
         VulkanDeviceContext *context,
         VkCommandPool commandPool,
-        VulkanSwapchainContext *vulkanSwapchainContext);
+        VulkanSwapchainContext *vulkanSwapchainContext,
+        VkRenderPass renderPass);
 #endif //APP_PIPELINES_BASIC_CONFIG_H

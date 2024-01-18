@@ -8,21 +8,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-VkCommandBuffer* allocateCommandBuffers(VkDevice device, VkCommandPool commandPool, uint32_t commandBufferCount);
-void recordCommandBuffer(
+void beginCommandBufferRecording(
         VkCommandBuffer commandBuffer,
         VkRenderPass renderPass,
         VkFramebuffer framebuffer,
-        VkExtent2D swapChainExtent,
+        VkExtent2D *swapChainExtent);
+
+VkCommandBuffer* allocateCommandBuffers(VkDevice device, VkCommandPool commandPool, uint32_t commandBufferCount);
+void recordCommandBuffer(
+        ImageMemory *depthImage,
+        VkCommandBuffer commandBuffer,
         VkPipeline graphicsPipeline,
         VkPipelineLayout pipelineLayout,
         EntityArray *ktEntities);
 
 void recordDebugCommandBuffer(
         VkCommandBuffer commandBuffer,
-        VkRenderPass renderPass,
-        VkFramebuffer framebuffer,
-        VkExtent2D swapChainExtent,
         VkPipeline graphicsPipeline,
         VkPipelineLayout pipelineLayout,
         EntityArray *ktEntities,
@@ -31,10 +32,10 @@ void recordDebugCommandBuffer(
 
 void recordEmitterBuffer(
         VkCommandBuffer commandBuffer,
-        VkFramebuffer framebuffer,
-        VkExtent2D swapChainExtent,
         PipelineConfig *pipelineConfig,
         BufferMemory *particleBuffer,
         Emitter *emitter
 );
+
+void endCommandBufferRecording(VkCommandBuffer commandBuffer);
 #endif // VULKAN_COMMANDBUFFER_H

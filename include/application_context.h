@@ -33,6 +33,9 @@ typedef struct ApplicationContext {
     Camera *activeCamera;
     BufferMemory *debugCubeBuffer;
     bool debugBoundingVolumes;
+    VkRenderPass renderPass;
+    VkFramebuffer *swapChainFramebuffers;
+    VkCommandBuffer *commandBuffers;
 } ApplicationContext;
 
 #endif //VULKAN_CONTEXT_H

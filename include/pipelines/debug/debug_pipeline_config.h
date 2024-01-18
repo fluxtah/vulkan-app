@@ -13,7 +13,7 @@
 
 PipelineConfig *createDebugPipelineConfig(
         VulkanDeviceContext *context,
-        VkCommandPool commandPool,
-        VulkanSwapchainContext *vulkanSwapchainContext);
+        VulkanSwapchainContext *vulkanSwapchainContext,
+        VkRenderPass renderPass);
 
 #endif //APP_PIPELINES_DEBUG_CONFIG_H
