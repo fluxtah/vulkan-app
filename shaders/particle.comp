@@ -18,10 +18,10 @@ layout(push_constant) uniform PushConstants {
 
 // Simple random number generator
 float rand(vec2 co){
-    return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+    return fract(sin(dot(co.xy , vec2(12.9898,78.233))) * 43758.5453);
 }
 
-const vec3 gravity = vec3(0.0, -9.81, 0.0); // Gravity vector (assuming negative Y is down)
+const vec3 gravity = vec3(0.0, -9.81 * 4, 0.0); // Gravity vector
 
 void main() {
     uint id = gl_GlobalInvocationID.x;
@@ -29,17 +29,18 @@ void main() {
 
     // Initialize or reset particle
     if (particles[id].lifeTime <= 0.0) {
-        particles[id].position = vec3(0.0); // Start at the origin
+        float radius = 0.5; // Small radius for explosion origin
+        vec3 randomPos = vec3(rand(vec2(id, id)) - 0.5, rand(vec2(id, id + 1)) - 0.5, rand(vec2(id + 1, id)) - 0.5) * radius;
+        particles[id].position = randomPos; // Start near the origin
+
         float angle = 2.0 * 3.14159265 * rand(vec2(id, id)); // Random angle
-        float speed = rand(vec2(id, angle)) * 10.0; // Random speed
-        particles[id].velocity = vec3(cos(angle) * speed, sin(angle) * speed, rand(vec2(angle, id)) * speed);
-        particles[id].lifeTime = 5.0; // Reset lifetime
+        float speed = rand(vec2(id, angle)) * 20.0 + 10.0; // Varied speed
+        particles[id].velocity = vec3(cos(angle) * speed, abs(sin(angle)) * speed, rand(vec2(angle, id)) * speed - 5.0);
+        particles[id].lifeTime = rand(vec2(id, angle)) * 3.0 + 2.0; // Varied lifetime
     }
 
-    // Apply gravity
+    // Apply gravity and update position
     particles[id].velocity += gravity * pushConstants.deltaTime;
-
-    // Update particle position and decrease lifetime
     particles[id].position += particles[id].velocity * pushConstants.deltaTime;
     particles[id].lifeTime -= pushConstants.deltaTime;
 }
