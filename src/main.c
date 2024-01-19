@@ -188,8 +188,8 @@ int main() {
             updateLightsUBO(context->vulkanDeviceContext->device, obj, context->activeCamera);
         }
 
-        emitter->position[0] = 10.0f * sinf(time);
-        emitter->position[2] = 1.0f;
+        emitter->position[0] = 2.0f * sinf(time);
+        emitter->position[2] = 4.0f;
 
         updateEmitterTransformUBO(context->vulkanDeviceContext->device, emitter, context->activeCamera);
 

@@ -5,8 +5,8 @@ layout(location = 1) in vec3 inNormal;
 layout(location = 2) in vec2 inUV;
 layout(location = 3) in vec4 inTangent;
 
-layout(location = 4) in vec3 particlePos;  // World position of the particle (from compute shader)
-layout(location = 5) in vec3 particleScale;  // Scale of the particle (from compute shader)
+layout(location = 4) in vec3 particlePos;
+layout(location = 5) in vec3 particleScale;
 
 layout(location = 0) out vec3 fragPos;
 layout(location = 1) out vec3 normal;
@@ -35,15 +35,13 @@ void main() {
     // Scale the quad vertices
     vec4 scaledPos = vec4(inPos * particleScale, 1.0);
 
-    // Use the billboard matrix and particle position directly
-    vec4 worldPos = billboardMatrix * scaledPos + vec4(particlePos, 0.0);
+    vec4 worldPos = ubo.model * billboardMatrix * scaledPos + vec4(particlePos, 0.0);
 
     fragPos = vec3(worldPos); // Position in world space
-    normal = mat3(transpose(inverse(billboardMatrix))) * inNormal;
+    normal = mat3(transpose(inverse(ubo.model))) * inNormal;
     uv = inUV;
     tangent = inTangent;
 
     gl_Position = ubo.proj * ubo.view * worldPos; // Correct transformation to clip space
 }
-
 
