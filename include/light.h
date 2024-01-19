@@ -8,7 +8,7 @@ typedef struct {
     int type;
     vec4 color;
     vec3 position;
-    char _pad1; // shader alignment
+    char _pad1[4]; // shader alignment
     vec3 direction;
     float intensity;
 } Light;

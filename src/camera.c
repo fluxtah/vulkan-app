@@ -43,7 +43,6 @@ void applyCameraChanges(Camera *camera) {
     // Update the projection matrix
     glm_perspective(glm_rad(camera->fov), camera->aspectRatio, camera->nearPlane, camera->farPlane, camera->proj);
     camera->proj[1][1] *= -1; // Adjust for Vulkan's clip space
-
 }
 
 void setLookAtTarget(Camera *camera, vec3 target) {

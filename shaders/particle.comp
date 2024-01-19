@@ -5,6 +5,7 @@ layout(local_size_x = 32) in;
 struct Particle {
     vec3 position;
     vec3 velocity;
+    vec3 scale;
     float lifeTime;
 };
 
@@ -21,26 +22,32 @@ float rand(vec2 co){
     return fract(sin(dot(co.xy , vec2(12.9898,78.233))) * 43758.5453);
 }
 
-const vec3 gravity = vec3(0.0, -9.81 * 4, 0.0); // Gravity vector
+const vec3 gravity = vec3(0.0, -2.81, 0.0); // Gravity vector
 
 void main() {
-    uint id = gl_GlobalInvocationID.x;
+    uint id = gl_GlobalInvocationID.x; // Get the current particle ID
     if (id >= particles.length()) return;
+    Particle p = particles[id];
 
-    // Initialize or reset particle
-    if (particles[id].lifeTime <= 0.0) {
-        float radius = 0.2; // Small radius for explosion origin
-        vec3 randomPos = vec3(rand(vec2(id, id)) - 0.2, rand(vec2(id, id + 1)) - 0.2, rand(vec2(id + 1, id)) - 0.2) * radius;
-        particles[id].position = randomPos; // Start near the origin
-
-        float angle = 2.0 * 3.14159265 * rand(vec2(id, id)); // Random angle
-        float speed = rand(vec2(id, angle)) * 20.0 + 10.0; // Varied speed
-        particles[id].velocity = vec3(cos(angle) * speed, abs(sin(angle)) * speed, rand(vec2(angle, id)) * speed - 5.0);
-        particles[id].lifeTime = rand(vec2(id, angle)) * 3.0 + 2.0; // Varied lifetime
+    // Initialize or reinitialize the particle
+    if (p.lifeTime <= 0.0) {
+        p.position = vec3(rand(vec2(id, 0.0)) * 1.0 - 0.5,
+        rand(vec2(id, 1.0)) * 1.0 - 0.5,
+        rand(vec2(id, 2.0)) * 1.0 - 0.5); // Random direction
+        p.velocity = vec3(rand(vec2(id, 0.0)) * 2.0 - 1.0,
+        rand(vec2(id, 1.0)) * 2.0 - 1.0,
+        rand(vec2(id, 2.0)) * 2.0 - 1.0); // Random direction
+        float randScale = 1.0f + (rand(vec2(id, pushConstants.deltaTime)) * 2);
+        p.scale = vec3(randScale, randScale, randScale); // Random scale
+        p.lifeTime = 2.0; // Reset lifeTime
+    } else {
+        // Update the particle
+        p.velocity += gravity * pushConstants.deltaTime; // Apply gravity
+        p.position += p.velocity * pushConstants.deltaTime; // Update position
+        p.lifeTime -= pushConstants.deltaTime; // Decrease lifeTime
+        p.scale = vec3(1.0f + p.lifeTime); // Scale particle
     }
 
-    // Apply gravity and update position
-    particles[id].velocity += gravity * pushConstants.deltaTime;
-    particles[id].position += particles[id].velocity * pushConstants.deltaTime;
-    particles[id].lifeTime -= pushConstants.deltaTime;
+    particles[id] = p; // Write back updated particle
 }
+

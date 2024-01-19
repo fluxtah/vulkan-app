@@ -129,7 +129,7 @@ void main() {
     vec3 lightingResult = calculateLight(norm, fragPos, viewDir, metallic, roughness, textureColor.rgb);
 
     // Apply Gamma Correction
-    //vec3 result = gammaCorrect(lightingResult * textureColor.rgb);
+   // vec3 result = gammaCorrect(lightingResult * textureColor.rgb);
     vec3 result = lightingResult * textureColor.rgb;
     outColor = vec4(result, 1.0f);
 }

@@ -19,7 +19,7 @@ VkPipeline createPfxPipeline(
     particlePositionBinding.inputRate = VK_VERTEX_INPUT_RATE_INSTANCE; // Use instance rate for particle positions
 
     VkVertexInputBindingDescription bindings[] = {bindingDescription, particlePositionBinding};
-    VkVertexInputAttributeDescription attributeDescriptions[5];
+    VkVertexInputAttributeDescription attributeDescriptions[6];
 
     // Position attribute
     attributeDescriptions[0].binding = 0;
@@ -48,13 +48,18 @@ VkPipeline createPfxPipeline(
     attributeDescriptions[4].binding = 1; // Corresponds to particlePositionBinding
     attributeDescriptions[4].location = 4; // Assuming the next available location index
     attributeDescriptions[4].format = VK_FORMAT_R32G32B32_SFLOAT; // Format for vec3
-    attributeDescriptions[4].offset = 0; // Start of the data in the buffer
+    attributeDescriptions[4].offset = offsetof(Particle , position); // Offset of position in Particle struct
+
+    attributeDescriptions[5].binding = 1; // Corresponds to particlePositionBinding
+    attributeDescriptions[5].location = 5; // Assuming the next available location index
+    attributeDescriptions[5].format = VK_FORMAT_R32G32B32_SFLOAT; // Format for vec3
+    attributeDescriptions[5].offset = offsetof(Particle, scale); // Offset of position in Particle struct
 
     VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertexInputInfo.vertexBindingDescriptionCount = 2;
-    vertexInputInfo.pVertexBindingDescriptions = &bindings; // Pointer to binding descriptions
-    vertexInputInfo.vertexAttributeDescriptionCount = 5;
+    vertexInputInfo.pVertexBindingDescriptions = bindings; // Pointer to binding descriptions
+    vertexInputInfo.vertexAttributeDescriptionCount = 6;
     vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions; // Pointer to attribute descriptions
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
@@ -94,16 +99,16 @@ VkPipeline createPfxPipeline(
     colorBlendAttachment.colorWriteMask =
             VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
     colorBlendAttachment.blendEnable = VK_TRUE;
-    colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_DARKEN_EXT;
+    colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
     colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
     colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+    colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
     colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
     colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-    colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
 
     VkPipelineColorBlendStateCreateInfo colorBlending = {};
     colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-    colorBlending.logicOpEnable = VK_FALSE;   // Set to VK_TRUE to enable logical operation
+    colorBlending.logicOpEnable = VK_TRUE;   // Set to VK_TRUE to enable logical operation
     colorBlending.logicOp = VK_LOGIC_OP_COPY; // Logical operation to use (ignored if logicOpEnable is VK_FALSE)
     colorBlending.attachmentCount = 1;
     colorBlending.pAttachments = &colorBlendAttachment;

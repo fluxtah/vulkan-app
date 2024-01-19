@@ -84,7 +84,7 @@ int main() {
 
     CreateEmitterInfo emitterInfo = {
             .positionX = 0.0f,
-            .positionY = 0.0f,
+            .positionY = 2.0f,
             .positionZ = 10.0f,
             .scaleX = 1.0f,
             .scaleY = 1.0f,

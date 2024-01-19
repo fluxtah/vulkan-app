@@ -1,7 +1,7 @@
 #include "include/emitter.h"
 #include "include/pipelines/pfx/pfx_pipeline_update_descriptor_sets.h"
 
-const int MAX_PARTICLE_COUNT = 1000;
+const int MAX_PARTICLE_COUNT = 20;
 
 Emitter *createEmitter(
         ApplicationContext *context,
@@ -16,9 +16,9 @@ Emitter *createEmitter(
     emitter->position[0] = info->positionX;
     emitter->position[1] = info->positionY;
     emitter->position[2] = info->positionZ;
-    emitter->scale[0] = info->scaleX;
-    emitter->scale[1] = info->scaleY;
-    emitter->scale[2] = info->scaleZ;
+    emitter->rotation[0] = info->rotationX;
+    emitter->rotation[1] = info->rotationY;
+    emitter->rotation[2] = info->rotationZ;
 
     // Dynamically allocate a BufferMemory
     emitter->transformUBO = (BufferMemory *) malloc(sizeof(BufferMemory));

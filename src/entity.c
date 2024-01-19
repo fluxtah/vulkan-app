@@ -10,9 +10,9 @@ Entity *createEntity(ApplicationContext *context, const char *filename, CreateEn
     entity->position[0] = info->positionX;
     entity->position[1] = info->positionY;
     entity->position[2] = info->positionZ;
-    entity->scale[0] = info->scaleX;
-    entity->scale[1] = info->scaleY;
-    entity->scale[2] = info->scaleZ;
+    entity->rotation[0] = info->rotationX;
+    entity->rotation[1] = info->rotationY;
+    entity->rotation[2] = info->rotationZ;
 
     // Dynamically allocate a BufferMemory
     entity->transformUBO = (BufferMemory *) malloc(sizeof(BufferMemory));
