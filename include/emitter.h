@@ -5,6 +5,7 @@
 #include <vulkan/vulkan.h>
 #include "include/vulkan/buffer_memory.h"
 #include "renderresources.h"
+#include "include/pipelines/compute_pipeline_config.h"
 
 typedef struct Emitter {
     vec3 scale;
@@ -15,13 +16,17 @@ typedef struct Emitter {
     VkDescriptorSet fragmentDescriptorSet;
     BufferMemory *transformUBO;
     RenderResources *renderResources;
+
+    ComputePipelineConfig *computePipelineConfig;
+
+    // TODO This could be shared between emitters that use the same shaders and compute pipeline
+    PipelineConfig *graphicsPipelineConfig;
 } Emitter;
 
 RenderResourcesMap *renderResourcesMap;
 
 Emitter *createEmitter(
         ApplicationContext *context,
-        PipelineConfig *pipelineConfig,
         const char *filename,
         CreateEmitterInfo *info);
 void setEmitterPosition(Emitter *emitter, float x, float y, float z);

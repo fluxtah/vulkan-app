@@ -1,14 +1,27 @@
 #include "include/emitter.h"
 #include "include/pipelines/pfx/pfx_pipeline_update_descriptor_sets.h"
+#include "include/pipelines/pfx/pfx_compute_pipeline_config.h"
+#include "include/pipelines/pfx/pfx_pipeline_config.h"
 
 const int MAX_PARTICLE_COUNT = 20;
 
 Emitter *createEmitter(
         ApplicationContext *context,
-        PipelineConfig *pipelineConfig,
         const char *filename,
         CreateEmitterInfo *info) {
     Emitter *emitter = malloc(sizeof(Emitter));
+
+    emitter->computePipelineConfig = createPfxComputePipelineConfig(
+            context->vulkanDeviceContext,
+            context->commandPool
+    );
+
+    emitter->graphicsPipelineConfig = createPfxPipelineConfig(
+            context->vulkanDeviceContext,
+            context->vulkanSwapchainContext,
+            context->renderPass
+    );
+
 
     emitter->scale[0] = info->scaleX;
     emitter->scale[1] = info->scaleY;
@@ -34,8 +47,8 @@ Emitter *createEmitter(
     // Create descriptor sets
     if (allocateDescriptorSet(
             context->vulkanDeviceContext->device,
-            pipelineConfig->descriptorPool,
-            pipelineConfig->vertexShaderDescriptorSetLayout,
+            emitter->graphicsPipelineConfig->descriptorPool,
+            emitter->graphicsPipelineConfig->vertexShaderDescriptorSetLayout,
             &emitter->vertexDescriptorSet) != VK_SUCCESS) {
         LOG_ERROR("Failed to allocate vertex descriptor set");
         return NULL;
@@ -43,8 +56,8 @@ Emitter *createEmitter(
 
     if (allocateDescriptorSet(
             context->vulkanDeviceContext->device,
-            pipelineConfig->descriptorPool,
-            pipelineConfig->fragmentShaderDescriptorSetLayout,
+            emitter->graphicsPipelineConfig->descriptorPool,
+            emitter->graphicsPipelineConfig->fragmentShaderDescriptorSetLayout,
             &emitter->fragmentDescriptorSet) != VK_SUCCESS) {
         LOG_ERROR("Failed to allocate fragment descriptor set");
         return NULL;
@@ -80,15 +93,24 @@ void setEmitterScale(Emitter *emitter, float x, float y, float z) {
     emitter->scale[2] = z;
 }
 
-void destroyEmitter(ApplicationContext *context, Emitter *entity) {
-    // Destroy UBOs
-    destroyBufferMemory(context->vulkanDeviceContext, entity->transformUBO);
+void destroyEmitter(ApplicationContext *context, Emitter *emitter) {
+    destroyComputePipelineConfig(
+            context->vulkanDeviceContext,
+            context->commandPool,
+            emitter->computePipelineConfig);
 
-    RenderResourcesMap *resources = getRenderResources(renderResourcesMap, entity->renderResources->filename);
+    destroyPipelineConfig(
+            context->vulkanDeviceContext,
+            emitter->graphicsPipelineConfig);
+
+    // Destroy UBOs
+    destroyBufferMemory(context->vulkanDeviceContext, emitter->transformUBO);
+
+    RenderResourcesMap *resources = getRenderResources(renderResourcesMap, emitter->renderResources->filename);
 
     if (resources->refs == 1) {
         deleteRenderResources(&renderResourcesMap, resources);
-        destroyRenderResources(context, entity->renderResources);
+        destroyRenderResources(context, emitter->renderResources);
     } else {
         resources->refs--;
     }

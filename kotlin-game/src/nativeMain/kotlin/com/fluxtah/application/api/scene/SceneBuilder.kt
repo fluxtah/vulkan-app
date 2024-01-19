@@ -64,6 +64,10 @@ class SceneBuilder(val sceneId: String) {
         }
     }
 
+    fun emitter(id: String, modelPath: String, builder: EmitterBuilder.() -> Unit) {
+
+    }
+
     @OptIn(ExperimentalForeignApi::class)
     fun build(): SceneInfo {
         val scene = SceneImpl()

@@ -71,17 +71,6 @@ int main() {
     //
     // TEMP PARTICLE EMITTER
     //
-    ComputePipelineConfig *pfxComputePipelineConfig = createPfxComputePipelineConfig(
-            context->vulkanDeviceContext,
-            context->commandPool
-    );
-
-    PipelineConfig *emitterPipelineConfig = createPfxPipelineConfig(
-            context->vulkanDeviceContext,
-            context->vulkanSwapchainContext,
-            context->renderPass
-    );
-
     CreateEmitterInfo emitterInfo = {
             .positionX = 0.0f,
             .positionY = 2.0f,
@@ -93,7 +82,6 @@ int main() {
 
     Emitter *emitter = createEmitter(
             context,
-            emitterPipelineConfig,
             "models/quad-explosion.glb",
             &emitterInfo);
 
@@ -142,7 +130,7 @@ int main() {
             }
         }
 
-        recordComputeCommandBuffer(pfxComputePipelineConfig, emitter, deltaTime);
+        recordComputeCommandBuffer(emitter->computePipelineConfig, emitter, deltaTime);
 
         for (size_t i = 0; i < context->vulkanSwapchainContext->swapChainImageCount; i++) {
             beginCommandBufferRecording(
@@ -159,8 +147,8 @@ int main() {
 
             recordEmitterBuffer(
                     context->commandBuffers[i],
-                    emitterPipelineConfig,
-                    pfxComputePipelineConfig->particleBuffer,
+                    emitter->graphicsPipelineConfig,
+                    emitter->computePipelineConfig->particleBuffer,
                     emitter
             );
 
@@ -189,7 +177,7 @@ int main() {
         }
 
         emitter->position[0] = 2.0f * sinf(time);
-        emitter->position[2] = 4.0f;
+        emitter->position[2] = 8.0f;
 
         updateEmitterTransformUBO(context->vulkanDeviceContext->device, emitter, context->activeCamera);
 
@@ -203,7 +191,7 @@ int main() {
 
         // Always add the primary command buffer
         commandBuffersToSubmit[commandBufferCount++] = context->commandBuffers[imageIndex];
-        commandBuffersToSubmit[commandBufferCount++] = pfxComputePipelineConfig->commandBuffers[0];
+        commandBuffersToSubmit[commandBufferCount++] = emitter->computePipelineConfig->commandBuffers[0];
 
         vkResetFences(context->vulkanDeviceContext->device, 1, &inFlightFence);
 
@@ -231,10 +219,7 @@ int main() {
     vkDestroyFence(context->vulkanDeviceContext->device, inFlightFence, NULL);
 
     // TODO TEMP PARTICLE EMITTER
-    destroyComputePipelineConfig(
-            context->vulkanDeviceContext,
-            context->commandPool,
-            pfxComputePipelineConfig);
+    destroyEmitter(context, emitter);
 
     ktDestroyApplication();
 
