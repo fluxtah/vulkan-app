@@ -95,7 +95,7 @@ ComputePipelineConfig *createPfxComputePipelineConfig(
     return config;
 }
 
-void recordComputeCommandBuffer(ComputePipelineConfig *config, float deltaTime) {
+void recordComputeCommandBuffer(ComputePipelineConfig *config, Emitter *emitter, float deltaTime) {
     VkCommandBufferBeginInfo beginInfo = {};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -108,7 +108,21 @@ void recordComputeCommandBuffer(ComputePipelineConfig *config, float deltaTime) 
 
     vkCmdBindDescriptorSets(config->commandBuffers[0], VK_PIPELINE_BIND_POINT_COMPUTE, config->pipelineLayout, 0, 1, &config->descriptorSet, 0, NULL);
 
-    vkCmdPushConstants(config->commandBuffers[0], config->pipelineLayout, VK_SHADER_STAGE_COMPUTE_BIT, 0, sizeof(float), &deltaTime);
+    PfxComputePipelinePushConstants pushConstants = {
+            .deltaTime = deltaTime
+    };
+    glm_mat4_identity(pushConstants.model);
+
+    // Apply rotation and translation first
+    glm_translate(pushConstants.model, emitter->position);
+    glm_rotate(pushConstants.model, glm_rad(emitter->rotation[0]), (vec3) {1.0f, 0.0f, 0.0f}); // X rotation
+    glm_rotate(pushConstants.model, glm_rad(emitter->rotation[1]), (vec3) {0.0f, 1.0f, 0.0f}); // Y rotation
+    glm_rotate(pushConstants.model, glm_rad(emitter->rotation[2]), (vec3) {0.0f, 0.0f, 1.0f}); // Z rotation
+
+    // Then apply non-uniform scaling
+    glm_scale(pushConstants.model, emitter->scale);
+
+    vkCmdPushConstants(config->commandBuffers[0], config->pipelineLayout, VK_SHADER_STAGE_COMPUTE_BIT, 0, sizeof(PfxComputePipelinePushConstants), &pushConstants);
 
     uint32_t workGroupSize = 32; // Example workgroup size
     uint32_t dispatchCount = (MAX_PARTICLE_COUNT + workGroupSize - 1) / workGroupSize;

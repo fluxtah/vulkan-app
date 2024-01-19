@@ -142,7 +142,7 @@ int main() {
             }
         }
 
-        recordComputeCommandBuffer(pfxComputePipelineConfig, deltaTime);
+        recordComputeCommandBuffer(pfxComputePipelineConfig, emitter, deltaTime);
 
         for (size_t i = 0; i < context->vulkanSwapchainContext->swapChainImageCount; i++) {
             beginCommandBufferRecording(
@@ -187,6 +187,9 @@ int main() {
             updateTransformUBO(context->vulkanDeviceContext->device, obj, context->activeCamera);
             updateLightsUBO(context->vulkanDeviceContext->device, obj, context->activeCamera);
         }
+
+        emitter->position[0] = 10.0f * sinf(time);
+        emitter->position[2] = 1.0f;
 
         updateEmitterTransformUBO(context->vulkanDeviceContext->device, emitter, context->activeCamera);
 

@@ -48,8 +48,6 @@ void updateTransformUBO(VkDevice device, Entity *entity, Camera *camera) {
     memcpy(transformUBO.view, camera->view, sizeof(mat4));
     memcpy(transformUBO.proj, camera->proj, sizeof(mat4));
 
-    glm_vec3_copy(camera->direction, transformUBO.cameraDirection);
-    glm_vec3_copy(camera->up, transformUBO.cameraUp);
     glm_vec3_copy(camera->position, transformUBO.cameraPos);
 
     void *transformData;
@@ -74,8 +72,6 @@ void updateEmitterTransformUBO(VkDevice device, Emitter *emitter, Camera *camera
     memcpy(transformUBO.view, camera->view, sizeof(mat4));
     memcpy(transformUBO.proj, camera->proj, sizeof(mat4));
 
-    glm_vec3_copy(camera->direction, transformUBO.cameraDirection);
-    glm_vec3_copy(camera->up, transformUBO.cameraUp);
     glm_vec3_copy(camera->position, transformUBO.cameraPos);
 
 //    printf("Camera position: %f, %f, %f\n", camera->position[0], camera->position[1], camera->position[2]);

@@ -12,10 +12,6 @@ typedef struct TransformUBO {
     mat4 view;
     mat4 proj;
     vec3 cameraPos;
-    char _pad1[4]; // Alignment for vec3
-    vec3 cameraDirection;
-    char _pad2[4]; // Alignment for vec3
-    vec3 cameraUp;
 } TransformUBO;
 
 typedef struct LightingUBO {

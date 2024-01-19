@@ -15,8 +15,6 @@ layout(set = 0, binding = 0) uniform TransformUBO {
     mat4 view;
     mat4 proj;
     vec3 cameraPos;
-    vec3 cameraDirection;
-    vec3 cameraUp;
 } ubo;
 
 void main() {

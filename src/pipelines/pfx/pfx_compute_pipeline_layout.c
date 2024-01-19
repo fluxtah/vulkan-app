@@ -4,7 +4,7 @@ VkPipelineLayout createPfxComputePipelineLayout(VkDevice device, VkDescriptorSet
     VkPushConstantRange pushConstantRange = {};
     pushConstantRange.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT; // Specify the shader stage this push constant is for
     pushConstantRange.offset = 0;
-    pushConstantRange.size = sizeof(float); // Size of deltaTime
+    pushConstantRange.size = sizeof(PfxComputePipelinePushConstants);
 
     VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {};
     pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
