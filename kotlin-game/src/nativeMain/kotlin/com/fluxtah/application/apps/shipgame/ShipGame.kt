@@ -18,6 +18,10 @@ TODO:
  * High Score
     * Get text rendering working, maybe vector text?
  * Improve logging
+ * Targeting system
+    * Cycle through targets (asteroids)
+    * Targeting reticle to show which asteroid is targeted
+    * Missiles that hone in on the target
 */
 class ShipGame : Application {
     override fun initialize() {
