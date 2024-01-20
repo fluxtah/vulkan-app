@@ -108,7 +108,7 @@ VkPipeline createPfxPipeline(
 
     VkPipelineColorBlendStateCreateInfo colorBlending = {};
     colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-    colorBlending.logicOpEnable = VK_TRUE;   // Set to VK_TRUE to enable logical operation
+    colorBlending.logicOpEnable = VK_FALSE;   // Set to VK_TRUE to enable logical operation
     colorBlending.logicOp = VK_LOGIC_OP_COPY; // Logical operation to use (ignored if logicOpEnable is VK_FALSE)
     colorBlending.attachmentCount = 1;
     colorBlending.pAttachments = &colorBlendAttachment;

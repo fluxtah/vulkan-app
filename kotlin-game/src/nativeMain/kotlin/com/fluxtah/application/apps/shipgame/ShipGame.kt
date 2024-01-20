@@ -107,8 +107,9 @@ class ShipGame : Application {
                 }
             }
 
-            emitter(Id.EMITTER_EXPLOSION, "models/quad-explosion.glb") {
-
+            emitterPool(Id.EMITTER_EXPLOSION, "models/quad-explosion.glb") {
+                initialSize(3)
+                behaviour { ExplosionEmitterBehavior() }
             }
 
             sound(Id.SOUND_UP_THRUST, "sounds/up-thrust.wav") {
