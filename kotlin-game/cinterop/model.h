@@ -107,4 +107,9 @@ typedef struct CreateEmitterInfo {
     float scaleZ;
 } CreateEmitterInfo;
 
+typedef struct EmitterArray {
+    void** emitters; // Pointer to the first entity
+    int size;     // Size of the array
+} EmitterArray;
+
 #endif // MODEL_H

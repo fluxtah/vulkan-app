@@ -32,9 +32,7 @@ void recordDebugCommandBuffer(
 
 void recordEmitterBuffer(
         VkCommandBuffer commandBuffer,
-        PipelineConfig *pipelineConfig,
-        BufferMemory *particleBuffer,
-        Emitter *emitter
+        EmitterArray *emitters
 );
 
 void endCommandBufferRecording(VkCommandBuffer commandBuffer);

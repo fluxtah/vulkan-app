@@ -167,28 +167,29 @@ void recordDebugCommandBuffer(
     }
 }
 
-void recordEmitterBuffer(
-        VkCommandBuffer commandBuffer,
-        PipelineConfig *pipelineConfig,
-        BufferMemory *particleBuffer,
-        Emitter *emitter
-) {
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineConfig->pipeline);
+void recordEmitterBuffer(VkCommandBuffer commandBuffer, EmitterArray *emitters) {
+    for (size_t i = 0; i < emitters->size; i++) {
+        Emitter *emitter = (Emitter *) (emitters->emitters[i]);
+        BufferMemory *particleBuffer = emitter->computePipelineConfig->particleBuffer;
+        PipelineConfig *pipelineConfig = emitter->graphicsPipelineConfig;
 
-    VkBuffer vertexBuffers[] = {
-            emitter->renderResources->vertexBuffer->buffer,
-            particleBuffer->buffer
-    };
-    VkDeviceSize offsets[] = {0, 0};
-    vkCmdBindVertexBuffers(commandBuffer, 0, 2, vertexBuffers, offsets);
-    vkCmdBindIndexBuffer(commandBuffer, emitter->renderResources->indexBuffer->buffer, 0, VK_INDEX_TYPE_UINT16);
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineConfig->pipeline);
 
-    VkDescriptorSet descriptorSets[] = {emitter->vertexDescriptorSet, emitter->fragmentDescriptorSet};
-    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineConfig->pipelineLayout, 0, 2,
-                            descriptorSets, 0,
-                            NULL);
+        VkBuffer vertexBuffers[] = {
+                emitter->renderResources->vertexBuffer->buffer,
+                particleBuffer->buffer
+        };
+        VkDeviceSize offsets[] = {0, 0};
+        vkCmdBindVertexBuffers(commandBuffer, 0, 2, vertexBuffers, offsets);
+        vkCmdBindIndexBuffer(commandBuffer, emitter->renderResources->indexBuffer->buffer, 0, VK_INDEX_TYPE_UINT16);
 
-    vkCmdDrawIndexed(commandBuffer, emitter->renderResources->modelData->num_indices, MAX_PARTICLE_COUNT, 0, 0, 0);
+        VkDescriptorSet descriptorSets[] = {emitter->vertexDescriptorSet, emitter->fragmentDescriptorSet};
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineConfig->pipelineLayout, 0, 2,
+                                descriptorSets, 0,
+                                NULL);
+
+        vkCmdDrawIndexed(commandBuffer, emitter->renderResources->modelData->num_indices, MAX_PARTICLE_COUNT, 0, 0, 0);
+    }
 }
 
 void endCommandBufferRecording(VkCommandBuffer commandBuffer) {

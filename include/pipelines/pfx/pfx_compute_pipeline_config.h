@@ -16,6 +16,6 @@ ComputePipelineConfig *createPfxComputePipelineConfig(
         VulkanDeviceContext *context,
         VkCommandPool commandPool);
 
-void recordComputeCommandBuffer(Emitter *emitter, float deltaTime);
+void recordComputeCommandBuffer(EmitterArray *emitters, float deltaTime);
 
 #endif //APP_PIPELINES_PFX_COMPUTE_PIPELINE_CONFIG_H

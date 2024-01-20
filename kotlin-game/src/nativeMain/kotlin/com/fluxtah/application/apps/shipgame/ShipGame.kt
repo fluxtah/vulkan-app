@@ -11,11 +11,13 @@ import kotlin.random.Random
 TODO:
  ✓ Get asteroids working
     * Get asteroids to spawn randomly without overlapping
- * Get projectiles to destroy asteroids (collision detection)
+ ✓ Get projectiles to destroy asteroids (collision detection)
     * Get OBB and AABB collision detection working
+ * Particle emitters
  * Get ship to explode when it hits an asteroid
  * High Score
     * Get text rendering working, maybe vector text?
+ * Improve logging
 */
 class ShipGame : Application {
     override fun initialize() {
@@ -103,6 +105,10 @@ class ShipGame : Application {
                         speedZ = Random.nextFloat() * 50
                     )
                 }
+            }
+
+            emitter(Id.EMITTER_EXPLOSION, "models/quad-explosion.glb") {
+
             }
 
             sound(Id.SOUND_UP_THRUST, "sounds/up-thrust.wav") {

@@ -1,6 +1,8 @@
 package com.fluxtah.application.api.scene
 
 import com.fluxtah.application.api.*
+import com.fluxtah.application.api.emitter.Emitter
+import com.fluxtah.application.api.emitter.EmitterBehavior
 import com.fluxtah.application.api.entity.Entity
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.StableRef
@@ -36,6 +38,19 @@ data class EntityPoolInfo(
     val onCollision: OnCollision? = null
 )
 
+@OptIn(ExperimentalForeignApi::class)
+data class EmitterInfo(
+    val emitter: Emitter,
+    val behaviors: List<EmitterBehavior>,
+)
+
+data class EmitterPoolInfo(
+    val initialSize: Int,
+    val factory: () -> EmitterInfo,
+    val emittersAvailable: MutableList<EmitterInfo>,
+    val emittersInUse: MutableList<EmitterInfo>,
+)
+
 @DslMarker
 annotation class SceneDsl
 
@@ -48,6 +63,10 @@ interface Scene {
     fun entityFromPool(id: String, block: (entity: Entity) -> Unit)
     fun entityToPool(entity: Entity)
 
+    fun emitterById(id: String): Emitter?
+    fun emitterFromPool(id: String, block: (emitter: Emitter) -> Unit)
+    fun emitterToPool(emitter: Emitter)
+
     fun soundById(id: String): Sound?
 
     class EMPTY : Scene {
@@ -58,6 +77,10 @@ interface Scene {
         override fun entityById(id: String): Entity? = null
         override fun entityFromPool(id: String, block: (entity: Entity) -> Unit) = Unit
         override fun entityToPool(entity: Entity) = Unit
+
+        override fun emitterById(id: String): Emitter? = null
+        override fun emitterFromPool(id: String, block: (emitter: Emitter) -> Unit) = Unit
+        override fun emitterToPool(emitter: Emitter) = Unit
 
         override fun soundById(id: String): Sound? = null
     }
@@ -91,18 +114,33 @@ fun Application.setActiveScene(id: String) {
         // Only once if the scene is new
         sceneInfo.onSceneCreated?.invoke(sceneInfo.scene)
 
-        // Initialize behaviours
+        //
+        // Initialize entities
+        //
         (sceneInfo.scene as SceneImpl).entities.forEach {
             it.value.behaviors.forEach { behavior ->
                 behavior.initialize()
             }
-            it.value.onSceneEntityUpdate
         }
-
-        // Initialize entity pools with active entities
         sceneInfo.scene.entityPools.forEach {
             it.value.entitiesInUse.forEach { entityInfo ->
                 entityInfo.behaviors.forEach { behavior ->
+                    behavior.initialize()
+                }
+            }
+        }
+
+        //
+        // Initialize emitters
+        //
+        sceneInfo.scene.emitters.forEach {
+            it.value.behaviors.forEach { behavior ->
+                behavior.initialize()
+            }
+        }
+        sceneInfo.scene.emitterPools.forEach {
+            it.value.emittersInUse.forEach { emitterInfo ->
+                emitterInfo.behaviors.forEach { behavior ->
                     behavior.initialize()
                 }
             }

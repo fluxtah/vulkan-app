@@ -63,6 +63,13 @@ void bindKotlinApi() {
     ktSetEntityScaleFunc(setEntityScale);
     ktSetAttachKotlinEntityFunc(attachKotlinEntityInfo);
 
+    // Emitter
+    ktSetCreateEmitterFunc(createEmitter);
+    ktSetDestroyEmitterFunc(destroyEmitter);
+    ktSetPositionEmitterFunc(   setEmitterPosition);
+    ktSetEmitterRotationFunc(   setEmitterRotation);
+    ktSetEmitterScaleFunc(      setEmitterScale);
+
     // Sound
     ktSetLoadSoundFunc(loadSound);
     ktSetDestroySoundFunc(destroySound);

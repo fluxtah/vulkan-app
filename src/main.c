@@ -68,21 +68,6 @@ int main() {
     //
     ktInitApplication();
 
-    //
-    // TEMP PARTICLE EMITTER
-    //
-    CreateEmitterInfo emitterInfo = {
-            .modelFileName = "models/quad-explosion.glb",
-            .positionX = 0.0f,
-            .positionY = 2.0f,
-            .positionZ = 10.0f,
-            .scaleX = 1.0f,
-            .scaleY = 1.0f,
-            .scaleZ = 1.0f,
-    };
-
-    Emitter *emitter = createEmitter(context, &emitterInfo);
-
     /*
      * MAIN LOOP
      */
@@ -95,17 +80,11 @@ int main() {
 
         ktUpdateApplication(time, deltaTime);
 
-        // TODO testing emitter
-        emitter->position[0] = 2.0f * sinf(time);
-        emitter->position[2] = 8.0f;
-
-        // TODO this will need to be done for each emitter
-        applyEmitterChanges(emitter);
-
         //
-        // Get the list of entities we want to render
+        // Get the list of entities & emitters we want to render
         //
         EntityArray *ktEntities = (EntityArray *) ktGetEntities();
+        EmitterArray *ktEmitters = (EmitterArray *) ktGetEmitters();
 
         //
         // Apply changes/transformations that are needed for rendering
@@ -113,6 +92,11 @@ int main() {
         for (size_t i = 0; i < ktEntities->size; i++) {
             Entity *entity = (Entity *) (ktEntities->entities[i]);
             applyEntityChanges(entity);
+        }
+
+        for (size_t i = 0; i < ktEmitters->size; i++) {
+            Emitter *emitter = (Emitter *) (ktEmitters->emitters[i]);
+            applyEmitterChanges(emitter);
         }
 
         //
@@ -143,7 +127,7 @@ int main() {
             }
         }
 
-        recordComputeCommandBuffer(emitter, deltaTime);
+        recordComputeCommandBuffer(ktEmitters, deltaTime);
 
         for (size_t i = 0; i < context->vulkanSwapchainContext->swapChainImageCount; i++) {
             beginCommandBufferRecording(
@@ -160,9 +144,7 @@ int main() {
 
             recordEmitterBuffer(
                     context->commandBuffers[i],
-                    emitter->graphicsPipelineConfig,
-                    emitter->computePipelineConfig->particleBuffer,
-                    emitter
+                    ktEmitters
             );
 
 #ifdef DEBUG
@@ -189,19 +171,26 @@ int main() {
             updateLightsUBO(context->vulkanDeviceContext->device, obj, context->activeCamera);
         }
 
-        updateEmitterTransformUBO(context->vulkanDeviceContext->device, emitter, context->activeCamera);
+        for (size_t i = 0; i < ktEmitters->size; i++) {
+            Emitter *emitter = (Emitter *) ktEmitters->emitters[i];
+            updateEmitterTransformUBO(context->vulkanDeviceContext->device, emitter, context->activeCamera);
+        }
 
         uint32_t imageIndex;
         vkAcquireNextImageKHR(context->vulkanDeviceContext->device, context->vulkanSwapchainContext->swapChain,
                               UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE,
                               &imageIndex);
 
-        VkCommandBuffer commandBuffersToSubmit[2]; // Maximum of 1 command buffers
+        VkCommandBuffer commandBuffersToSubmit[1 + ktEmitters->size];
         uint32_t commandBufferCount = 0;
 
         // Always add the primary command buffer
         commandBuffersToSubmit[commandBufferCount++] = context->commandBuffers[imageIndex];
-        commandBuffersToSubmit[commandBufferCount++] = emitter->computePipelineConfig->commandBuffers[0];
+
+        for (size_t i = 0; i < ktEmitters->size; i++) {
+            Emitter *emitter = (Emitter *) ktEmitters->emitters[i];
+            commandBuffersToSubmit[commandBufferCount++] = emitter->computePipelineConfig->commandBuffers[0];
+        }
 
         vkResetFences(context->vulkanDeviceContext->device, 1, &inFlightFence);
 
@@ -227,9 +216,6 @@ int main() {
     vkDestroySemaphore(context->vulkanDeviceContext->device, renderFinishedSemaphore, NULL);
     vkDestroySemaphore(context->vulkanDeviceContext->device, imageAvailableSemaphore, NULL);
     vkDestroyFence(context->vulkanDeviceContext->device, inFlightFence, NULL);
-
-    // TODO TEMP PARTICLE EMITTER
-    destroyEmitter(context, emitter);
 
     ktDestroyApplication();
 

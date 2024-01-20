@@ -26,13 +26,13 @@ fun enableDebugBoundingVolumes(enable: Boolean) {
 
 private lateinit var applicationInstance: Application
 
-@OptIn(kotlin.experimental.ExperimentalNativeApi::class)
+@OptIn(ExperimentalNativeApi::class)
 @CName("ktCreateApplication")
 fun ktCreateApplication() {
     applicationInstance = ShipGame()
 }
 
-@OptIn(kotlin.experimental.ExperimentalNativeApi::class)
+@OptIn(ExperimentalNativeApi::class)
 @CName("ktInitApplication")
 fun ktInitApplication() {
     applicationInstance.initialize()
@@ -41,13 +41,16 @@ fun ktInitApplication() {
 const val fixedTimeStep = 1.0f / 60.0f // Fixed timestep (e.g., 60 updates per second)
 private var accumulatedTime = 0.0f
 
-@OptIn(kotlin.experimental.ExperimentalNativeApi::class)
+@OptIn(ExperimentalNativeApi::class)
 @CName("ktUpdateApplication")
 fun ktUpdateApplication(time: Float, deltaTime: Float) {
     accumulatedTime += deltaTime
     val activeSceneInfo = activeSceneInfo
     val scene = activeSceneInfo.scene as SceneImpl
     val entities = scene.entities.map { it.value } + scene.entityPools.flatMap { it.value.entitiesInUse }
+    val emitters = scene.emitters.map { it.value } + scene.emitterPools.flatMap { it.value.emittersInUse }
+
+    applicationInstance.beforeUpdate(time, deltaTime)
 
     activeSceneInfo.onSceneBeforeUpdate?.invoke(activeSceneInfo.scene, time, deltaTime)
     entities.forEach {
@@ -56,7 +59,11 @@ fun ktUpdateApplication(time: Float, deltaTime: Float) {
         }
         it.onSceneBeforeEntityUpdate?.invoke(scene, it.entity, time, deltaTime)
     }
-    applicationInstance.beforeUpdate(time, deltaTime)
+    emitters.forEach {
+        it.behaviors.forEach { behavior ->
+            behavior.beforeUpdate(time, deltaTime)
+        }
+    }
 
     while (accumulatedTime >= fixedTimeStep) {
         activeSceneInfo.onSceneUpdate?.invoke(activeSceneInfo.scene, time)
@@ -65,6 +72,11 @@ fun ktUpdateApplication(time: Float, deltaTime: Float) {
                 behavior.update(time)
             }
             it.onSceneEntityUpdate?.invoke(scene, it.entity, time)
+        }
+        emitters.forEach {
+            it.behaviors.forEach { behavior ->
+                behavior.update(time)
+            }
         }
         applicationInstance.update(time)
         accumulatedTime -= fixedTimeStep
@@ -77,11 +89,16 @@ fun ktUpdateApplication(time: Float, deltaTime: Float) {
         }
         it.onSceneAfterEntityUpdate?.invoke(scene, it.entity, time, deltaTime)
     }
+    emitters.forEach {
+        it.behaviors.forEach { behavior ->
+            behavior.afterUpdate(time, deltaTime)
+        }
+    }
 
     applicationInstance.afterUpdate(time, deltaTime)
 }
 
-@OptIn(ExperimentalNativeApi::class, ExperimentalForeignApi::class)
+@OptIn(ExperimentalNativeApi::class)
 @CName("ktDestroyApplication")
 fun ktDestroyApplication() {
     // TODO: Destroy all scenes
@@ -90,14 +107,16 @@ fun ktDestroyApplication() {
 
 @OptIn(ExperimentalForeignApi::class)
 private fun SceneImpl.destroy() {
-    cameras.forEach { camera ->
-        c_destroyCamera!!.invoke(camera.value.handle)
-    }
-    cameras.clear()
     lights.forEach { light ->
         c_destroyLight!!.invoke(light.value.handle)
     }
     lights.clear()
+
+    cameras.forEach { camera ->
+        c_destroyCamera!!.invoke(camera.value.handle)
+    }
+    cameras.clear()
+
     entities.forEach { entityInfo ->
         c_destroyEntity!!.invoke(ApplicationContext.vulcanContext!!, entityInfo.value.entity.handle)
         entityInfo.value.stableRef!!.dispose()
@@ -115,6 +134,22 @@ private fun SceneImpl.destroy() {
         }
         entityPool.value.entitiesAvailable.clear()
     }
+
+    emitters.forEach { emitterInfo ->
+        c_destroyEmitter!!.invoke(ApplicationContext.vulcanContext!!, emitterInfo.value.emitter.handle)
+    }
+    emitters.clear()
+    emitterPools.forEach { emitterPool ->
+        emitterPool.value.emittersInUse.forEach { emitterInfo ->
+            c_destroyEmitter!!.invoke(ApplicationContext.vulcanContext!!, emitterInfo.emitter.handle)
+        }
+        emitterPool.value.emittersInUse.clear()
+        emitterPool.value.emittersAvailable.forEach { emitterInfo ->
+            c_destroyEmitter!!.invoke(ApplicationContext.vulcanContext!!, emitterInfo.emitter.handle)
+        }
+        emitterPool.value.emittersAvailable.clear()
+    }
+
     sounds.forEach {
         c_destroySound!!.invoke(it.value.handle)
     }

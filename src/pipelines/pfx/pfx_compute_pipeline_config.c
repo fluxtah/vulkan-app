@@ -95,52 +95,54 @@ ComputePipelineConfig *createPfxComputePipelineConfig(
     return config;
 }
 
-void recordComputeCommandBuffer(Emitter *emitter, float deltaTime) {
+void recordComputeCommandBuffer(EmitterArray *emitters, float deltaTime) {
+    for (size_t i = 0; i < emitters->size; i++) {
+        Emitter *emitter = (Emitter *) (emitters->emitters[i]);
+        ComputePipelineConfig *config = emitter->computePipelineConfig;
 
-    ComputePipelineConfig *config = emitter->computePipelineConfig;
+        VkCommandBufferBeginInfo beginInfo = {};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        if (vkBeginCommandBuffer(config->commandBuffers[0], &beginInfo) != VK_SUCCESS) {
+            LOG_ERROR("Failed to begin recording compute command buffer");
+            return;
+        }
 
-    VkCommandBufferBeginInfo beginInfo = {};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    if (vkBeginCommandBuffer(config->commandBuffers[0], &beginInfo) != VK_SUCCESS) {
-        LOG_ERROR("Failed to begin recording compute command buffer");
-        return;
-    }
+        vkCmdBindPipeline(config->commandBuffers[0], VK_PIPELINE_BIND_POINT_COMPUTE, config->computePipeline);
 
-    vkCmdBindPipeline(config->commandBuffers[0], VK_PIPELINE_BIND_POINT_COMPUTE, config->computePipeline);
+        vkCmdBindDescriptorSets(config->commandBuffers[0], VK_PIPELINE_BIND_POINT_COMPUTE, config->pipelineLayout, 0, 1,
+                                &config->descriptorSet, 0, NULL);
 
-    vkCmdBindDescriptorSets(config->commandBuffers[0], VK_PIPELINE_BIND_POINT_COMPUTE, config->pipelineLayout, 0, 1,
-                            &config->descriptorSet, 0, NULL);
+        PfxComputePipelinePushConstants pushConstants = {
+                .deltaTime = deltaTime
+        };
+        memcpy(pushConstants.model, emitter->modelMatrix, sizeof(mat4));
 
-    PfxComputePipelinePushConstants pushConstants = {
-            .deltaTime = deltaTime
-    };
-    memcpy(pushConstants.model, emitter->modelMatrix, sizeof(mat4));
+        vkCmdPushConstants(config->commandBuffers[0], config->pipelineLayout, VK_SHADER_STAGE_COMPUTE_BIT, 0,
+                           sizeof(PfxComputePipelinePushConstants), &pushConstants);
 
-    vkCmdPushConstants(config->commandBuffers[0], config->pipelineLayout, VK_SHADER_STAGE_COMPUTE_BIT, 0,
-                       sizeof(PfxComputePipelinePushConstants), &pushConstants);
+        uint32_t workGroupSize = 32; // Example workgroup size
+        uint32_t dispatchCount = (MAX_PARTICLE_COUNT + workGroupSize - 1) / workGroupSize;
+        vkCmdDispatch(config->commandBuffers[0], dispatchCount, 1, 1);
 
-    uint32_t workGroupSize = 32; // Example workgroup size
-    uint32_t dispatchCount = (MAX_PARTICLE_COUNT + workGroupSize - 1) / workGroupSize;
-    vkCmdDispatch(config->commandBuffers[0], dispatchCount, 1, 1);
+        // Memory Barrier
+        VkBufferMemoryBarrier bufferBarrier = {};
+        bufferBarrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+        bufferBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+        bufferBarrier.dstAccessMask = VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT;
+        bufferBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        bufferBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        bufferBarrier.buffer = config->particleBuffer->buffer;
+        bufferBarrier.offset = 0;
+        bufferBarrier.size = VK_WHOLE_SIZE;
 
-    // Memory Barrier
-    VkBufferMemoryBarrier bufferBarrier = {};
-    bufferBarrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
-    bufferBarrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
-    bufferBarrier.dstAccessMask = VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT;
-    bufferBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    bufferBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    bufferBarrier.buffer = config->particleBuffer->buffer;
-    bufferBarrier.offset = 0;
-    bufferBarrier.size = VK_WHOLE_SIZE;
+        vkCmdPipelineBarrier(
+                config->commandBuffers[0],
+                VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+                VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,
+                0, 0, NULL, 1, &bufferBarrier, 0, NULL);
 
-    vkCmdPipelineBarrier(
-            config->commandBuffers[0],
-            VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-            VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,
-            0, 0, NULL, 1, &bufferBarrier, 0, NULL);
-
-    if (vkEndCommandBuffer(config->commandBuffers[0]) != VK_SUCCESS) {
-        LOG_ERROR("Failed to record compute command buffer");
+        if (vkEndCommandBuffer(config->commandBuffers[0]) != VK_SUCCESS) {
+            LOG_ERROR("Failed to record compute command buffer");
+        }
     }
 }
