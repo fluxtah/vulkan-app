@@ -69,6 +69,7 @@ void bindKotlinApi() {
     ktSetPositionEmitterFunc(   setEmitterPosition);
     ktSetEmitterRotationFunc(   setEmitterRotation);
     ktSetEmitterScaleFunc(      setEmitterScale);
+    ktSetEmitterResetFunc(resetEmitter);
 
     // Sound
     ktSetLoadSoundFunc(loadSound);

@@ -8,6 +8,7 @@
 typedef struct PfxComputePipelinePushConstants {
     mat4 model;
     float deltaTime;
+    int reset;
 } PfxComputePipelinePushConstants;
 
 VkPipelineLayout createPfxComputePipelineLayout(VkDevice device, VkDescriptorSetLayout descriptorSetLayout);

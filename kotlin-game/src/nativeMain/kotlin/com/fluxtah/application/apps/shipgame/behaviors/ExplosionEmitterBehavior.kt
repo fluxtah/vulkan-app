@@ -7,7 +7,8 @@ class ExplosionEmitterBehavior : EmitterBehavior() {
     private var timeToLive = 0.0f;
 
     fun explode() {
-        timeToLive = 1.0f
+        timeToLive = 1.5f
+        emitter.reset();
         emitter.visible = true
     }
     override fun update(time: Float) {

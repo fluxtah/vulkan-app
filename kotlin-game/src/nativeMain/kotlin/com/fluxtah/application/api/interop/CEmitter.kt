@@ -53,7 +53,9 @@ fun ktSetDestroyEmitterFunc(callback: CPointer<CFunction<(CVulkanContext, CEmitt
 fun ktGetEmitters(): CPointer<EmitterArray> {
     val scene = activeSceneInfo.scene as SceneImpl
     val emitters = scene.emitters.values.filter { it.emitter.visible }.map { it.emitter.handle } +
-            scene.emitterPools.flatMap { it.value.emittersInUse.filter { it.emitter.visible }.map { it.emitter.handle } }
+            scene.emitterPools.flatMap {
+                it.value.emittersInUse.filter { it.emitter.visible }.map { it.emitter.handle }
+            }
 
     val emitterPointerArray = nativeHeap.allocArray<COpaquePointerVar>(emitters.size)
 
@@ -121,3 +123,20 @@ fun ktSetEmitterScaleFunc(callback: CPointer<CFunction<EmitterScaleFunc>>) {
         }
     }
 }
+
+@OptIn(ExperimentalForeignApi::class)
+typealias EmitterResetFunc = (CEmitter) -> Unit
+
+@OptIn(ExperimentalForeignApi::class)
+var c_resetEmitter: EmitterResetFunc? = null
+
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@CName("ktSetEmitterResetFunc")
+fun ktSetEmitterResetFunc(callback: CPointer<CFunction<EmitterResetFunc>>) {
+    c_resetEmitter = { emitter ->
+        memScoped {
+            callback.reinterpret<CFunction<EmitterResetFunc>>()(emitter)
+        }
+    }
+}
+

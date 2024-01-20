@@ -16,6 +16,7 @@ layout(std430, binding = 0) buffer ParticleBuffer {
 layout(push_constant) uniform PushConstants {
     mat4 modelMatrix;
     float deltaTime;
+    int reset; // 0 = false, 1 = true
 } pushConstants;
 
 // Simple random number generator
@@ -25,28 +26,33 @@ float rand(vec2 co){
 
 const vec3 gravity = vec3(0.0, -2.81, 0.0); // Gravity vector
 
+Particle resetParticle(uint id, Particle p) {
+    p.position = vec3(rand(vec2(id, 0.0)) * 1.0 - 0.5,
+    rand(vec2(id, 1.0)) * 1.0 - 0.5,
+    rand(vec2(id, 2.0)) * 1.0 - 0.5); // Random direction
+    p.velocity = vec3(rand(vec2(id, 0.0)) * 2.0 - 1.0,
+    rand(vec2(id, 1.0)) * 2.0 - 1.0,
+    rand(vec2(id, 2.0)) * 2.0 - 1.0); // Random direction
+    float randScale = 1.0f + (rand(vec2(id, pushConstants.deltaTime)) * 2);
+    p.scale = vec3(randScale, randScale, randScale); // Random scale
+    p.lifeTime = 1.6; // Reset lifeTime
+    return p;
+}
+
 void main() {
     uint id = gl_GlobalInvocationID.x; // Get the current particle ID
     if (id >= particles.length()) return;
     Particle p = particles[id];
 
     // Initialize or reinitialize the particle
-    if (p.lifeTime <= 0.0) {
-        p.position = vec3(rand(vec2(id, 0.0)) * 1.0 - 0.5,
-        rand(vec2(id, 1.0)) * 1.0 - 0.5,
-        rand(vec2(id, 2.0)) * 1.0 - 0.5); // Random direction
-        p.velocity = vec3(rand(vec2(id, 0.0)) * 2.0 - 1.0,
-        rand(vec2(id, 1.0)) * 2.0 - 1.0,
-        rand(vec2(id, 2.0)) * 2.0 - 1.0); // Random direction
-        float randScale = 1.0f + (rand(vec2(id, pushConstants.deltaTime)) * 2);
-        p.scale = vec3(randScale, randScale, randScale); // Random scale
-        p.lifeTime = 2.0; // Reset lifeTime
+    if (p.lifeTime <= 0.0 || pushConstants.reset == 1) {
+        p = resetParticle(id, p);
     } else {
         // Update the particle
         p.velocity += gravity * pushConstants.deltaTime; // Apply gravity
         p.position += p.velocity * pushConstants.deltaTime; // Update position
         p.lifeTime -= pushConstants.deltaTime; // Decrease lifeTime
-        p.scale = vec3(1.0f + p.lifeTime); // Scale particle
+        p.scale = vec3(1.0f + p.lifeTime * 1.5); // Scale particle
     }
 
     particles[id] = p; // Write back updated particle

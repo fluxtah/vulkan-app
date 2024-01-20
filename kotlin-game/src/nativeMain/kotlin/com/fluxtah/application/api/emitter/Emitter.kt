@@ -1,9 +1,6 @@
 package com.fluxtah.application.api.emitter
 
-import com.fluxtah.application.api.interop.CEmitter
-import com.fluxtah.application.api.interop.c_setEntityPosition
-import com.fluxtah.application.api.interop.c_setEntityRotation
-import com.fluxtah.application.api.interop.c_setEntityScale
+import com.fluxtah.application.api.interop.*
 import kotlinx.cinterop.ExperimentalForeignApi
 
 @OptIn(ExperimentalForeignApi::class)
@@ -114,6 +111,10 @@ class Emitter(
         _positionY += y
         _positionZ += z
         c_setEntityPosition!!.invoke(handle, _positionX, _positionY, _positionZ)
+    }
+
+    fun reset() {
+        c_resetEmitter!!.invoke(handle)
     }
 
     inline fun <reified T : EmitterBehavior> getBehaviorByType(): T {

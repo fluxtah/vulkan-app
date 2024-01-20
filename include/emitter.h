@@ -22,6 +22,8 @@ typedef struct Emitter {
 
     // TODO This could be shared between emitters that use the same shaders and compute pipeline
     PipelineConfig *graphicsPipelineConfig;
+
+    int reset;
 } Emitter;
 
 RenderResourcesMap *renderResourcesMap;
@@ -35,6 +37,8 @@ void setEmitterPosition(Emitter *emitter, float x, float y, float z);
 void setEmitterRotation(Emitter *emitter, float x, float y, float z);
 
 void setEmitterScale(Emitter *emitter, float x, float y, float z);
+
+void resetEmitter(Emitter *emitter);
 
 void updateEmitterAABB(Emitter *emitter);
 

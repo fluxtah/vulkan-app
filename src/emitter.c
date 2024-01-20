@@ -105,6 +105,10 @@ void applyEmitterChanges(Emitter *emitter) {
     glm_scale(emitter->modelMatrix, emitter->scale);
 }
 
+void resetEmitter(Emitter *emitter) {
+    emitter->reset = 1;
+}
+
 void destroyEmitter(ApplicationContext *context, Emitter *emitter) {
     destroyComputePipelineConfig(
             context->vulkanDeviceContext,

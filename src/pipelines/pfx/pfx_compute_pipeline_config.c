@@ -113,8 +113,12 @@ void recordComputeCommandBuffer(EmitterArray *emitters, float deltaTime) {
                                 &config->descriptorSet, 0, NULL);
 
         PfxComputePipelinePushConstants pushConstants = {
-                .deltaTime = deltaTime
+                .deltaTime = deltaTime,
+                .reset = emitter->reset,
         };
+
+        emitter->reset = 0;
+
         memcpy(pushConstants.model, emitter->modelMatrix, sizeof(mat4));
 
         vkCmdPushConstants(config->commandBuffers[0], config->pipelineLayout, VK_SHADER_STAGE_COMPUTE_BIT, 0,
