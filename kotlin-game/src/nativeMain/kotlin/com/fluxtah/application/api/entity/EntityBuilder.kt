@@ -75,21 +75,22 @@ class EntityBuilder(private val scene: Scene, private val id: String, private va
     fun build(): EntityInfo = createEntityInfo()
 
     private fun createEntityInfo(): EntityInfo {
-        val info = cValue<CreateEntityInfo> {
-            positionX = this@EntityBuilder.positionX
-            positionY = this@EntityBuilder.positionY
-            positionZ = this@EntityBuilder.positionZ
-            rotationX = this@EntityBuilder.rotationX
-            rotationY = this@EntityBuilder.rotationY
-            rotationZ = this@EntityBuilder.rotationZ
-            scaleX = this@EntityBuilder.scaleX
-            scaleY = this@EntityBuilder.scaleY
-            scaleZ = this@EntityBuilder.scaleX
-            useOrientedBoundingBox = this@EntityBuilder.orientatedBoundingBox
-        }
 
         val cEntity = memScoped {
-            c_createEntity!!.invoke(ApplicationContext.vulcanContext!!, modelPath.cstr.ptr, info.ptr)
+            val info = cValue<CreateEntityInfo> {
+                modelFileName = modelPath.cstr.ptr
+                positionX = this@EntityBuilder.positionX
+                positionY = this@EntityBuilder.positionY
+                positionZ = this@EntityBuilder.positionZ
+                rotationX = this@EntityBuilder.rotationX
+                rotationY = this@EntityBuilder.rotationY
+                rotationZ = this@EntityBuilder.rotationZ
+                scaleX = this@EntityBuilder.scaleX
+                scaleY = this@EntityBuilder.scaleY
+                scaleZ = this@EntityBuilder.scaleX
+                useOrientedBoundingBox = this@EntityBuilder.orientatedBoundingBox
+            }
+            c_createEntity!!.invoke(ApplicationContext.vulcanContext!!, info.ptr)
         }
 
         val behaviors = behaviors.map { it().apply { this.scene = this@EntityBuilder.scene } }

@@ -66,6 +66,7 @@ typedef struct CreateLightInfo {
 } CreateLightInfo;
 
 typedef struct CreateEntityInfo {
+    char *modelFileName;
     float positionX;
     float positionY;
     float positionZ;
@@ -94,6 +95,7 @@ typedef struct CreateSoundInfo {
 
 
 typedef struct CreateEmitterInfo {
+    char *modelFileName;
     float positionX;
     float positionY;
     float positionZ;

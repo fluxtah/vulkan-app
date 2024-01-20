@@ -3,11 +3,10 @@
 #include "include/pipelines/pfx/pfx_compute_pipeline_config.h"
 #include "include/pipelines/pfx/pfx_pipeline_config.h"
 
-const int MAX_PARTICLE_COUNT = 20;
+const int MAX_PARTICLE_COUNT = 10;
 
 Emitter *createEmitter(
         ApplicationContext *context,
-        const char *filename,
         CreateEmitterInfo *info) {
     Emitter *emitter = malloc(sizeof(Emitter));
 
@@ -42,7 +41,7 @@ Emitter *createEmitter(
             VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-    emitter->renderResources = createRenderResourcesFromFile(context, filename);
+    emitter->renderResources = createRenderResourcesFromFile(context, info->modelFileName);
 
     // Create descriptor sets
     if (allocateDescriptorSet(
@@ -91,6 +90,19 @@ void setEmitterScale(Emitter *emitter, float x, float y, float z) {
     emitter->scale[0] = x;
     emitter->scale[1] = y;
     emitter->scale[2] = z;
+}
+
+void applyEmitterChanges(Emitter *emitter) {
+    glm_mat4_identity(emitter->modelMatrix);
+
+    // Apply rotation and translation first
+    glm_translate(emitter->modelMatrix, emitter->position);
+    glm_rotate(emitter->modelMatrix, glm_rad(emitter->rotation[0]), (vec3) {1.0f, 0.0f, 0.0f}); // X rotation
+    glm_rotate(emitter->modelMatrix, glm_rad(emitter->rotation[1]), (vec3) {0.0f, 1.0f, 0.0f}); // Y rotation
+    glm_rotate(emitter->modelMatrix, glm_rad(emitter->rotation[2]), (vec3) {0.0f, 0.0f, 1.0f}); // Z rotation
+
+    // Then apply non-uniform scaling
+    glm_scale(emitter->modelMatrix, emitter->scale);
 }
 
 void destroyEmitter(ApplicationContext *context, Emitter *emitter) {

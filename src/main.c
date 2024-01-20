@@ -72,6 +72,7 @@ int main() {
     // TEMP PARTICLE EMITTER
     //
     CreateEmitterInfo emitterInfo = {
+            .modelFileName = "models/quad-explosion.glb",
             .positionX = 0.0f,
             .positionY = 2.0f,
             .positionZ = 10.0f,
@@ -80,10 +81,7 @@ int main() {
             .scaleZ = 1.0f,
     };
 
-    Emitter *emitter = createEmitter(
-            context,
-            "models/quad-explosion.glb",
-            &emitterInfo);
+    Emitter *emitter = createEmitter(context, &emitterInfo);
 
     /*
      * MAIN LOOP
@@ -97,10 +95,25 @@ int main() {
 
         ktUpdateApplication(time, deltaTime);
 
+        // TODO testing emitter
+        emitter->position[0] = 2.0f * sinf(time);
+        emitter->position[2] = 8.0f;
+
+        // TODO this will need to be done for each emitter
+        applyEmitterChanges(emitter);
+
         //
         // Get the list of entities we want to render
         //
         EntityArray *ktEntities = (EntityArray *) ktGetEntities();
+
+        //
+        // Apply changes/transformations that are needed for rendering
+        //
+        for (size_t i = 0; i < ktEntities->size; i++) {
+            Entity *entity = (Entity *) (ktEntities->entities[i]);
+            applyEntityChanges(entity);
+        }
 
         //
         // Collision detection
@@ -130,7 +143,7 @@ int main() {
             }
         }
 
-        recordComputeCommandBuffer(emitter->computePipelineConfig, emitter, deltaTime);
+        recordComputeCommandBuffer(emitter, deltaTime);
 
         for (size_t i = 0; i < context->vulkanSwapchainContext->swapChainImageCount; i++) {
             beginCommandBufferRecording(
@@ -175,9 +188,6 @@ int main() {
             updateTransformUBO(context->vulkanDeviceContext->device, obj, context->activeCamera);
             updateLightsUBO(context->vulkanDeviceContext->device, obj, context->activeCamera);
         }
-
-        emitter->position[0] = 2.0f * sinf(time);
-        emitter->position[2] = 8.0f;
 
         updateEmitterTransformUBO(context->vulkanDeviceContext->device, emitter, context->activeCamera);
 

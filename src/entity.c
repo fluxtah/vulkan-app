@@ -1,6 +1,6 @@
 #include "include/entity.h"
 
-Entity *createEntity(ApplicationContext *context, const char *filename, CreateEntityInfo *info) {
+Entity *createEntity(ApplicationContext *context, CreateEntityInfo *info) {
     Entity *entity = malloc(sizeof(Entity));
 
     entity->useOBB = info->useOrientedBoundingBox;
@@ -29,7 +29,7 @@ Entity *createEntity(ApplicationContext *context, const char *filename, CreateEn
                        VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-    entity->renderResources = createRenderResourcesFromFile(context, filename);
+    entity->renderResources = createRenderResourcesFromFile(context, info->modelFileName);
 
     // Create descriptor sets
     if (allocateDescriptorSet(
@@ -76,31 +76,36 @@ void setEntityPosition(Entity *obj, float x, float y, float z) {
     obj->position[0] = x;
     obj->position[1] = y;
     obj->position[2] = z;
-
-    if (obj->useOBB)
-        updateEntityOBB(obj);
-    else
-        updateEntityAABB(obj);
 }
 
 void setEntityRotation(Entity *obj, float x, float y, float z) {
     obj->rotation[0] = x;
     obj->rotation[1] = y;
     obj->rotation[2] = z;
-
-    if (obj->useOBB)
-        updateEntityOBB(obj);
 }
 
 void setEntityScale(Entity *obj, float x, float y, float z) {
     obj->scale[0] = x;
     obj->scale[1] = y;
     obj->scale[2] = z;
+}
 
-    if (obj->useOBB)
-        updateEntityOBB(obj);
+void applyEntityChanges(Entity *entity) {
+    glm_mat4_identity(entity->modelMatrix);
+
+    // Apply rotation and translation first
+    glm_translate(entity->modelMatrix, entity->position);
+    glm_rotate(entity->modelMatrix, glm_rad(entity->rotation[0]), (vec3) {1.0f, 0.0f, 0.0f}); // X rotation
+    glm_rotate(entity->modelMatrix, glm_rad(entity->rotation[1]), (vec3) {0.0f, 1.0f, 0.0f}); // Y rotation
+    glm_rotate(entity->modelMatrix, glm_rad(entity->rotation[2]), (vec3) {0.0f, 0.0f, 1.0f}); // Z rotation
+
+    // Then apply non-uniform scaling
+    glm_scale(entity->modelMatrix, entity->scale);
+
+    if (entity->useOBB)
+        updateEntityOBB(entity);
     else
-        updateEntityAABB(obj);
+        updateEntityAABB(entity);
 }
 
 void updateEntityAABB(Entity *entity) {

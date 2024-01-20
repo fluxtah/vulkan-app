@@ -83,21 +83,21 @@ class EntityPoolBuilder(private val scene: Scene, private val id: String, privat
     }
 
     private fun createEntityInfo(): EntityInfo {
-        val info = cValue<CreateEntityInfo> {
-            positionX = this@EntityPoolBuilder.positionX
-            positionY = this@EntityPoolBuilder.positionY
-            positionZ = this@EntityPoolBuilder.positionZ
-            rotationX = this@EntityPoolBuilder.rotationX
-            rotationY = this@EntityPoolBuilder.rotationY
-            rotationZ = this@EntityPoolBuilder.rotationZ
-            scaleX = this@EntityPoolBuilder.scaleX
-            scaleY = this@EntityPoolBuilder.scaleY
-            scaleZ = this@EntityPoolBuilder.scaleX
-            useOrientedBoundingBox = this@EntityPoolBuilder.orientatedBoundingBox
-        }
-
         val cEntity = memScoped {
-            c_createEntity!!.invoke(ApplicationContext.vulcanContext!!, modelPath.cstr.ptr, info.ptr)
+            val info = cValue<CreateEntityInfo> {
+                modelFileName = modelPath.cstr.ptr
+                positionX = this@EntityPoolBuilder.positionX
+                positionY = this@EntityPoolBuilder.positionY
+                positionZ = this@EntityPoolBuilder.positionZ
+                rotationX = this@EntityPoolBuilder.rotationX
+                rotationY = this@EntityPoolBuilder.rotationY
+                rotationZ = this@EntityPoolBuilder.rotationZ
+                scaleX = this@EntityPoolBuilder.scaleX
+                scaleY = this@EntityPoolBuilder.scaleY
+                scaleZ = this@EntityPoolBuilder.scaleX
+                useOrientedBoundingBox = this@EntityPoolBuilder.orientatedBoundingBox
+            }
+            c_createEntity!!.invoke(ApplicationContext.vulcanContext!!, info.ptr)
         }
 
         val behaviors = behaviors.map { it().apply { this.scene = this@EntityPoolBuilder.scene } }
