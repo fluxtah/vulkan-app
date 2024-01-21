@@ -10,16 +10,35 @@ Emitter *createEmitter(
 
     emitter->maxParticles = info->maxParticles;
 
+
+    const char *shaderPath = "shaders/particle.comp.spv"; // default
+    if (info->computeShaderFileName != NULL) {
+        shaderPath = info->computeShaderFileName;
+    }
+
+    const char *vertexShaderPath = "shaders/particle.vert.spv"; // default
+    if (info->vertexShaderFileName != NULL) {
+        vertexShaderPath = info->vertexShaderFileName;
+    }
+
+    const char *fragmentShaderPath = "shaders/particle.frag.spv"; // default
+    if (info->fragmentShaderFileName != NULL) {
+        fragmentShaderPath = info->fragmentShaderFileName;
+    }
+
     emitter->computePipelineConfig = createPfxComputePipelineConfig(
             context->vulkanDeviceContext,
             context->commandPool,
+            shaderPath,
             emitter->maxParticles
     );
 
     emitter->graphicsPipelineConfig = createPfxPipelineConfig(
             context->vulkanDeviceContext,
             context->vulkanSwapchainContext,
-            context->renderPass
+            context->renderPass,
+            vertexShaderPath,
+            fragmentShaderPath
     );
 
 

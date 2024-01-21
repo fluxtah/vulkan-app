@@ -25,6 +25,10 @@ class EmitterBuilder(private val scene: Scene, private val id: String, private v
     private var scaleY: Float = 1.0f
     private var scaleZ: Float = 1.0f
 
+    private var computeShaderPath: String? = null
+    private var vertexShaderPath: String? = null
+    private var fragmentShaderPath: String? = null
+
     private val behaviors = mutableListOf<() -> EmitterBehavior>()
 
     fun maxParticles(size: Int) {
@@ -49,6 +53,17 @@ class EmitterBuilder(private val scene: Scene, private val id: String, private v
         scaleZ = z
     }
 
+    fun computeShader(path: String) {
+        computeShaderPath = path
+    }
+
+    fun vertexShader(path: String) {
+        vertexShaderPath = path
+    }
+
+    fun fragmentShader(path: String) {
+        fragmentShaderPath = path
+    }
 
     fun behaviour(behavior: () -> EmitterBehavior) {
         behaviors.add(behavior)
@@ -62,6 +77,9 @@ class EmitterBuilder(private val scene: Scene, private val id: String, private v
         val cEmitter = memScoped {
             val info = cValue<CreateEmitterInfo> {
                 modelFileName = modelPath.cstr.ptr
+                computeShaderFileName = computeShaderPath?.cstr?.ptr
+                vertexShaderFileName = vertexShaderPath?.cstr?.ptr
+                fragmentShaderFileName = fragmentShaderPath?.cstr?.ptr
                 maxParticles = this@EmitterBuilder.maxParticles
                 positionX = this@EmitterBuilder.positionX
                 positionY = this@EmitterBuilder.positionY

@@ -9,7 +9,9 @@
 PipelineConfig *createPfxPipelineConfig(
         VulkanDeviceContext *context,
         VulkanSwapchainContext *vulkanSwapchainContext,
-        VkRenderPass renderPass) {
+        VkRenderPass renderPass,
+        const char *vertexShaderPath,
+        const char *fragmentShaderPath) {
     PipelineConfig *pipelineConfig = malloc(sizeof(PipelineConfig));
 
     //
@@ -41,14 +43,14 @@ PipelineConfig *createPfxPipelineConfig(
         return NULL;
     }
 
-    VkShaderModule vertexShaderModule = createShaderModule(context->device, "shaders/particle.vert.spv");
+    VkShaderModule vertexShaderModule = createShaderModule(context->device, vertexShaderPath);
     if (vertexShaderModule == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create vertex shader module for pfx shader pipeline");
         destroyPipelineConfig(context, pipelineConfig);
         return NULL;
     }
 
-    VkShaderModule fragmentShaderModule = createShaderModule(context->device, "shaders/particle.frag.spv");
+    VkShaderModule fragmentShaderModule = createShaderModule(context->device, fragmentShaderPath);
     if (fragmentShaderModule == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create fragment shader module for pfx shader pipeline");
         destroyPipelineConfig(context, pipelineConfig);
@@ -82,7 +84,7 @@ PipelineConfig *createPfxPipelineConfig(
 
     if (pipelineConfig->pipeline == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create pipeline for pfx shader pipeline");
-        destroyPipelineConfig(context,pipelineConfig);
+        destroyPipelineConfig(context, pipelineConfig);
         return NULL;
     }
 

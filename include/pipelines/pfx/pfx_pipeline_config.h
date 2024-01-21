@@ -7,6 +7,8 @@
 PipelineConfig *createPfxPipelineConfig(
         VulkanDeviceContext *context,
         VulkanSwapchainContext *vulkanSwapchainContext,
-        VkRenderPass renderPass);
+        VkRenderPass renderPass,
+        const char *vertexShaderPath,
+        const char *fragmentShaderPath);
 
 #endif //APP_PIPELINES_PFX_PIPELINE_CONFIG_H

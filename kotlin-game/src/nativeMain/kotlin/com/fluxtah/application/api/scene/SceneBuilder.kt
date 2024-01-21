@@ -64,7 +64,7 @@ class SceneBuilder(val sceneId: String) {
 
     fun emitter(id: String, modelPath: String, builder: EmitterBuilder.() -> Unit) {
         if (emitters.containsKey(id)) {
-            throw Exception("Entity with id $id already exists")
+            throw Exception("Emitter with id $id already exists")
         }
         emitters[id] = {
             EmitterBuilder(it, id, modelPath).apply(builder).build()
@@ -73,7 +73,7 @@ class SceneBuilder(val sceneId: String) {
 
     fun emitterPool(id: String, modelPath: String, builder: EmitterPoolBuilder.() -> Unit) {
         if (emitterPools.containsKey(id)) {
-            throw Exception("Entity pool with id $id already exists")
+            throw Exception("Emitter pool with id $id already exists")
         }
         emitterPools[id] = {
             EmitterPoolBuilder(it, id, modelPath).apply(builder).build()

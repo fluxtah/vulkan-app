@@ -15,6 +15,7 @@
 ComputePipelineConfig *createPfxComputePipelineConfig(
         VulkanDeviceContext *context,
         VkCommandPool commandPool,
+        const char *shaderPath,
         int maxParticles);
 
 void recordComputeCommandBuffer(EmitterArray *emitters, float deltaTime);

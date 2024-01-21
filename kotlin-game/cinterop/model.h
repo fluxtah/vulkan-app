@@ -106,6 +106,11 @@ typedef struct CreateEmitterInfo {
     float scaleX;
     float scaleY;
     float scaleZ;
+
+    char *computeShaderFileName;
+    char *vertexShaderFileName;
+    char *fragmentShaderFileName;
+
 } CreateEmitterInfo;
 
 typedef struct EmitterArray {

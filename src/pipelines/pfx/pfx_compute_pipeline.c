@@ -1,7 +1,7 @@
 #include "include/pipelines/pfx/pfx_compute_pipeline.h"
 
-VkPipeline createPfxComputePipeline(VkDevice device, VkPipelineLayout layout) {
-    VkShaderModule computeShaderModule = createShaderModule(device, "shaders/particle.comp.spv");
+VkPipeline createPfxComputePipeline(VkDevice device, VkPipelineLayout layout, const char *shaderPath) {
+    VkShaderModule computeShaderModule = createShaderModule(device, shaderPath);
     if (computeShaderModule == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create compute shader module");
         return VK_NULL_HANDLE;

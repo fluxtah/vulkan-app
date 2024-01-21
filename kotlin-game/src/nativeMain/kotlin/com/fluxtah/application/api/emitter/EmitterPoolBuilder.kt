@@ -26,6 +26,10 @@ class EmitterPoolBuilder(private val scene: Scene, private val id: String, priva
     private var scaleY: Float = 1.0f
     private var scaleZ: Float = 1.0f
 
+    private var computeShaderPath: String? = null
+    private var vertexShaderPath: String? = null
+    private var fragmentShaderPath: String? = null
+
     private var initialSize: Int = 10
     private var startActive: Boolean = false
 
@@ -61,6 +65,18 @@ class EmitterPoolBuilder(private val scene: Scene, private val id: String, priva
         scaleZ = z
     }
 
+    fun computeShader(path: String) {
+        computeShaderPath = path
+    }
+
+    fun vertexShader(path: String) {
+        vertexShaderPath = path
+    }
+
+    fun fragmentShader(path: String) {
+        fragmentShaderPath = path
+    }
+
     fun behaviour(behavior: () -> EmitterBehavior) {
         behaviors.add(behavior)
     }
@@ -84,6 +100,9 @@ class EmitterPoolBuilder(private val scene: Scene, private val id: String, priva
         val cEmitter = memScoped {
             val info = cValue<CreateEmitterInfo> {
                 modelFileName = modelPath.cstr.ptr
+                computeShaderFileName = computeShaderPath?.cstr?.ptr
+                vertexShaderFileName = vertexShaderPath?.cstr?.ptr
+                fragmentShaderFileName = fragmentShaderPath?.cstr?.ptr
                 maxParticles = this@EmitterPoolBuilder.maxParticles
                 positionX = this@EmitterPoolBuilder.positionX
                 positionY = this@EmitterPoolBuilder.positionY

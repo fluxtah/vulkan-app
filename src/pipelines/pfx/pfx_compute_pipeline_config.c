@@ -4,6 +4,7 @@
 ComputePipelineConfig *createPfxComputePipelineConfig(
         VulkanDeviceContext *context,
         VkCommandPool commandPool,
+        const char *shaderPath,
         int maxParticles) {
     ComputePipelineConfig *config = malloc(sizeof(ComputePipelineConfig));
 
@@ -37,7 +38,11 @@ ComputePipelineConfig *createPfxComputePipelineConfig(
         return NULL;
     }
 
-    config->computePipeline = createPfxComputePipeline(context->device, config->pipelineLayout);
+    config->computePipeline = createPfxComputePipeline(
+            context->device,
+            config->pipelineLayout,
+            shaderPath);
+
     if (config->computePipeline == VK_NULL_HANDLE) {
         LOG_ERROR("Failed to create pfx compute pipeline");
         destroyComputePipelineConfig(
