@@ -130,7 +130,7 @@ void recordComputeCommandBuffer(EmitterArray *emitters, float deltaTime) {
         vkCmdPushConstants(config->commandBuffers[0], config->pipelineLayout, VK_SHADER_STAGE_COMPUTE_BIT, 0,
                            sizeof(PfxComputePipelinePushConstants), &pushConstants);
 
-        uint32_t workGroupSize = 32; // Example workgroup size
+        uint32_t workGroupSize = emitter->particleBatchSize; // Example workgroup size
         uint32_t dispatchCount = (emitter->maxParticles + workGroupSize - 1) / workGroupSize;
         vkCmdDispatch(config->commandBuffers[0], dispatchCount, 1, 1);
 

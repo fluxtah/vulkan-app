@@ -24,6 +24,12 @@ Emitter *createEmitter(ApplicationContext *context, CreateEmitterInfo *info) {
         fragmentShaderPath = info->fragmentShaderFileName;
     }
 
+    if(info->particleBatchSize == 0) {
+        emitter->particleBatchSize = 16;
+    } else {
+        emitter->particleBatchSize = info->particleBatchSize;
+    }
+
     emitter->computePipelineConfig = createPfxComputePipelineConfig(
             context->vulkanDeviceContext,
             context->commandPool,

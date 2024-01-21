@@ -26,6 +26,7 @@ typedef struct Emitter {
     int reset;
 
     int maxParticles;
+    int particleBatchSize;
 } Emitter;
 
 RenderResourcesMap *renderResourcesMap;

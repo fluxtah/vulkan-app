@@ -15,6 +15,8 @@ import kotlinx.cinterop.memScoped
 @OptIn(ExperimentalForeignApi::class)
 class EmitterBuilder(private val scene: Scene, private val id: String, private val modelPath: String) {
     private var maxParticles: Int = 100
+    private var particleBatchSize: Int = 0
+
     private var positionX: Float = 0.0f
     private var positionY: Float = 0.0f
     private var positionZ: Float = 0.0f
@@ -33,6 +35,10 @@ class EmitterBuilder(private val scene: Scene, private val id: String, private v
 
     fun maxParticles(size: Int) {
         maxParticles = size
+    }
+
+    fun particleBatchSize(size: Int) {
+        particleBatchSize = size
     }
 
     fun position(x: Float = 0f, y: Float = 0f, z: Float = 0f) {
@@ -81,6 +87,7 @@ class EmitterBuilder(private val scene: Scene, private val id: String, private v
                 vertexShaderFileName = vertexShaderPath?.cstr?.ptr
                 fragmentShaderFileName = fragmentShaderPath?.cstr?.ptr
                 maxParticles = this@EmitterBuilder.maxParticles
+                particleBatchSize = this@EmitterBuilder.particleBatchSize
                 positionX = this@EmitterBuilder.positionX
                 positionY = this@EmitterBuilder.positionY
                 positionZ = this@EmitterBuilder.positionZ

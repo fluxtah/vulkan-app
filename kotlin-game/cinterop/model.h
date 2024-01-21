@@ -96,7 +96,10 @@ typedef struct CreateSoundInfo {
 
 typedef struct CreateEmitterInfo {
     char *modelFileName;
+
     int maxParticles;
+    int particleBatchSize;
+
     float positionX;
     float positionY;
     float positionZ;
