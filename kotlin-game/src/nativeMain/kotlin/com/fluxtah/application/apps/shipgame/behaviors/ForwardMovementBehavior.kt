@@ -13,10 +13,10 @@ import kotlin.math.sin
 class ForwardMovementBehavior(
     private val isMovingForward: () -> Boolean,
     private val isReversing: () -> Boolean,
-    private val acceleration: Float = 1.0f,
+    private val acceleration: Float = 2.0f,
     private val reversingFactor: Float = 2.0f,
-    private val maxForwardSpeed: Float = 5.0f,
-    private val maxReverseSpeed: Float = -1.0f,
+    private val maxForwardSpeed: Float = 10.0f,
+    private val maxReverseSpeed: Float = -4.0f,
 ) : EntityBehavior() {
     private var forwardVelocity = 0.0f
     private lateinit var engineSound: Sound

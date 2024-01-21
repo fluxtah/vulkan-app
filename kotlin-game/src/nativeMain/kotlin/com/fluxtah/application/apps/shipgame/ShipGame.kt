@@ -11,10 +11,15 @@ import kotlin.random.Random
 TODO:
  ✓ Get asteroids working
     * Get asteroids to spawn randomly without overlapping
+    * Ship to asteroid collision, both ship and asteroid should explode
+    * When ship explodes need a sequence/animation/action camera cutscene
  ✓ Get projectiles to destroy asteroids (collision detection)
     * Get OBB and AABB collision detection working
  ✓ Particle emitters
  * Instanced rendering for asteroids
+ * Tile based map like a racing game
+    * Dynamic layout of tiles based on map data, as player moves forward and back
+       * octree?
  * Scene switching
     * Main menu
     * Game over

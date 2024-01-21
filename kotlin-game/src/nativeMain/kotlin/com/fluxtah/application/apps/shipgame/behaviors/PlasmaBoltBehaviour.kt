@@ -6,7 +6,7 @@ import com.fluxtah.application.api.math.Vector3
 import com.fluxtah.application.api.math.distanceTo
 
 class PlasmaBoltBehaviour(
-    private val boltSpeed: Float = 40.0f,
+    private val boltSpeed: Float = 60.0f,
     private val maxDistance: Float = 20f
 ) : EntityBehavior() {
 

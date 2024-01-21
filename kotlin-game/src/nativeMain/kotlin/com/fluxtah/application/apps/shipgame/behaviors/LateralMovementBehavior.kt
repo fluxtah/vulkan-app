@@ -12,8 +12,8 @@ import kotlin.math.sin
 class LateralMovementBehavior(
     private val isMovingLeft: () -> Boolean,
     private val isMovingRight: () -> Boolean,
-    private val lateralAcceleration: Float = 1.0f,
-    private val maxLateralSpeed: Float = 5.0f,
+    private val lateralAcceleration: Float = 2.0f,
+    private val maxLateralSpeed: Float = 10.0f,
 ) : EntityBehavior() {
     private var lateralVelocity = 0.0f
     private lateinit var movementSound: Sound
