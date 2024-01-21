@@ -3,9 +3,7 @@
 #include "include/pipelines/pfx/pfx_compute_pipeline_config.h"
 #include "include/pipelines/pfx/pfx_pipeline_config.h"
 
-Emitter *createEmitter(
-        ApplicationContext *context,
-        CreateEmitterInfo *info) {
+Emitter *createEmitter(ApplicationContext *context, CreateEmitterInfo *info) {
     Emitter *emitter = malloc(sizeof(Emitter));
 
     emitter->maxParticles = info->maxParticles;

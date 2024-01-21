@@ -13,7 +13,11 @@ TODO:
     * Get asteroids to spawn randomly without overlapping
  ✓ Get projectiles to destroy asteroids (collision detection)
     * Get OBB and AABB collision detection working
- * Particle emitters
+ ✓ Particle emitters
+ * Instanced rendering for asteroids
+ * Scene switching
+    * Main menu
+    * Game over
  * Get ship to explode when it hits an asteroid
  * High Score
     * Get text rendering working, maybe vector text?
@@ -22,6 +26,7 @@ TODO:
     * Cycle through targets (asteroids)
     * Targeting reticle to show which asteroid is targeted
     * Missiles that hone in on the target
+ * UI system
 */
 class ShipGame : Application {
     override fun initialize() {
@@ -85,13 +90,13 @@ class ShipGame : Application {
                 behaviour {
                     PlasmaBoltBehaviour()
                 }
-                onCollision { scene, entity, entities ->
+                onCollision { scene, plasmaBoltEntity, entities ->
                     for (otherEntity in entities) {
                         if (otherEntity.id == Id.ENT_ASTEROID) {
                             val asteroidDieBehavior = otherEntity.getBehaviorByType<AsteroidDieBehavior>()
-                            scene.entityToPool(entity)
+                            scene.entityToPool(plasmaBoltEntity)
                             asteroidDieBehavior.die()
-                            entity.visible = false
+                            plasmaBoltEntity.visible = false
                             return@onCollision
                         }
                     }
