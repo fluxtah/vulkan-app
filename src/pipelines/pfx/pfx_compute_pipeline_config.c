@@ -3,7 +3,8 @@
 
 ComputePipelineConfig *createPfxComputePipelineConfig(
         VulkanDeviceContext *context,
-        VkCommandPool commandPool) {
+        VkCommandPool commandPool,
+        int maxParticles) {
     ComputePipelineConfig *config = malloc(sizeof(ComputePipelineConfig));
 
     config->descriptorPool = createPfxComputePipelineDescriptorPool(context->device);
@@ -56,7 +57,7 @@ ComputePipelineConfig *createPfxComputePipelineConfig(
         return NULL;
     }
 
-    VkDeviceSize bufferSize = sizeof(Particle) * MAX_PARTICLE_COUNT;
+    VkDeviceSize bufferSize = sizeof(Particle) * maxParticles;
 
     config->particleBuffer = (BufferMemory *) malloc(sizeof(BufferMemory));
 
@@ -79,7 +80,7 @@ ComputePipelineConfig *createPfxComputePipelineConfig(
     VkDescriptorBufferInfo bufferInfo = {};
     bufferInfo.buffer = config->particleBuffer->buffer;
     bufferInfo.offset = 0;
-    bufferInfo.range = sizeof(Particle) * MAX_PARTICLE_COUNT;
+    bufferInfo.range = sizeof(Particle) * maxParticles;
 
     VkWriteDescriptorSet descriptorWrite = {};
     descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -125,7 +126,7 @@ void recordComputeCommandBuffer(EmitterArray *emitters, float deltaTime) {
                            sizeof(PfxComputePipelinePushConstants), &pushConstants);
 
         uint32_t workGroupSize = 32; // Example workgroup size
-        uint32_t dispatchCount = (MAX_PARTICLE_COUNT + workGroupSize - 1) / workGroupSize;
+        uint32_t dispatchCount = (emitter->maxParticles + workGroupSize - 1) / workGroupSize;
         vkCmdDispatch(config->commandBuffers[0], dispatchCount, 1, 1);
 
         // Memory Barrier

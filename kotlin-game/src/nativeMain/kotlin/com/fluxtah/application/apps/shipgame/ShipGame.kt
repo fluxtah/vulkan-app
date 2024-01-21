@@ -113,6 +113,7 @@ class ShipGame : Application {
 
             emitterPool(Id.EMITTER_EXPLOSION, "models/quad-explosion.glb") {
                 initialSize(3)
+                maxParticles(20)
                 behaviour { ExplosionEmitterBehavior() }
             }
 

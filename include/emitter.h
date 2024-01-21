@@ -24,6 +24,8 @@ typedef struct Emitter {
     PipelineConfig *graphicsPipelineConfig;
 
     int reset;
+
+    int maxParticles;
 } Emitter;
 
 RenderResourcesMap *renderResourcesMap;

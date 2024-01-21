@@ -6,12 +6,13 @@ layout(location = 2) in vec2 inUV;
 layout(location = 3) in vec4 inTangent;
 
 layout(location = 4) in vec3 particlePos;
-layout(location = 5) in vec3 particleScale;
+layout(location = 5) in vec3 inParticleScale;
 
 layout(location = 0) out vec3 fragPos;
 layout(location = 1) out vec3 normal;
 layout(location = 2) out vec2 uv;
 layout(location = 3) out vec4 tangent;
+layout(location = 4) out vec3 particleScale;
 
 layout(set = 0, binding = 0) uniform TransformUBO {
     mat4 model;
@@ -33,7 +34,7 @@ void main() {
     );
 
     // Scale the quad vertices
-    vec4 scaledPos = vec4(inPos * particleScale, 1.0);
+    vec4 scaledPos = vec4(inPos * inParticleScale, 1.0);
 
     vec4 worldPos = ubo.model * billboardMatrix * scaledPos + vec4(particlePos, 0.0);
 
@@ -41,6 +42,7 @@ void main() {
     normal = mat3(transpose(inverse(ubo.model))) * inNormal;
     uv = inUV;
     tangent = inTangent;
+    particleScale = inParticleScale;
 
     gl_Position = ubo.proj * ubo.view * worldPos; // Correct transformation to clip space
 }

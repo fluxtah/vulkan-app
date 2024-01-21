@@ -188,7 +188,7 @@ void recordEmitterBuffer(VkCommandBuffer commandBuffer, EmitterArray *emitters) 
                                 descriptorSets, 0,
                                 NULL);
 
-        vkCmdDrawIndexed(commandBuffer, emitter->renderResources->modelData->num_indices, MAX_PARTICLE_COUNT, 0, 0, 0);
+        vkCmdDrawIndexed(commandBuffer, emitter->renderResources->modelData->num_indices, emitter->maxParticles, 0, 0, 0);
     }
 }
 

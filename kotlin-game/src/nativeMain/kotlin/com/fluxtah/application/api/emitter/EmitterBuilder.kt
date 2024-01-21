@@ -14,6 +14,7 @@ import kotlinx.cinterop.memScoped
 @SceneDsl
 @OptIn(ExperimentalForeignApi::class)
 class EmitterBuilder(private val scene: Scene, private val id: String, private val modelPath: String) {
+    private var maxParticles: Int = 100
     private var positionX: Float = 0.0f
     private var positionY: Float = 0.0f
     private var positionZ: Float = 0.0f
@@ -25,6 +26,10 @@ class EmitterBuilder(private val scene: Scene, private val id: String, private v
     private var scaleZ: Float = 1.0f
 
     private val behaviors = mutableListOf<() -> EmitterBehavior>()
+
+    fun maxParticles(size: Int) {
+        maxParticles = size
+    }
 
     fun position(x: Float = 0f, y: Float = 0f, z: Float = 0f) {
         positionX = x
@@ -57,6 +62,7 @@ class EmitterBuilder(private val scene: Scene, private val id: String, private v
         val cEmitter = memScoped {
             val info = cValue<CreateEmitterInfo> {
                 modelFileName = modelPath.cstr.ptr
+                maxParticles = this@EmitterBuilder.maxParticles
                 positionX = this@EmitterBuilder.positionX
                 positionY = this@EmitterBuilder.positionY
                 positionZ = this@EmitterBuilder.positionZ

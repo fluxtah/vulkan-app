@@ -15,6 +15,7 @@ import kotlinx.cinterop.memScoped
 @SceneDsl
 @OptIn(ExperimentalForeignApi::class)
 class EmitterPoolBuilder(private val scene: Scene, private val id: String, private val modelPath: String) {
+    private var maxParticles: Int = 100
     private var positionX: Float = 0.0f
     private var positionY: Float = 0.0f
     private var positionZ: Float = 0.0f
@@ -36,6 +37,10 @@ class EmitterPoolBuilder(private val scene: Scene, private val id: String, priva
 
     fun startActive() {
         startActive = true
+    }
+
+    fun maxParticles(size: Int) {
+        maxParticles = size
     }
 
     fun position(x: Float = 0f, y: Float = 0f, z: Float = 0f) {
@@ -79,6 +84,7 @@ class EmitterPoolBuilder(private val scene: Scene, private val id: String, priva
         val cEmitter = memScoped {
             val info = cValue<CreateEmitterInfo> {
                 modelFileName = modelPath.cstr.ptr
+                maxParticles = this@EmitterPoolBuilder.maxParticles
                 positionX = this@EmitterPoolBuilder.positionX
                 positionY = this@EmitterPoolBuilder.positionY
                 positionZ = this@EmitterPoolBuilder.positionZ

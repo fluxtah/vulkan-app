@@ -3,8 +3,6 @@
 
 #include "cglm/cglm.h"
 
-extern const int MAX_PARTICLE_COUNT;
-
 typedef struct Particle {
     vec3 position;
     char _pad[4];

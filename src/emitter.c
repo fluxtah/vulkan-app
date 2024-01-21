@@ -3,16 +3,17 @@
 #include "include/pipelines/pfx/pfx_compute_pipeline_config.h"
 #include "include/pipelines/pfx/pfx_pipeline_config.h"
 
-const int MAX_PARTICLE_COUNT = 10;
-
 Emitter *createEmitter(
         ApplicationContext *context,
         CreateEmitterInfo *info) {
     Emitter *emitter = malloc(sizeof(Emitter));
 
+    emitter->maxParticles = info->maxParticles;
+
     emitter->computePipelineConfig = createPfxComputePipelineConfig(
             context->vulkanDeviceContext,
-            context->commandPool
+            context->commandPool,
+            emitter->maxParticles
     );
 
     emitter->graphicsPipelineConfig = createPfxPipelineConfig(
