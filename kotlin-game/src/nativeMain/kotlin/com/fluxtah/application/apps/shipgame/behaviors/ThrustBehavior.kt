@@ -15,6 +15,12 @@ class ThrustBehavior(private val isThrusting: () -> Boolean) : EntityBehavior() 
         sonicBoomSound = scene.soundById(Id.SOUND_SONIC_BOOM)!!
     }
 
+    override fun reset() {
+        thrustSound.stopIfPlaying()
+        sonicBoomSound.stopIfPlaying()
+        state.reset()
+    }
+
     override fun beforeUpdate(time: Float, deltaTime: Float) {
         state.thrusting = isThrusting()
         if (state.thrusting) {
@@ -87,5 +93,12 @@ class ThrustBehavior(private val isThrusting: () -> Boolean) : EntityBehavior() 
         val hoverDamping: Float = 0.99f,
         val maxVelocity: Float = 3.0f,
         var thrusting: Boolean = false,
-    )
+    ) {
+        fun reset() {
+            velocityY = 0.0f
+            positionY = 0.0f
+            thrust = 0.0f
+            thrusting = false
+        }
+    }
 }

@@ -22,4 +22,6 @@ object Id {
     const val SOUND_SONIC_BOOM = "sonic-boom-sound"
     const val SOUND_PLASMA_BOLT = "plasma-bolt-sound"
     const val SOUND_ASTEROID_EXPLODE = "asteroid-explode-sound"
+
+    const val SEQ_DEATH_RESPAWN = "death-respawn-sequence"
 }

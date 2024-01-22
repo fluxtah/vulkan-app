@@ -115,6 +115,10 @@ class Entity(
         c_setEntityPosition!!.invoke(handle, _positionX, _positionY, _positionZ)
     }
 
+    fun resetBehaviors() {
+        behaviors.forEach { it.reset() }
+    }
+
     inline fun <reified T : EntityBehavior> getBehaviorByType(): T {
         for (behavior in behaviors) {
             if (behavior is T) {

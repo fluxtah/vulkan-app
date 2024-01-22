@@ -4,6 +4,7 @@ import com.fluxtah.application.api.*
 import com.fluxtah.application.api.emitter.Emitter
 import com.fluxtah.application.api.emitter.EmitterBehavior
 import com.fluxtah.application.api.entity.Entity
+import com.fluxtah.application.api.sequence.Sequence
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.StableRef
 
@@ -70,6 +71,8 @@ interface Scene {
 
     fun soundById(id: String): Sound?
 
+    fun createSequence(id: String) : Sequence?
+
     class EMPTY : Scene {
         override fun setActiveCamera(id: String) = Unit
         override fun activeCamera(): Camera? = null
@@ -85,6 +88,7 @@ interface Scene {
         override fun emitterToPool(emitter: Emitter) = Unit
 
         override fun soundById(id: String): Sound? = null
+        override fun createSequence(id: String): Sequence? = null
     }
 }
 

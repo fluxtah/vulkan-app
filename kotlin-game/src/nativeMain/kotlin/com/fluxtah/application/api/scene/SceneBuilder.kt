@@ -5,6 +5,8 @@ import com.fluxtah.application.api.emitter.EmitterBuilder
 import com.fluxtah.application.api.emitter.EmitterPoolBuilder
 import com.fluxtah.application.api.entity.EntityBuilder
 import com.fluxtah.application.api.entity.EntityPoolBuilder
+import com.fluxtah.application.api.sequence.Sequence
+import com.fluxtah.application.api.sequence.SequenceBuilder
 import kotlinx.cinterop.ExperimentalForeignApi
 
 @SceneDsl
@@ -19,6 +21,7 @@ class SceneBuilder(val sceneId: String) {
     private val emitterPools = mutableMapOf<String, (Scene) -> EmitterPoolInfo>()
 
     private val sounds = mutableMapOf<String, (Scene) -> Sound>()
+    private val sequences = mutableMapOf<String, () -> Sequence>()
 
     private var onSceneCreated: ((scene: Scene) -> Unit)? = null
     private var onSceneUpdate: OnSceneUpdate? = null
@@ -89,6 +92,15 @@ class SceneBuilder(val sceneId: String) {
         }
     }
 
+    fun sequence(id: String, builder: SequenceBuilder.() -> Unit) {
+        if (sequences.containsKey(id)) {
+            throw Exception("Sequence with id $id already exists")
+        }
+        sequences[id] = {
+            SequenceBuilder().apply(builder).build()
+        }
+    }
+
     @OptIn(ExperimentalForeignApi::class)
     fun build(): SceneInfo {
         val scene = SceneImpl()
@@ -113,6 +125,10 @@ class SceneBuilder(val sceneId: String) {
 
         sounds.forEach { (id, builder) ->
             scene.sounds[id] = builder.invoke(scene)
+        }
+
+        sequences.forEach { (id, builder) ->
+            scene.sequences[id] = builder
         }
 
         return SceneInfo(

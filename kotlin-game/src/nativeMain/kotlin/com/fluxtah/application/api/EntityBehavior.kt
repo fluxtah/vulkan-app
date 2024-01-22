@@ -10,4 +10,5 @@ abstract class EntityBehavior {
     open fun beforeUpdate(time: Float, deltaTime: Float) {}
     open fun update(time: Float) {}
     open fun afterUpdate(time: Float, deltaTime: Float) {}
+    open fun reset() {}
 }

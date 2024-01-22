@@ -2,6 +2,7 @@ package com.fluxtah.application.apps.shipgame
 
 import com.fluxtah.application.api.*
 import com.fluxtah.application.api.input.Key
+import com.fluxtah.application.api.scene.Scene
 import com.fluxtah.application.api.scene.scene
 import com.fluxtah.application.api.scene.setActiveScene
 import com.fluxtah.application.apps.shipgame.behaviors.*
@@ -12,7 +13,7 @@ TODO:
  ✓ Get asteroids working
     * Get asteroids to spawn randomly without overlapping
     * Ship to asteroid collision, both ship and asteroid should explode
-    * When ship explodes need a sequence/animation/action camera cutscene
+    ✓ When ship explodes need a sequence/animation/action camera cutscene
  ✓ Get projectiles to destroy asteroids (collision detection)
     * Get OBB and AABB collision detection working
  ✓ Particle emitters
@@ -36,7 +37,7 @@ TODO:
 class ShipGame : Application {
     override fun initialize() {
         scene(Id.SCENE_MAIN) {
-            val map = InfiniteMap(1)
+            val map = InfiniteMap(324242353)
 
             camera(Id.CAMERA1) {
                 position(4.0f, 6.0f, -4.0f)
@@ -61,11 +62,6 @@ class ShipGame : Application {
                 direction(0.5f, -1.0f, 0.0f)
                 intensity(1.0f)
             }
-
-//            entity(Id.ENT_PLANE, "models/plane.glb") {
-//                position(0.0f, -0.1f, 0.0f)
-//                scale(10f, 10f, 10f)
-//            }
 
             entityPool("tile", "models/tile.glb") {
                 initialSize(100)
@@ -100,10 +96,23 @@ class ShipGame : Application {
                             asteroidDieBehavior.die()
                             ship.inUse = false
                             ship.visible = false
-                            scene.soundById(Id.SOUND_ENGINE)?.stopIfPlaying()
+                            ship.resetBehaviors()
+                            scene.createSequence(Id.SEQ_DEATH_RESPAWN)?.play()
+
                             return@onCollision
                         }
                     }
+                }
+            }
+
+            sequence(Id.SEQ_DEATH_RESPAWN) {
+                wait(duration = 8f) // wait for 8 seconds
+                action { scene ->
+                    val ship = scene.entityById(Id.ENT_SHIP)!!
+                    ship.setPosition(0.0f, 0.0f, 0.0f)
+                    ship.visible = true
+                    ship.inUse = true
+                    scene.soundById(Id.SOUND_ENGINE)?.play()
                 }
             }
 
@@ -167,39 +176,9 @@ class ShipGame : Application {
             }
 
             onBeforeSceneUpdate { scene, _, _ ->
-                val ship = scene.entityById(Id.ENT_SHIP)!!
-                scene.resetEntityPool("tile")
-                map.getTileByWorldPosition(ship.positionX, ship.positionZ, 4).forEach {
-                    scene.entityFromPool("tile") { tile ->
-                        when(it.type) {
-                            TileType.LEVEL1 -> {
-                                tile.setPosition(it.worldX.toFloat(), -1.0f, it.worldZ.toFloat())
-                            }
-                            TileType.LEVEL2 -> {
-                                tile.setPosition(it.worldX.toFloat(), -1.2f, it.worldZ.toFloat())
-                            }
-                            TileType.LEVEL3 -> {
-                                tile.setPosition(it.worldX.toFloat(), -1.4f, it.worldZ.toFloat())
-                            }
-                            TileType.LEVEL4 -> {
-                                tile.setPosition(it.worldX.toFloat(), -1.6f, it.worldZ.toFloat())
-                            }
-                        }
-                    }
-                }
+                layoutTiles(scene, map)
 
-                if (isKeyPressed(Key.Num1)) {
-                    scene.setActiveCamera(Id.CAMERA1)
-                }
-                if (isKeyPressed(Key.Num2)) {
-                    scene.setActiveCamera(Id.CAMERA2)
-                }
-                if (isKeyPressed(Key.F1)) {
-                    enableDebugBoundingVolumes(true)
-                }
-                if (isKeyPressed(Key.F2)) {
-                    enableDebugBoundingVolumes(false)
-                }
+                handleInput(scene)
             }
 
             onSceneUpdate { scene, _ ->
@@ -212,5 +191,49 @@ class ShipGame : Application {
         }
 
         setActiveScene(Id.SCENE_MAIN)
+    }
+
+    private fun layoutTiles(
+        scene: Scene,
+        map: InfiniteMap
+    ) {
+        val ship = scene.entityById(Id.ENT_SHIP)!!
+        scene.resetEntityPool("tile")
+        map.getTileByWorldPosition(ship.positionX, ship.positionZ, 4).forEach {
+            scene.entityFromPool("tile") { tile ->
+                when (it.type) {
+                    TileType.LEVEL1 -> {
+                        tile.setPosition(it.worldX.toFloat(), -1.0f, it.worldZ.toFloat())
+                    }
+
+                    TileType.LEVEL2 -> {
+                        tile.setPosition(it.worldX.toFloat(), -1.2f, it.worldZ.toFloat())
+                    }
+
+                    TileType.LEVEL3 -> {
+                        tile.setPosition(it.worldX.toFloat(), -1.4f, it.worldZ.toFloat())
+                    }
+
+                    TileType.LEVEL4 -> {
+                        tile.setPosition(it.worldX.toFloat(), -1.6f, it.worldZ.toFloat())
+                    }
+                }
+            }
+        }
+    }
+
+    private fun handleInput(scene: Scene) {
+        if (isKeyPressed(Key.Num1)) {
+            scene.setActiveCamera(Id.CAMERA1)
+        }
+        if (isKeyPressed(Key.Num2)) {
+            scene.setActiveCamera(Id.CAMERA2)
+        }
+        if (isKeyPressed(Key.F1)) {
+            enableDebugBoundingVolumes(true)
+        }
+        if (isKeyPressed(Key.F2)) {
+            enableDebugBoundingVolumes(false)
+        }
     }
 }

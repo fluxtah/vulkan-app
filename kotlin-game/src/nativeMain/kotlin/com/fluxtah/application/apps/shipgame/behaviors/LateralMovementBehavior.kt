@@ -22,6 +22,11 @@ class LateralMovementBehavior(
         movementSound = scene.soundById(Id.SOUND_LATERAL_THRUST)!!
     }
 
+    override fun reset() {
+        movementSound.stopIfPlaying()
+        lateralVelocity = 0.0f
+    }
+
     override fun update(time: Float) {
         lateralVelocity = when {
             isMovingRight() -> {

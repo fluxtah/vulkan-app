@@ -26,6 +26,11 @@ class ForwardMovementBehavior(
         engineSound.playIfNotPlaying()
     }
 
+    override fun reset() {
+        engineSound.stopIfPlaying()
+        forwardVelocity = 0.0f
+    }
+
     override fun update(time: Float) {
 
         forwardVelocity = when {

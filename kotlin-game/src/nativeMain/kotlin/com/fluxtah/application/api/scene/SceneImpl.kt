@@ -7,18 +7,21 @@ import com.fluxtah.application.api.Sound
 import com.fluxtah.application.api.emitter.Emitter
 import com.fluxtah.application.api.entity.Entity
 import com.fluxtah.application.api.interop.c_setActiveCamera
+import com.fluxtah.application.api.sequence.Sequence
 import kotlinx.cinterop.ExperimentalForeignApi
 
 @OptIn(ExperimentalForeignApi::class)
 class SceneImpl : Scene {
-    private var activeCamera: Camera? = null
-    internal val cameras = mutableMapOf<String, Camera>()
-    internal val lights = mutableMapOf<String, Light>()
-    internal val entities = mutableMapOf<String, EntityInfo>()
-    internal val entityPools = mutableMapOf<String, EntityPoolInfo>()
-    internal val emitters = mutableMapOf<String, EmitterInfo>()
-    internal val emitterPools = mutableMapOf<String, EmitterPoolInfo>()
-    internal val sounds = mutableMapOf<String, Sound>()
+    var activeCamera: Camera? = null
+    val cameras = mutableMapOf<String, Camera>()
+    val lights = mutableMapOf<String, Light>()
+    val entities = mutableMapOf<String, EntityInfo>()
+    val entityPools = mutableMapOf<String, EntityPoolInfo>()
+    val emitters = mutableMapOf<String, EmitterInfo>()
+    val emitterPools = mutableMapOf<String, EmitterPoolInfo>()
+    val sounds = mutableMapOf<String, Sound>()
+    val sequences = mutableMapOf<String, () -> Sequence>()
+    val sequencesPlaying = mutableSetOf<Sequence>()
 
     override fun setActiveCamera(id: String) {
         activeCamera = cameras[id] ?: throw Exception("Camera with id $id does not exist")
@@ -66,8 +69,8 @@ class SceneImpl : Scene {
     override fun resetEntityPool(id: String) {
         val pool = entityPools[id] ?: throw Exception("Entity pool with id $id does not exist")
         pool.entitiesInUse.forEach {
-            pool.entitiesAvailable.add(it)
             it.entity.inUse = false
+            pool.entitiesAvailable.add(it)
         }
         pool.entitiesInUse.clear()
     }
@@ -96,5 +99,23 @@ class SceneImpl : Scene {
 
     override fun soundById(id: String): Sound? {
         return sounds[id]
+    }
+
+    override fun createSequence(id: String): Sequence? {
+        val factory = sequences[id]
+        if (factory != null) {
+            val sequence =  factory.invoke()
+            sequence.scene = this
+            return sequence
+        }
+        throw Exception("Sequence with id $id does not exist")
+    }
+
+    fun dispatchSequence(sequence: Sequence) {
+        sequencesPlaying.add(sequence)
+    }
+
+    fun stopSequence(sequence: Sequence) {
+        sequencesPlaying.remove(sequence)
     }
 }

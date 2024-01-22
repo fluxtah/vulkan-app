@@ -53,6 +53,11 @@ fun ktUpdateApplication(time: Float, deltaTime: Float) {
     applicationInstance.beforeUpdate(time, deltaTime)
 
     activeSceneInfo.onSceneBeforeUpdate?.invoke(activeSceneInfo.scene, time, deltaTime)
+
+    scene.sequencesPlaying.forEach { sequence ->
+        sequence.advance(time, deltaTime)
+    }
+
     entities.forEach {
         it.behaviors.forEach { behavior ->
             behavior.beforeUpdate(time, deltaTime)
