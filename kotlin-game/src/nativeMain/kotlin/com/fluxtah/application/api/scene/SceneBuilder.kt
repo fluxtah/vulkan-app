@@ -1,6 +1,8 @@
 package com.fluxtah.application.api.scene
 
 import com.fluxtah.application.api.*
+import com.fluxtah.application.api.camera.Camera
+import com.fluxtah.application.api.camera.CameraBuilder
 import com.fluxtah.application.api.emitter.EmitterBuilder
 import com.fluxtah.application.api.emitter.EmitterPoolBuilder
 import com.fluxtah.application.api.entity.EntityBuilder
@@ -42,7 +44,7 @@ class SceneBuilder(val sceneId: String) {
             throw Exception("Entity with id $id already exists")
         }
         cameras[id] = {
-            CameraBuilder().apply(builder).build()
+            CameraBuilder(it).apply(builder).build()
         }
     }
 

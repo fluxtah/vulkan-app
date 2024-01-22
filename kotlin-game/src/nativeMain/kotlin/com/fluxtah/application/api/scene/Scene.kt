@@ -1,9 +1,11 @@
 package com.fluxtah.application.api.scene
 
 import com.fluxtah.application.api.*
+import com.fluxtah.application.api.camera.Camera
 import com.fluxtah.application.api.emitter.Emitter
 import com.fluxtah.application.api.emitter.EmitterBehavior
 import com.fluxtah.application.api.entity.Entity
+import com.fluxtah.application.api.entity.EntityBehavior
 import com.fluxtah.application.api.sequence.Sequence
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.StableRef
@@ -149,6 +151,15 @@ fun Application.setActiveScene(id: String) {
                 emitterInfo.behaviors.forEach { behavior ->
                     behavior.initialize()
                 }
+            }
+        }
+
+        //
+        // Initialize cameras
+        //
+        sceneInfo.scene.cameras.forEach {
+            it.value.behaviors.forEach { behavior ->
+                behavior.initialize()
             }
         }
 

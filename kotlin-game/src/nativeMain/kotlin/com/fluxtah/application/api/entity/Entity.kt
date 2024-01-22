@@ -1,9 +1,7 @@
 package com.fluxtah.application.api.entity
 
-import com.fluxtah.application.api.EntityBehavior
 import com.fluxtah.application.api.interop.*
 import kotlinx.cinterop.*
-import kotlin.reflect.KClass
 
 @OptIn(ExperimentalForeignApi::class)
 class Entity(

@@ -1,10 +1,9 @@
-package com.fluxtah.application.api
+package com.fluxtah.application.api.camera
 
-import com.fluxtah.application.api.entity.Entity
 import com.fluxtah.application.api.scene.Scene
 
-abstract class EntityBehavior {
-    lateinit var entity: Entity
+abstract class CameraBehavior {
+    lateinit var camera: Camera
     lateinit var scene: Scene
     open fun initialize() {}
     open fun beforeUpdate(time: Float, deltaTime: Float) {}

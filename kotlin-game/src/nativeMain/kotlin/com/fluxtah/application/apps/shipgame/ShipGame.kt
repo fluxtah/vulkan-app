@@ -2,6 +2,7 @@ package com.fluxtah.application.apps.shipgame
 
 import com.fluxtah.application.api.*
 import com.fluxtah.application.api.input.Key
+import com.fluxtah.application.api.math.Vector3
 import com.fluxtah.application.api.scene.Scene
 import com.fluxtah.application.api.scene.scene
 import com.fluxtah.application.api.scene.setActiveScene
@@ -42,7 +43,12 @@ class ShipGame : Application {
             camera(Id.CAMERA1) {
                 position(4.0f, 6.0f, -4.0f)
                 fieldOfView(60.0f)
+
+                behavior {
+                    ChaseCameraBehavior(targetEntityId = Id.ENT_SHIP)
+                }
             }
+
             camera(Id.CAMERA2) {
                 position(4.0f, 5.0f, -4.0f)
             }
@@ -167,12 +173,8 @@ class ShipGame : Application {
             sound(Id.SOUND_PLASMA_BOLT, "sounds/plasma-bolt.wav")
             sound(Id.SOUND_ASTEROID_EXPLODE, "sounds/asteroid-explode.wav")
 
-            var chaseCam: ChaseCamera? = null
-
             onSceneCreated { scene ->
                 scene.setActiveCamera(Id.CAMERA1)
-                scene.activeCamera()?.lookAt(0f, 0f, 0f)
-                chaseCam = ChaseCamera(scene.activeCamera()!!, scene.entityById(Id.ENT_SHIP)!!)
             }
 
             onBeforeSceneUpdate { scene, _, _ ->
@@ -185,8 +187,6 @@ class ShipGame : Application {
                 if (scene.activeCamera() == scene.cameraById(Id.CAMERA2)) {
                     handleCameraInput(scene, fixedTimeStep)
                 }
-
-                chaseCam?.update()
             }
         }
 

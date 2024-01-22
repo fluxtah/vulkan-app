@@ -1,6 +1,6 @@
 package com.fluxtah.application.apps.shipgame.behaviors
 
-import com.fluxtah.application.api.EntityBehavior
+import com.fluxtah.application.api.entity.EntityBehavior
 import com.fluxtah.application.apps.shipgame.Id
 
 class AsteroidDieBehavior : EntityBehavior() {

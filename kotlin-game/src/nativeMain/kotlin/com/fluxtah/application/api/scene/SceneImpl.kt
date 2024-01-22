@@ -1,7 +1,7 @@
 package com.fluxtah.application.api.scene
 
 import com.fluxtah.application.api.ApplicationContext
-import com.fluxtah.application.api.Camera
+import com.fluxtah.application.api.camera.Camera
 import com.fluxtah.application.api.Light
 import com.fluxtah.application.api.Sound
 import com.fluxtah.application.api.emitter.Emitter

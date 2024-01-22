@@ -49,6 +49,7 @@ fun ktUpdateApplication(time: Float, deltaTime: Float) {
     val scene = activeSceneInfo.scene as SceneImpl
     val entities = scene.entities.filter { it.value.entity.inUse }.map { it.value } + scene.entityPools.flatMap { it.value.entitiesInUse }
     val emitters = scene.emitters.map { it.value } + scene.emitterPools.flatMap { it.value.emittersInUse }
+    val cameras = scene.cameras
 
     applicationInstance.beforeUpdate(time, deltaTime)
 
@@ -69,6 +70,12 @@ fun ktUpdateApplication(time: Float, deltaTime: Float) {
             behavior.beforeUpdate(time, deltaTime)
         }
     }
+    cameras.forEach {
+        it.value.behaviors.forEach { behavior ->
+            behavior.beforeUpdate(time, deltaTime)
+        }
+    }
+
 
     while (accumulatedTime >= fixedTimeStep) {
         activeSceneInfo.onSceneUpdate?.invoke(activeSceneInfo.scene, time)
@@ -80,6 +87,11 @@ fun ktUpdateApplication(time: Float, deltaTime: Float) {
         }
         emitters.forEach {
             it.behaviors.forEach { behavior ->
+                behavior.update(time)
+            }
+        }
+        cameras.forEach {
+            it.value.behaviors.forEach { behavior ->
                 behavior.update(time)
             }
         }
@@ -96,6 +108,11 @@ fun ktUpdateApplication(time: Float, deltaTime: Float) {
     }
     emitters.forEach {
         it.behaviors.forEach { behavior ->
+            behavior.afterUpdate(time, deltaTime)
+        }
+    }
+    cameras.forEach {
+        it.value.behaviors.forEach { behavior ->
             behavior.afterUpdate(time, deltaTime)
         }
     }

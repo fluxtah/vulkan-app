@@ -1,6 +1,6 @@
 package com.fluxtah.application.apps.shipgame.behaviors
 
-import com.fluxtah.application.api.EntityBehavior
+import com.fluxtah.application.api.entity.EntityBehavior
 import com.fluxtah.application.api.Sound
 import com.fluxtah.application.api.fixedTimeStep
 import com.fluxtah.application.api.math.Vector3

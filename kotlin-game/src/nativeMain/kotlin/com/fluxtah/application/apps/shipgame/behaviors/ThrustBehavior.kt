@@ -1,7 +1,7 @@
 package com.fluxtah.application.apps.shipgame.behaviors
 
 import com.fluxtah.application.api.*
-import com.fluxtah.application.api.entity.Entity
+import com.fluxtah.application.api.entity.EntityBehavior
 import com.fluxtah.application.apps.shipgame.Id
 
 class ThrustBehavior(private val isThrusting: () -> Boolean) : EntityBehavior() {

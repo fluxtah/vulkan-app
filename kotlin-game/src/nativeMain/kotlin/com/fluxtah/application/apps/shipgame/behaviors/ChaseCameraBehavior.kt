@@ -1,6 +1,6 @@
-package com.fluxtah.application.apps.shipgame
+package com.fluxtah.application.apps.shipgame.behaviors
 
-import com.fluxtah.application.api.Camera
+import com.fluxtah.application.api.camera.CameraBehavior
 import com.fluxtah.application.api.entity.Entity
 import com.fluxtah.application.api.fixedTimeStep
 import com.fluxtah.application.api.math.Vector3
@@ -9,15 +9,21 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-class ChaseCamera(
-    private val camera: Camera,
-    private val target: Entity,
-    private var offset: Vector3 = Vector3(0f, 3f, -4.2f)
-) {
-    private var position: Vector3 = Vector3()
-    private var smoothingFactor = 4.0f // Adjust for desired smoothing
+class ChaseCameraBehavior(
+    private var targetEntityId: String,
+    private var offset: Vector3 = Vector3(0f, 3f, -4.2f),
+    private var position: Vector3 = Vector3(),
+    private var smoothingFactor: Float = 4.0f // Adjust for desired smoothing
+) : CameraBehavior() {
 
-    fun update() {
+    private lateinit var target: Entity
+
+    override fun initialize() {
+        target = scene.entityById(targetEntityId) ?: throw Exception("Target entity not found")
+        camera.lookAt(0f, 0f, 0f)
+    }
+
+    override fun update(time: Float) {
         // Calculate the offset position based on target's rotation
         val rotatedOffset = rotateOffsetByTargetYaw(offset, -target.rotationY)
 
