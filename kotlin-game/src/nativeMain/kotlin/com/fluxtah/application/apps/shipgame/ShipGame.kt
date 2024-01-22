@@ -36,6 +36,8 @@ TODO:
 class ShipGame : Application {
     override fun initialize() {
         scene(Id.SCENE_MAIN) {
+            val map = InfiniteMap(1)
+
             camera(Id.CAMERA1) {
                 position(4.0f, 6.0f, -4.0f)
                 fieldOfView(60.0f)
@@ -60,9 +62,13 @@ class ShipGame : Application {
                 intensity(1.0f)
             }
 
-            entity(Id.ENT_PLANE, "models/plane.glb") {
-                position(0.0f, -0.1f, 0.0f)
-                scale(10f, 10f, 10f)
+//            entity(Id.ENT_PLANE, "models/plane.glb") {
+//                position(0.0f, -0.1f, 0.0f)
+//                scale(10f, 10f, 10f)
+//            }
+
+            entityPool("tile", "models/tile.glb") {
+                initialSize(100)
             }
 
             entity(Id.ENT_SHIP, "models/ship.glb") {
@@ -86,6 +92,18 @@ class ShipGame : Application {
                         isMovingLeft = { isKeyPressed(Key.Left) },
                         isMovingRight = { isKeyPressed(Key.Right) }
                     )
+                }
+                onCollision { scene, ship, entities ->
+                    for (otherEntity in entities) {
+                        if (otherEntity.id == Id.ENT_ASTEROID) {
+                            val asteroidDieBehavior = otherEntity.getBehaviorByType<AsteroidDieBehavior>()
+                            asteroidDieBehavior.die()
+                            ship.inUse = false
+                            ship.visible = false
+                            scene.soundById(Id.SOUND_ENGINE)?.stopIfPlaying()
+                            return@onCollision
+                        }
+                    }
                 }
             }
 
@@ -149,6 +167,27 @@ class ShipGame : Application {
             }
 
             onBeforeSceneUpdate { scene, _, _ ->
+                val ship = scene.entityById(Id.ENT_SHIP)!!
+                scene.resetEntityPool("tile")
+                map.getTileByWorldPosition(ship.positionX, ship.positionZ, 4).forEach {
+                    scene.entityFromPool("tile") { tile ->
+                        when(it.type) {
+                            TileType.LEVEL1 -> {
+                                tile.setPosition(it.worldX.toFloat(), -1.0f, it.worldZ.toFloat())
+                            }
+                            TileType.LEVEL2 -> {
+                                tile.setPosition(it.worldX.toFloat(), -1.2f, it.worldZ.toFloat())
+                            }
+                            TileType.LEVEL3 -> {
+                                tile.setPosition(it.worldX.toFloat(), -1.4f, it.worldZ.toFloat())
+                            }
+                            TileType.LEVEL4 -> {
+                                tile.setPosition(it.worldX.toFloat(), -1.6f, it.worldZ.toFloat())
+                            }
+                        }
+                    }
+                }
+
                 if (isKeyPressed(Key.Num1)) {
                     scene.setActiveCamera(Id.CAMERA1)
                 }

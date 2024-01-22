@@ -63,6 +63,15 @@ class SceneImpl : Scene {
         pool.entitiesAvailable.add(entityInfo)
     }
 
+    override fun resetEntityPool(id: String) {
+        val pool = entityPools[id] ?: throw Exception("Entity pool with id $id does not exist")
+        pool.entitiesInUse.forEach {
+            pool.entitiesAvailable.add(it)
+            it.entity.inUse = false
+        }
+        pool.entitiesInUse.clear()
+    }
+
     override fun emitterFromPool(id: String, block: (emitter: Emitter) -> Unit) {
         val pool = emitterPools[id] ?: throw Exception("Emitter pool with id $id does not exist")
 

@@ -62,6 +62,7 @@ interface Scene {
     fun entityById(id: String): Entity?
     fun entityFromPool(id: String, block: (entity: Entity) -> Unit)
     fun entityToPool(entity: Entity)
+    fun resetEntityPool(id: String)
 
     fun emitterById(id: String): Emitter?
     fun emitterFromPool(id: String, block: (emitter: Emitter) -> Unit)
@@ -77,6 +78,7 @@ interface Scene {
         override fun entityById(id: String): Entity? = null
         override fun entityFromPool(id: String, block: (entity: Entity) -> Unit) = Unit
         override fun entityToPool(entity: Entity) = Unit
+        override fun resetEntityPool(id: String) = Unit
 
         override fun emitterById(id: String): Emitter? = null
         override fun emitterFromPool(id: String, block: (emitter: Emitter) -> Unit) = Unit
