@@ -38,7 +38,7 @@ TODO:
 class ShipGame : Application {
     override fun initialize() {
         scene(Id.SCENE_MAIN) {
-            val map = InfiniteMap(324242353)
+            val map = InfiniteMap(6242423)
 
             camera(Id.CAMERA1) {
                 position(4.0f, 6.0f, -4.0f)
@@ -75,7 +75,7 @@ class ShipGame : Application {
 
             entity(Id.ENT_SHIP, "models/ship.glb") {
                 // useOrientedBoundingBox()
-                position(0.0f, 0.0f, 0.0f)
+                position(0.0f, 8.0f, 0.0f)
                 behaviour { FirePlasmaCannonBehaviour(fireButtonPressed = { isKeyPressed(Key.Space) }) }
                 behaviour { ThrustBehavior(isThrusting = { isKeyPressed(Key.Up) }) }
                 behaviour {
@@ -120,7 +120,8 @@ class ShipGame : Application {
                 wait(duration = 4f) // wait for 8 seconds
                 action { scene ->
                     val ship = scene.entityById(Id.ENT_SHIP)!!
-                    ship.setPosition(0.0f, 0.0f, 0.0f)
+                    ship.setPosition(0.0f, 8.0f, 0.0f)
+                    ship.resetBehaviors()
                     ship.visible = true
                     ship.inUse = true
                     scene.soundById(Id.SOUND_ENGINE)?.play()
@@ -220,7 +221,7 @@ class ShipGame : Application {
                     }
 
                     TileType.LEVEL4 -> {
-                        tile.setPosition(it.worldX.toFloat(), 3.0f, it.worldZ.toFloat())
+                        tile.setPosition(it.worldX.toFloat(), 2.0f, it.worldZ.toFloat())
                     }
                 }
             }
