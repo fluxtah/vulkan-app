@@ -87,12 +87,17 @@ class ShipGame : Application {
                 behaviour {
                     ForwardMovementBehavior(
                         isMovingForward = { isKeyPressed(Key.W) },
-                        isReversing = { isKeyPressed(Key.S) })
+                        isReversing = { isKeyPressed(Key.S) },
+                        acceleration = 6.0f,
+                        maxForwardSpeed = 12.0f
+                    )
                 }
                 behaviour {
                     LateralMovementBehavior(
                         isMovingLeft = { isKeyPressed(Key.Left) },
-                        isMovingRight = { isKeyPressed(Key.Right) }
+                        isMovingRight = { isKeyPressed(Key.Right) },
+                        lateralAcceleration = 6.0f,
+                        maxLateralSpeed = 12.0f
                     )
                 }
                 onCollision { scene, ship, entities ->
@@ -112,7 +117,7 @@ class ShipGame : Application {
             }
 
             sequence(Id.SEQ_DEATH_RESPAWN) {
-                wait(duration = 8f) // wait for 8 seconds
+                wait(duration = 4f) // wait for 8 seconds
                 action { scene ->
                     val ship = scene.entityById(Id.ENT_SHIP)!!
                     ship.setPosition(0.0f, 0.0f, 0.0f)
@@ -215,7 +220,7 @@ class ShipGame : Application {
                     }
 
                     TileType.LEVEL4 -> {
-                        tile.setPosition(it.worldX.toFloat(), -1.6f, it.worldZ.toFloat())
+                        tile.setPosition(it.worldX.toFloat(), 3.0f, it.worldZ.toFloat())
                     }
                 }
             }

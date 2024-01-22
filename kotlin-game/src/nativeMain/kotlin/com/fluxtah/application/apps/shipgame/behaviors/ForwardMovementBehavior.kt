@@ -16,7 +16,7 @@ class ForwardMovementBehavior(
     private val acceleration: Float = 2.0f,
     private val reversingFactor: Float = 2.0f,
     private val maxForwardSpeed: Float = 10.0f,
-    private val maxReverseSpeed: Float = -4.0f,
+    private val maxReverseSpeed: Float = -12.0f,
 ) : EntityBehavior() {
     private var forwardVelocity = 0.0f
     private lateinit var engineSound: Sound

@@ -13,7 +13,7 @@ class ChaseCameraBehavior(
     private var targetEntityId: String,
     private var offset: Vector3 = Vector3(0f, 3f, -4.2f),
     private var position: Vector3 = Vector3(),
-    private var smoothingFactor: Float = 4.0f // Adjust for desired smoothing
+    private var smoothingFactor: Float = 8.0f // Adjust for desired smoothing
 ) : CameraBehavior() {
 
     private lateinit var target: Entity
