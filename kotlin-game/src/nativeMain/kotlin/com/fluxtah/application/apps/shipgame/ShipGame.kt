@@ -38,7 +38,7 @@ TODO:
 class ShipGame : Application {
     override fun initialize() {
         scene(Id.SCENE_MAIN) {
-            val map = InfiniteMap(6242423)
+            val map = InfiniteMap(1)
 
             camera(Id.CAMERA1) {
                 position(4.0f, 6.0f, -4.0f)
@@ -100,6 +100,9 @@ class ShipGame : Application {
                         maxLateralSpeed = 12.0f
                     )
                 }
+                behaviour {
+                    ShipDieBehavior()
+                }
                 onCollision { scene, ship, entities ->
                     for (otherEntity in entities) {
                         if (otherEntity.id == Id.ENT_ASTEROID) {
@@ -107,6 +110,12 @@ class ShipGame : Application {
                             asteroidDieBehavior.die()
                             ship.inUse = false
                             ship.visible = false
+                            ship.resetBehaviors()
+                            scene.createSequence(Id.SEQ_DEATH_RESPAWN)?.play()
+
+                            return@onCollision
+                        } else if (otherEntity.id == "tile") {
+                            ship.getBehaviorByType<ShipDieBehavior>().die()
                             ship.resetBehaviors()
                             scene.createSequence(Id.SEQ_DEATH_RESPAWN)?.play()
 
